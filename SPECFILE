@@ -32,7 +32,7 @@ pillar_defaults:
       data_dir: /mnt/hadoop/hdfs/data
       permissions: true
     mapred:
-      local_dir: /mnt/hadoop/mapred/local
+      local_dir: /mnt/yarn
       system_dir: /hadoop/system/mapred
       reduce_tasks: 6
       map_tasks_max: 5

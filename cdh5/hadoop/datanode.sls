@@ -1,4 +1,4 @@
-{% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
+{% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/yarn') %}
 {% set dfs_data_dir = salt['pillar.get']('cdh5:dfs:data_dir', '/mnt/hadoop/hdfs/data') %}
 
 # From cloudera, CDH5 requires JDK7, so include it along with the 
@@ -78,10 +78,10 @@ hadoop-mapreduce:
 datanode_mapred_local_dirs:
   cmd:
     - run
-    - name: 'mkdir -p {{ mapred_local_dir }} && chmod -R 755 {{ mapred_local_dir }} && chown -R mapred:mapred {{ mapred_local_dir }}'
+    - name: 'mkdir -p {{ mapred_local_dir }} && chmod -R 755 {{ mapred_local_dir }} && chown -R yarn:yarn {{ mapred_local_dir }}'
     - unless: "test -d {{ mapred_local_dir }} && [ `stat -c '%U' {{ mapred_local_dir }}` == 'mapred' ]"
     - require:
-      - pkg: hadoop-0.20-mapreduce-tasktracker
+      - pkg: hadoop-yarn-nodemanager
 
 # make the hdfs data directories
 dfs_data_dir:
