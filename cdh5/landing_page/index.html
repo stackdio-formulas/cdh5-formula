@@ -44,12 +44,13 @@ body {
         <p class="lead">Below is a list of useful links customized for your CDH5 stack.</p>
         <ul>
           {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-          <li><a href='http://{{ fqdn }}:50030/'>Hadoop MR JobTracker</a></li>
+          <li><a href='http://{{ fqdn }}:8088/'>Hadoop Yarn ResourceManager</a></li>
+          <li><a href='http://{{ fqdn }}:19888/'>Hadoop Mapreduce HistoryServer</a></li>
           <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS NameNode</a></li>
           {% endif %}
 
           {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
-          <li><a href='http://{{ fqdn }}:50060/'>Hadoop MR TaskTracker</a></li>
+          <li><a href='http://{{ fqdn }}:50060/'>Hadoop NodeManager</a></li>
           <li><a href='http://{{ fqdn }}:50075/'>Hadoop HDFS DataNode</a></li>
           {% endif %}
 
