@@ -1,0 +1,55 @@
+title: CDH5 Salt Formula
+description: Salt formula for installing components of CDH5
+root_path: cdh5
+components:
+  - title: NameNode
+    description: Hadoop NameNode component of CDH5
+    sls_path: cdh5.hadoop.namenode
+  - title: DataNode
+    description: Hadoop DataNode component of CDH5
+    sls_path: cdh5.hadoop.datanode
+  - title: ZooKeeper
+    description: ZooKeeper component of CDH5
+    sls_path: cdh5.zookeeper
+  - title: HBase Master
+    description: HBase Master component of CDH5
+    sls_path: cdh5.hbase.master
+  - title: HBase RegionServer
+    description: HBase RegionServer component of CDH5
+    sls_path: cdh5.hbase.regionserver
+  - title: Oozie 
+    description: Oozie
+    sls_path: cdh5.oozie
+pillar_defaults:
+  cdh5:
+    version: 5.0.0b1
+    landing_page: true
+    io:
+      sort_factor: 25
+      sort_mb: 250
+    dfs:
+      name_dir: /mnt/hadoop/hdfs/nn
+      data_dir: /mnt/hadoop/hdfs/data
+      permissions: true
+    mapred:
+      local_dir: /mnt/hadoop/mapred/local
+      system_dir: /hadoop/system/mapred
+      reduce_tasks: 6
+      map_tasks_max: 5
+      reduce_tasks_max: 3
+      child_java_opts: '-Xmx2000m'
+      child_ulimit: 8000000
+    hbase:
+      tmp_dir: /mnt/hbase/tmp
+      log_dir: /mnt/hbase/logs
+      replication: 3
+      master_initial_heap: 1024m
+      master_max_heap: 1024m
+      master_young_gen: 256m
+      region_initial_heap: 1024m
+      region_max_heap: 1024m
+      region_young_gen: 256m
+      jute_maxbuffer: 1000000
+    zookeeper:
+      data_dir: /mnt/zk/data
+
