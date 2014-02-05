@@ -18,7 +18,7 @@ extend:
         - pkg: hadoop-hdfs-namenode
         - pkg: hadoop-yarn-resourcemanager 
         - pkg: hadoop-mapreduce-historyserver
-        - pkg: hadoop-yarn-proxyserver
+#        - pkg: hadoop-yarn-proxyserver
 
 ##
 # Installs the namenode package and starts the service.
@@ -55,9 +55,10 @@ hadoop-yarn-resourcemanager:
     - running
     - require: 
       - pkg: hadoop-yarn-resourcemanager
-      - cmd: namenode_mapred_local_dirs
-      - cmd: mapred_system_dirs
-      - cmd: hdfs_mapreduce_var_dir
+      - service: hadoop-hdfs-namenode
+#      - cmd: namenode_mapred_local_dirs
+#      - cmd: mapred_system_dirs
+#      - cmd: hdfs_mapreduce_var_dir
       - file: /etc/hadoop/conf
     - watch:
       - file: /etc/hadoop/conf
@@ -76,6 +77,7 @@ hadoop-mapreduce-historyserver:
     - running
     - require:
       - pkg: hadoop-mapreduce-historyserver
+      - service: hadoop-hdfs-namenode
       - file: /etc/hadoop/conf
     - watch:
       - file: /etc/hadoop/conf
@@ -85,19 +87,19 @@ hadoop-mapreduce-historyserver:
 #
 # Depends on: JDK7
 ##
-hadoop-yarn-proxyserver:
-  pkg:
-    - installed
-    - require:
-      - module: cdh5_refresh_db
-  service:
-    - running
-    - require:
-      - pkg: hadoop-yarn-proxyserver
-      - file: /etc/hadoop/conf
-    - watch:
-      - file: /etc/hadoop/conf
-
+#hadoop-yarn-proxyserver:
+#  pkg:
+#    - installed
+#    - require:
+#      - module: cdh5_refresh_db
+#  service:
+#    - running
+#    - require:
+#      - pkg: hadoop-yarn-proxyserver
+#      - file: /etc/hadoop/conf
+#    - watch:
+#      - file: /etc/hadoop/conf
+#
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
 cdh5_dfs_dirs:
@@ -133,36 +135,36 @@ hdfs_tmp_dir:
       - service: hadoop-hdfs-namenode
 
 # HDFS MapReduce var directories
-hdfs_mapreduce_var_dir:
-  cmd:
-    - run
-    - user: hdfs
-    - group: hdfs
-    - name: 'hadoop fs -mkdir -p {{ mapred_staging_dir }} && hadoop fs -chmod 1777 {{ mapred_staging_dir }} && hadoop fs -chown -R mapred `dirname {{ mapred_staging_dir }}`'
-    - unless: 'hadoop fs -test -d {{ mapred_staging_dir }}'
-    - require:
-      - service: hadoop-hdfs-namenode
+#hdfs_mapreduce_var_dir:
+#  cmd:
+#    - run
+#    - user: hdfs
+#    - group: hdfs
+#    - name: 'hadoop fs -mkdir -p {{ mapred_staging_dir }} && hadoop fs -chmod 1777 {{ mapred_staging_dir }} && hadoop fs -chown -R mapred `dirname {{ mapred_staging_dir }}`'
+#    - unless: 'hadoop fs -test -d {{ mapred_staging_dir }}'
+#    - require:
+#      - service: hadoop-hdfs-namenode
 
 # MR local directory
-namenode_mapred_local_dirs:
-  cmd:
-    - run
-    - name: 'mkdir -p {{ mapred_local_dir }} && chown -R mapred:hadoop {{ mapred_local_dir }}'
-    - unless: 'test -d {{ mapred_local_dir }}'
-    - require:
-      - pkg: hadoop-hdfs-namenode
-      - pkg: hadoop-yarn-resourcemanager
+#namenode_mapred_local_dirs:
+#  cmd:
+#    - run
+#    - name: 'mkdir -p {{ mapred_local_dir }} && chown -R mapred:hadoop {{ mapred_local_dir }}'
+#    - unless: 'test -d {{ mapred_local_dir }}'
+#    - require:
+#      - pkg: hadoop-hdfs-namenode
+#      - pkg: hadoop-yarn-resourcemanager
 
 # MR system directory
-mapred_system_dirs:
-  cmd:
-    - run
-    - user: hdfs
-    - group: hdfs
-    - name: 'hadoop fs -mkdir {{ mapred_system_dir }} && hadoop fs -chown mapred:hadoop {{ mapred_system_dir }}'
-    - unless: 'hadoop fs -test -d {{ mapred_system_dir }}'
-    - require:
-      - service: hadoop-hdfs-namenode
+#mapred_system_dirs:
+#  cmd:
+#    - run
+#    - user: hdfs
+#    - group: hdfs
+#    - name: 'hadoop fs -mkdir {{ mapred_system_dir }} && hadoop fs -chown mapred:hadoop {{ mapred_system_dir }}'
+#    - unless: 'hadoop fs -test -d {{ mapred_system_dir }}'
+#    - require:
+#      - service: hadoop-hdfs-namenode
 
 # set permissions at the root level of HDFS so any user can write to it
 hdfs_permissions:
