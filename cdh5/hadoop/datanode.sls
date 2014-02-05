@@ -51,6 +51,7 @@ hadoop-yarn-nodemanager:
     - running
     - require: 
       - pkg: hadoop-yarn-nodemanager
+      - cmd: datanode_mapred_local_dirs
       - file: /etc/hadoop/conf
     - watch:
       - file: /etc/hadoop/conf
@@ -65,14 +66,14 @@ hadoop-mapreduce:
     - installed
     - require:
       - module: cdh5_refresh_db
-  service:
-    - running
-    - require:
-      - pkg: hadoop-mapreduce
-      - cmd: datanode_mapred_local_dirs
-      - file: /etc/hadoop/conf
-    - watch:
-      - file: /etc/hadoop/conf
+#  service:
+#    - running
+#    - require:
+#      - pkg: hadoop-mapreduce
+#      - cmd: datanode_mapred_local_dirs
+#      - file: /etc/hadoop/conf
+#    - watch:
+#      - file: /etc/hadoop/conf
 
 # make the local storage directories
 datanode_mapred_local_dirs:
