@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh4.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
-{% set master_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh4.hbase.master', 'grains.items', 'compound').values()[0]['fqdn'] %}
+{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
+{% set master_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hbase.master', 'grains.items', 'compound').values()[0]['fqdn'] %}
 <configuration>
     <property>
         <name>hbase.zookeeper.quorum</name>
@@ -20,11 +20,11 @@
     </property>
     <property>
         <name>hbase.tmp.dir</name>
-        <value>{{ pillar.cdh4.hbase.tmp_dir }}</value>
+        <value>{{ pillar.cdh5.hbase.tmp_dir }}</value>
     </property>
     <property>
         <name>dfs.replication</name>
-        <value>{{ pillar.cdh4.hbase.replication }}</value>
+        <value>{{ pillar.cdh5.hbase.replication }}</value>
     </property>
     <!-- zookeeper properties -->
     <property>
@@ -33,7 +33,7 @@
     </property>
     <property>
         <name>hbase.zookeeper.property.dataDir</name>
-        <value>{{ pillar.cdh4.zookeeper.data_dir }}</value>
+        <value>{{ pillar.cdh5.zookeeper.data_dir }}</value>
     </property>
     <property>
         <name>hbase.zookeeper.property.maxClientCnxns</name>
