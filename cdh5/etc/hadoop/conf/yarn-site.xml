@@ -71,4 +71,12 @@
      <name>yarn.app.mapreduce.am.staging-dir</name>
      <value>/user</value>
   </property>
+  <property>
+     <name>mapreduce.jobhistory.webapp.address</name>
+     <value>{{ salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] }}:19888</value>
+  </property>
+  <property>
+     <name>mapreduce.jobhistory.address</name>
+     <value>{{ salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] }}:10020</value>
+  </property>
 </configuration>
