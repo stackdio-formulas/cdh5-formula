@@ -1,7 +1,8 @@
 {% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
 {% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
 {% set mapred_system_dir = salt['pillar.get']('cdh5:mapred:system_dir', '/hadoop/system/mapred') %}
-{% set mapred_staging_dir = '/var/lib/hadoop-hdfs/cache/mapred/mapred/staging' %}
+{% set mapred_staging_dir = '/user/history' %}
+{% set mapred_log_dir = '/var/log/hadoop-yarn' %}
 
 # From cloudera, CDH4 requires JDK7, so include it along with the 
 # CDH4 repository to install their packages.
@@ -58,7 +59,8 @@ hadoop-yarn-resourcemanager:
       - service: hadoop-hdfs-namenode
 #      - cmd: namenode_mapred_local_dirs
 #      - cmd: mapred_system_dirs
-#      - cmd: hdfs_mapreduce_var_dir
+      - cmd: hdfs_mapreduce_var_dir
+      - cmd: hdfs_mapreduce_log_dir
       - file: /etc/hadoop/conf
     - watch:
       - file: /etc/hadoop/conf
@@ -134,16 +136,27 @@ hdfs_tmp_dir:
     - require:
       - service: hadoop-hdfs-namenode
 
+# HDFS MapReduce log directories
+hdfs_mapreduce_log_dir:
+  cmd:
+    - run
+    - user: hdfs
+    - group: hdfs
+    - name: 'hadoop fs -mkdir -p {{ mapred_log_dir }} && hadoop fs -chmod 1777 {{ mapred_log_dir }} && hadoop fs -chown -R yarn `dirname {{ mapred_log_dir }}`'
+    - unless: 'hadoop fs -test -d {{ mapred_log_dir }}'
+    - require:
+      - service: hadoop-hdfs-namenode
+
 # HDFS MapReduce var directories
-#hdfs_mapreduce_var_dir:
-#  cmd:
-#    - run
-#    - user: hdfs
-#    - group: hdfs
-#    - name: 'hadoop fs -mkdir -p {{ mapred_staging_dir }} && hadoop fs -chmod 1777 {{ mapred_staging_dir }} && hadoop fs -chown -R mapred `dirname {{ mapred_staging_dir }}`'
-#    - unless: 'hadoop fs -test -d {{ mapred_staging_dir }}'
-#    - require:
-#      - service: hadoop-hdfs-namenode
+hdfs_mapreduce_var_dir:
+  cmd:
+    - run
+    - user: hdfs
+    - group: hdfs
+    - name: 'hadoop fs -mkdir -p {{ mapred_staging_dir }} && hadoop fs -chmod 1777 {{ mapred_staging_dir }} && hadoop fs -chown -R yarn `dirname {{ mapred_staging_dir }}`'
+    - unless: 'hadoop fs -test -d {{ mapred_staging_dir }}'
+    - require:
+      - service: hadoop-hdfs-namenode
 
 # MR local directory
 #namenode_mapred_local_dirs:
