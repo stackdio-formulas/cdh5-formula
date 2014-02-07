@@ -4,4 +4,48 @@
       <name>mapreduce.framework.name</name>
       <value>yarn</value>
     </property>
+  <property>
+     <name>mapreduce.jobhistory.webapp.address</name>
+     <value>{{ salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] }}:19888</value>
+  </property>
+  <property>
+     <name>mapreduce.jobhistory.address</name>
+     <value>{{ salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] }}:10020</value>
+  </property>
+  <property>
+     <name>yarn.app.mapreduce.am.staging-dir</name>
+     <value>/user</value>
+  </property>
+  <property>
+     <name>mapreduce.job.counters.limit</name>
+     <value>240</value>
+  </property>
+  <property>
+    <name>mapred.reduce.tasks</name>
+    <value>{{ pillar.cdh5.mapred.reduce_tasks }}</value>
+  </property>
+  <property>
+     <name>mapreduce.output.fileoutputformat.compress</name>
+     <value>true</value>
+  </property>
+  <property>
+     <name>mapreduce.output.fileoutputformat.compress.type</name>
+     <value>BLOCK</value>
+  </property>
+  <property>
+     <name>mapreduce.map.output.compress</name>
+     <value>true</value>
+  </property>
+  <property>
+     <name>mapreduce.reduce.speculative</name>
+     <value>false</value>
+  </property>
+  <property>
+     <name>mapreduce.map.output.compress.codec</name>
+     <value>org.apache.hadoop.io.compress.SnappyCodec</value>
+  </property>
+  <property>
+     <name>mapreduce.reduce.shuffle.input.buffer.percent</name>
+     <value>0.4</value>
+  </property>
 </configuration>

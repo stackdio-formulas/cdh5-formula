@@ -72,11 +72,19 @@
      <value>/user</value>
   </property>
   <property>
-     <name>mapreduce.jobhistory.webapp.address</name>
-     <value>{{ salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] }}:19888</value>
+     <name>yarn.nodemanager.vmem-pmem-ratio</name>
+     <value>1.0</value>
   </property>
   <property>
-     <name>mapreduce.jobhistory.address</name>
-     <value>{{ salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] }}:10020</value>
+     <name>yarn.scheduler.minimum-allocation-mb</name>
+     <value>512</value>
+  </property>
+  <property>
+     <name>yarn.scheduler.maximum-allocation-mb</name>
+     <value>{{ pillar.cdh5.yarn.max_container_size_mb }}</value>
+  </property>
+  <property>
+     <name>yarn.nodemanager.resource.memory-mb</name>
+     <value>{{ pillar.cdh5.yarn.max_container_size_mb }}</value>
   </property>
 </configuration>

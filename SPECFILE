@@ -24,6 +24,8 @@ pillar_defaults:
   cdh5:
     version: 5.0.0b1
     landing_page: true
+    yarn:
+      max_container_size_mb: 11264
     io:
       sort_factor: 25
       sort_mb: 250
@@ -35,10 +37,6 @@ pillar_defaults:
       local_dir: /mnt/yarn
       system_dir: /hadoop/system/mapred
       reduce_tasks: 6
-      map_tasks_max: 5
-      reduce_tasks_max: 3
-      child_java_opts: '-Xmx2000m'
-      child_ulimit: 8000000
     hbase:
       tmp_dir: /mnt/hbase/tmp
       log_dir: /mnt/hbase/logs
