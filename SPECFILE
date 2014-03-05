@@ -22,7 +22,7 @@ components:
     sls_path: cdh5.oozie
 pillar_defaults:
   cdh5:
-    version: 5.0.0b1
+    version: 5.0.0b2
     landing_page: true
     yarn:
       max_container_size_mb: 11264
