@@ -50,7 +50,7 @@ body {
           {% endif %}
 
           {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
-          <li><a href='http://{{ fqdn }}:50060/'>Hadoop NodeManager</a></li>
+          <li><a href='http://{{ fqdn }}:8042/'>Hadoop NodeManager</a></li>
           <li><a href='http://{{ fqdn }}:50075/'>Hadoop HDFS DataNode</a></li>
           {% endif %}
 
