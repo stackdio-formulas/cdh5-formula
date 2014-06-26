@@ -4,7 +4,7 @@
 <configuration>
     <property>
         <name>hbase.zookeeper.quorum</name>
-        <value>{{ master_host }}</value>
+        <value>{% if pillar.cdh5.hbase.manage_zk %}{{ master_host }}{% else %}{% for host, items in salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').items() %}{{ items['fqdn'] }}{% if not loop.last %},{% endif %}{% endfor %}{% endif %}</value>
     </property>
     <property>
         <name>hbase.rootdir</name>
@@ -52,5 +52,10 @@
       <!-- tell the master to perform fresh assignments on startup, this avoids problems with ephemeral IP addresses in EC2 -->
         <name>hbase.master.startup.retainassign</name>
         <value>false</value>
+    </property>
+    <property>
+        <!-- increase the number of threads used for bulk assignment to speed up table creation and cluster restarts -->
+        <name>hbase.bulk.assignment.threadpool.size</name>
+        <value>60</value>
     </property>
 </configuration>

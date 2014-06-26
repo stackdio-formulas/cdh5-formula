@@ -5,16 +5,6 @@ include:
   - cdh5.zookeeper
   - cdh5.hbase.conf
 
-extend:
-  /etc/hbase/conf/hbase-site.xml:
-    file:
-      - require:
-        - pkg: hbase-master
-  /etc/hbase/conf/hbase-env.sh:
-    file:
-      - require:
-        - pkg: hbase-master
-
 hbase-init:
   cmd:
     - run
@@ -25,20 +15,26 @@ hbase-init:
     - require:
       - pkg: hadoop-client
 
-hbase-master:
-  pkg:
-    - installed 
-    - require:
+hbase-master-svc:
+  service:
+    - running
+    - name: hbase-master
+    - require: 
+      - pkg: hbase-master
       - cmd: hbase-init
       - service: zookeeper-server
       - file: append_regionservers_etc_hosts
-  service:
-    - running
-    - require: 
-      - pkg: hbase-master
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
+
+hbase-thrift-svc:
+  cmd:
+    - run
+    - user: hbase
+    - group: hbase
+    - name: '/usr/lib/hbase/bin/hbase-daemon.sh start thrift'
+    - unless: 'netstat -an | grep 9090'
 

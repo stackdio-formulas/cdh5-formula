@@ -10,3 +10,4 @@ append_regionservers_etc_hosts:
       - {{ items['ip_interfaces']['eth0'][0] }} {{ items['fqdn'] }}
 {% endfor %}
 {% endif %}
+

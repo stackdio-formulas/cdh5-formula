@@ -53,4 +53,8 @@
       <name>hadoop.proxyuser.hue.groups</name>
       <value>*</value>
     </property>
+    <property>
+       <name>dfs.client.read.shortcircuit</name>
+       <value>true</value>
+    </property>
 </configuration>
