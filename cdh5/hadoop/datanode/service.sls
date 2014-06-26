@@ -58,7 +58,6 @@ datanode_mapred_local_dirs:
     - unless: "test -d {{ mapred_local_dir }} && [ `stat -c '%U' {{ mapred_local_dir }}` == 'yarn' ]"
     - require:
       - pkg: hadoop-yarn-nodemanager
-      - service: hadoop-yarn-nodemanager-svc
 
 # make the hdfs data directories
 dfs_data_dir:
@@ -68,6 +67,5 @@ dfs_data_dir:
     - unless: "test -d {{ dfs_data_dir }} && [ `stat -c '%U' {{ dfs_data_dir }}` == 'hdfs' ]"
     - require:
       - pkg: hadoop-hdfs-datanode
-      - service: hadoop-hdfs-datanode-svc
 
 

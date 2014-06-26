@@ -22,14 +22,8 @@ extend:
         - pkg: hbase-regionserver
 
 hbase-regionserver:
-  service:
-    - running
-    - require: 
-      - pkg: hbase-regionserver
-      - file: /etc/hbase/conf/hbase-site.xml
-      - file: /etc/hbase/conf/hbase-env.sh
-    - watch:
-      - file: /etc/hbase/conf/hbase-site.xml
-      - file: /etc/hbase/conf/hbase-env.sh
-
-
+  pkg:
+    - installed 
+    - require:
+      - module: cdh5_refresh_db
+    

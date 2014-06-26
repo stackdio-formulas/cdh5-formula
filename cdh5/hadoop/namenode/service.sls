@@ -83,7 +83,7 @@ cdh5_dfs_dirs:
     - name: 'mkdir -p {{ dfs_name_dir }} && chown -R hdfs:hdfs `dirname {{ dfs_name_dir }}`'
     - unless: 'test -d {{ dfs_name_dir }}'
     - require:
-      - pkg: hadoop-hdfs-namenode-svc
+      - pkg: hadoop-hdfs-namenode
       - file: /etc/hadoop/conf
 
 # Initialize HDFS. This should only run once, immediately

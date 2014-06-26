@@ -28,6 +28,7 @@ impala-catalog:
       - file: /etc/impala/conf/hbase-site.xml
 {% endif %}
 
+{% if 'cdh5.hadoop.datanode' in grains['roles'] %}
 impala-server:
   service:
     - running
@@ -38,4 +39,4 @@ impala-server:
       - file: /etc/impala/conf/core-site.xml
       - file: /etc/impala/conf/hdfs-site.xml
       - file: /etc/impala/conf/hbase-site.xml
-
+{% endif %}

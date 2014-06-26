@@ -1,7 +1,12 @@
+
+# 
+# Start the HBase master service
+#
+
 include:
   - cdh5.repo
   - cdh5.hadoop.client
-  - cdh5.hbase.regionserver_hostnames
+  - cdh5.hbase.regionserver.hostnames
   - cdh5.zookeeper
   - cdh5.hbase.conf
 

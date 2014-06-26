@@ -1,7 +1,15 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
+
+# 
+# Install the Oozie package
+#
+
 include:
   - cdh5.repo
   - cdh5.landing_page
+{% if salt['pillar.get']('cdh5:oozie:start_service', True) %}
+  - cdh5.oozie.service
+{% endif %}
 
 unzip:
   pkg:
