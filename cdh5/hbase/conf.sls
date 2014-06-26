@@ -30,3 +30,16 @@
     - dir_mode: 755
     - makedirs: True
 
+/etc/hbase/conf/log4j.properties:
+  file:
+    - replace
+    - pattern: 'maxbackupindex=20'
+    - repl: 'maxbackupindex={{ pillar.cdh5.max_log_index }}'
+    - require:
+      {% if 'cdh5.hbase.master' in grains['roles'] %}
+      - pkg: hbase-master
+      {% endif %}
+      {% if 'cdh5.hbase.regionserver' in grains['roles'] %}
+      - pkg: hbase-regionserver
+      {% endif %}
+

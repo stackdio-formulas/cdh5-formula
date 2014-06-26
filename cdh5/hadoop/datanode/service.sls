@@ -1,35 +1,16 @@
 {% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/yarn') %}
 {% set dfs_data_dir = salt['pillar.get']('cdh5:dfs:data_dir', '/mnt/hadoop/hdfs/data') %}
 
-# From cloudera, CDH5 requires JDK7, so include it along with the 
-# CDH5 repository to install their packages.
-include:
-  - cdh5.repo
-  - cdh5.hadoop.conf
-  - cdh5.landing_page
-  - cdh5.hadoop.client
-
-extend:
-  /etc/hadoop/conf:
-    file:
-      - require:
-        - pkg: hadoop-hdfs-datanode
-        - pkg: hadoop-yarn-nodemanager
-        - pkg: hadoop-mapreduce
-
 ##
-# Installs the datanode service
+# Starts the datanode service
 #
 # Depends on: JDK7
 #
 ##
-hadoop-hdfs-datanode:
-  pkg:
-    - installed 
-    - require:
-      - module: cdh5_refresh_db
+hadoop-hdfs-datanode-svc:
   service:
     - running
+    - name: hadoop-hdfs-datanode
     - require: 
       - pkg: hadoop-hdfs-datanode
       - cmd: dfs_data_dir
@@ -38,17 +19,14 @@ hadoop-hdfs-datanode:
       - file: /etc/hadoop/conf
 
 ##
-# Installs the yarn nodemanager service
+# Starts the yarn nodemanager service
 #
 # Depends on: JDK7
 ##
-hadoop-yarn-nodemanager:
-  pkg:
-    - installed 
-    - require:
-      - module: cdh5_refresh_db
+hadoop-yarn-nodemanager-svc:
   service:
     - running
+    - name: hadoop-yarn-nodemanager
     - require: 
       - pkg: hadoop-yarn-nodemanager
       - cmd: datanode_mapred_local_dirs
@@ -57,17 +35,14 @@ hadoop-yarn-nodemanager:
       - file: /etc/hadoop/conf
 
 ##
-# Installs the mapreduce service
+# Starts the mapreduce service
 #
 # Depends on: JDK7
 ##
-hadoop-mapreduce:
-  pkg:
-    - installed
-    - require:
-      - module: cdh5_refresh_db
+#hadoop-mapreduce-svc:
 #  service:
 #    - running
+#    - name: hadoop-mapreduce
 #    - require:
 #      - pkg: hadoop-mapreduce
 #      - cmd: datanode_mapred_local_dirs
@@ -92,4 +67,5 @@ dfs_data_dir:
     - unless: "test -d {{ dfs_data_dir }} && [ `stat -c '%U' {{ dfs_data_dir }}` == 'hdfs' ]"
     - require:
       - pkg: hadoop-hdfs-datanode
+
 

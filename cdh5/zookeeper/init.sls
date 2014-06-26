@@ -1,5 +1,13 @@
+
+#
+# Install the ZooKeeper service
+#
+
 include:
   - cdh5.repo
+{% if salt['pillar.get']('cdh5:zookeeper:start_service', True) %}
+  - cdh5.zookeeper.service
+{% endif %}
 
 zookeeper:
   pkg:
@@ -12,15 +20,13 @@ zookeeper-server:
     - installed
     - require:
       - pkg: zookeeper
-  service:
-    - running
-    - require:
-      - cmd: zookeeper-init
 
-zookeeper-init:
-  cmd:
-    - run
-    - name: 'service zookeeper-server init'
-    - unless: 'ls /var/lib/zookeeper/*'
+/etc/zookeeper/conf/log4j.properties:
+  file:
+    - replace
+    - pattern: 'maxbackupindex=20'
+    - repl: 'maxbackupindex={{ pillar.cdh5.max_log_index }}'
     - require:
       - pkg: zookeeper-server
+
+

@@ -1,5 +1,4 @@
-{% set fqdn = grains.get('fqdn', 'localhost') %}
-<!DOCTYPE html>
+{% set fqdn = grains.get('fqdn', 'localhost') %}<!DOCTYPE html>
 <html lang="en">
 <head>
 <title>CDH5 Landing Page</title>
@@ -9,6 +8,16 @@ html,
 body {
   height: 100%;
   /* The html and body elements cannot have any padding or margin. */
+  background-color: #333;
+}
+body {
+  color: #fff;
+}
+
+a,
+a:focus,
+a:hover {
+  color: #999;
 }
 
 /* Wrapper for page content to push down footer */
@@ -19,12 +28,15 @@ body {
   margin: 0 auto -60px;
   /* Pad bottom by footer height */
   padding: 0 0 60px; 
+  -webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+          box-shadow: inset 0 0 100px rgba(0,0,0,.5);
 }
 
 /* Set the fixed height of the footer here */ 
 #footer {
   height: 60px;
-  background-color: #f5f5f5;
+  background-color: #555;
+  color: #ddd;
 }
 
 .container {
@@ -41,37 +53,63 @@ body {
 <div id="wrap">
     <div class="container">
         <h1>CDH5 Landing Page</h1>
-        <p class="lead">Below is a list of useful links customized for your CDH5 stack.</p>
-        <ul>
-          {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-          <li><a href='http://{{ fqdn }}:8088/'>Hadoop Yarn ResourceManager</a></li>
-          <li><a href='http://{{ fqdn }}:19888/'>Hadoop Mapreduce HistoryServer</a></li>
-          <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS NameNode</a></li>
-          {% endif %}
+        <p class="lead">Below is a list of useful links customized for your CDH5 stack:</p>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Hadoop</h4>
+                <ul>
+                    {% if 'cdh5.hue' in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:8888/home'>Hue</a></li>
+                    {% endif %}
+                    {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:8088/'>Hadoop Yarn ResourceManager</a></li>
+                    <li><a href='http://{{ fqdn }}:19888/'>Hadoop Mapreduce HistoryServer</a></li>
+                    <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS NameNode</a></li>
+                    {% endif %}
+                    {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:8042/'>Hadoop NodeManager</a></li>
+                    <li><a href='http://{{ fqdn }}:50075/'>Hadoop HDFS DataNode</a></li>
+                    {% endif %}
+                    {% if 'cdh5.oozie' in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:11000/'>Oozie Dashboard</a></li>
+                    {% endif %}
+                </ul>
+            </div> <!-- col-md-6 -->
 
-          {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
-          <li><a href='http://{{ fqdn }}:8042/'>Hadoop NodeManager</a></li>
-          <li><a href='http://{{ fqdn }}:50075/'>Hadoop HDFS DataNode</a></li>
-          {% endif %}
+            <div class="col-md-6">
+                {% if 'cdh5.hbase.master' in grains['roles'] or 'cdh5.hbase.regionserver' in grains['roles'] %}
+                <h4>HBase</h4>
+                {% endif %}
+                {% if 'cdh5.hbase.master' in grains['roles'] %}
+                <ul>
+                    <li><a href='http://{{ fqdn }}:60010/'>HBase Master</a></li>
+                </ul>
+                {% endif %}
+                {% if 'cdh5.hbase.regionserver' in grains['roles'] %}
+                <ul>
+                    <li><a href='http://{{ fqdn }}:60030/'>HBase RegionServer</a></li>
+                </ul>
+                {% endif %}
+                {% if 'cdh5.impala' in grains['roles'] %}
+                <h4>Impala</h4>
+                <ul>
+                    {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
+                    <li><a href="http://{{ fqdn }}:25010">Impala State Store</a></li>
+                    <li><a href="http://{{ fqdn }}:25020">Impala Catalog</a></li>
+                    {% endif %}
+                    {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
+                    <li><a href="http://{{ fqdn }}:25000">Impala Server</a></li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+            </div> <!-- col-md-6 -->
+        </div> <!-- row -->
+    </div> <!-- container -->
+</div> <!-- wrap -->
 
-          {% if 'cdh5.oozie' in grains['roles'] %}
-          <li><a href='http://{{ fqdn }}:11000/'>Oozie Dashboard</a></li>
-          {% endif %}
-
-          {% if 'cdh5.hbase.master' in grains['roles'] %}
-          <li><a href='http://{{ fqdn }}:60010/'>HBase Master</a></li>
-          {% endif %}
-
-          {% if 'cdh5.hbase.regionserver' in grains['roles'] %}
-          <li><a href='http://{{ fqdn }}:60030/'>HBase RegionServer</a></li>
-          {% endif %}
-
-        </ul>
-    </div>
-</div>
 <div id="footer">
     <div class="container">
-        <p class="text-muted credit"><small>
+        <p class="credit"><small>
             This stack provisioned with 
             <a href="http://stackd.io">stackd.io</a> from 
             <a href="http://www.digitalreasoning.com">Digital Reasoning</a> // 

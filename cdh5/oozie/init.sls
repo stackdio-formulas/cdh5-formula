@@ -1,7 +1,15 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
+
+# 
+# Install the Oozie package
+#
+
 include:
   - cdh5.repo
   - cdh5.landing_page
+{% if salt['pillar.get']('cdh5:oozie:start_service', True) %}
+  - cdh5.oozie.service
+{% endif %}
 
 unzip:
   pkg:
@@ -15,12 +23,6 @@ oozie:
       - oozie-client
     - require:
       - module: cdh5_refresh_db
-  service:
-    - running
-    - require:
-      - cmd: extjs
-      - cmd: ooziedb
-      - file: /var/log/oozie
 
 extjs:
   file:
@@ -43,14 +45,6 @@ extjs:
       - pkg: unzip
       - pkg: oozie
 
-ooziedb:
-  cmd:
-    - run
-    - name: '/usr/lib/oozie/bin/ooziedb.sh create -run'
-    - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
-    - require:
-      - pkg: oozie
-
 /var/log/oozie:
   file:
     - directory
@@ -68,3 +62,4 @@ ooziedb:
     - recurse:
       - user
       - group
+

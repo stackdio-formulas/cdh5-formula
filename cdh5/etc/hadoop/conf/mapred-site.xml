@@ -47,5 +47,16 @@
   <property>
      <name>mapreduce.reduce.shuffle.input.buffer.percent</name>
      <value>0.4</value>
-  </property>
+   </property>
+
+    <property>
+        <name>jobtracker.thrift.address</name>
+        <value>0.0.0.0:9290</value>
+    </property>
+    <property>
+        <name>mapred.jobtracker.plugins</name>
+        <value>org.apache.hadoop.thriftfs.ThriftJobTrackerPlugin</value>
+        <description>Comma-separated list of jobtracker plug-ins to be activated.</description>
+    </property>
+ 
 </configuration>
