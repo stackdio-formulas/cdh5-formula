@@ -26,7 +26,7 @@ configure_metastore:
 create_warehouse_dir:
   cmd:
     - run
-    - name: 'hdfs dfs -mkdir -p /user/{{pillar.cdh4.hive.user}}/warehouse'
+    - name: 'hdfs dfs -mkdir -p /user/{{pillar.cdh5.hive.user}}/warehouse'
     - user: hdfs
     - group: hdfs
     - require:
@@ -35,7 +35,7 @@ create_warehouse_dir:
 warehouse_dir_owner:
   cmd:
     - run
-    - name: 'hdfs dfs -chown -R {{pillar.cdh4.hive.user}}:{{pillar.cdh4.hive.user}} /user/{{pillar.cdh4.hive.user}}'
+    - name: 'hdfs dfs -chown -R {{pillar.cdh5.hive.user}}:{{pillar.cdh5.hive.user}} /user/{{pillar.cdh5.hive.user}}'
     - user: hdfs
     - group: hdfs
     - require:
@@ -44,7 +44,7 @@ warehouse_dir_owner:
 warehouse_dir_permissions:
   cmd:
     - run
-    - name: 'hdfs dfs -chmod 1777 /user/{{pillar.cdh4.hive.user}}/warehouse'
+    - name: 'hdfs dfs -chmod 1777 /user/{{pillar.cdh5.hive.user}}/warehouse'
     - user: hdfs
     - group: hdfs
     - require:
@@ -60,6 +60,7 @@ hive-metastore:
       - service: mysql-svc
       - file: /usr/lib/hive/lib/mysql-connector-java.jar
       - file: /etc/hive/conf/hive-site.xml
+      - file: /mnt/tmp/
 
 hive-server2:
   service:
@@ -67,4 +68,10 @@ hive-server2:
     - require: 
       - service: hive-metastore
 
+/mnt/tmp/:
+  file:
+    - directory
+    - user: root
+    - group: root
+    - dir_mode: 777
 

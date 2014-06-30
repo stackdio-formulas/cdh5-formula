@@ -40,6 +40,3 @@ mysql:
     - managed
     - template: jinja
     - source: salt://cdh5/etc/hive/hive-site.xml
-
-
-

@@ -74,8 +74,8 @@ a:hover {
                     <li><a href='http://{{ fqdn }}:11000/'>Oozie Dashboard</a></li>
                     {% endif %}
                 </ul>
-                {% if 'cdh4.hadoop.namenode' in grains['roles'] %}
-                {% set datanodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh4.hadoop.datanode', 'grains.items', 'compound').values() %}
+                {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
+                {% set datanodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.datanode', 'grains.items', 'compound').values() %}
                 <h4>Datanodes</h4>
                 <ul>
                     {% for datanode in datanodes %}
