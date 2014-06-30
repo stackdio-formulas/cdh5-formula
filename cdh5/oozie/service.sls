@@ -4,6 +4,14 @@
 # Start the Oozie service
 #
 
+{% if grains['os_family'] == 'Debian' %}
+extend:
+  remove_policy_file:
+    file:
+      - require:
+        - service: oozie-svc
+{% endif %}
+
 oozie-svc:
   service:
     - running
@@ -22,13 +30,35 @@ ooziedb:
     - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
     - require:
       - pkg: oozie
+      - cmd: extjs
 
-oozie-sharelibs:        
+create-oozie-sharelibs:        
   cmd:
     - run
-    - name: 'hdfs dfs -mkdir -p /user/oozie/share/lib && hdfs dfs -chown -R oozie:oozie /user/oozie'
-    - unless: 'hdfs dfs -test -d /user/oozie/share/lib'
+    - name: 'hdfs dfs -mkdir /user/oozie && hdfs dfs -chown -R oozie:oozie /user/oozie'
+    - unless: 'hdfs dfs -test -d /user/oozie'
     - user: hdfs
     - require:
       - service: oozie-svc
 
+unpack-oozie-sharelibs:
+  cmd:
+    - run
+    - name: 'mkdir /tmp/ooziesharelib && cd /tmp/ooziesharelib && tar xzf /usr/lib/oozie/oozie-sharelib.tar.gz'
+    - require:
+      - cmd: create-oozie-sharelibs
+
+populate-oozie-sharelibs:
+  cmd:
+    - run
+    - name: 'cd /tmp/ooziesharelib && hdfs dfs -put share /user/oozie/share'
+    - user: oozie
+    - require:
+      - cmd: unpack-oozie-sharelibs
+
+remove-oozie-sharelibs-tmp:
+  cmd:
+    - run
+    - name: 'rm -rf /tmp/ooziesharelib'
+    - require:
+      - cmd: populate-oozie-sharelibs

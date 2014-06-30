@@ -23,12 +23,40 @@ configure_metastore:
     - require: 
       - pkg: hive
 
+create_warehouse_dir:
+  cmd:
+    - run
+    - name: 'hdfs dfs -mkdir -p /user/{{pillar.cdh4.hive.user}}/warehouse'
+    - user: hdfs
+    - group: hdfs
+    - require:
+      - pkg: hive
+
+warehouse_dir_owner:
+  cmd:
+    - run
+    - name: 'hdfs dfs -chown -R {{pillar.cdh4.hive.user}}:{{pillar.cdh4.hive.user}} /user/{{pillar.cdh4.hive.user}}'
+    - user: hdfs
+    - group: hdfs
+    - require:
+      - cmd: create_warehouse_dir
+
+warehouse_dir_permissions:
+  cmd:
+    - run
+    - name: 'hdfs dfs -chmod 1777 /user/{{pillar.cdh4.hive.user}}/warehouse'
+    - user: hdfs
+    - group: hdfs
+    - require:
+      - cmd: warehouse_dir_owner
+
 hive-metastore:
   service:
     - running
     - require: 
       - pkg: hive
       - cmd: configure_metastore
+      - cmd: warehouse_dir_permissions
       - service: mysql-svc
       - file: /usr/lib/hive/lib/mysql-connector-java.jar
       - file: /etc/hive/conf/hive-site.xml

@@ -74,6 +74,15 @@ a:hover {
                     <li><a href='http://{{ fqdn }}:11000/'>Oozie Dashboard</a></li>
                     {% endif %}
                 </ul>
+                {% if 'cdh4.hadoop.namenode' in grains['roles'] %}
+                {% set datanodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh4.hadoop.datanode', 'grains.items', 'compound').values() %}
+                <h4>Datanodes</h4>
+                <ul>
+                    {% for datanode in datanodes %}
+                    <li><a href='http://{{ datanode["fqdn"] }}/'>{{ datanode['id'] }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
             </div> <!-- col-md-6 -->
 
             <div class="col-md-6">
@@ -90,16 +99,18 @@ a:hover {
                     <li><a href='http://{{ fqdn }}:60030/'>HBase RegionServer</a></li>
                 </ul>
                 {% endif %}
-                {% if 'cdh5.impala' in grains['roles'] %}
+                {% if 'cdh5.impala.state-store' in grains['roles'] or 'cdh5.impala.server' in grains['roles'] %}
                 <h4>Impala</h4>
+                {% endif %}
+                {% if 'cdh5.impala.state-store' in grains['roles'] %}
                 <ul>
-                    {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
                     <li><a href="http://{{ fqdn }}:25010">Impala State Store</a></li>
                     <li><a href="http://{{ fqdn }}:25020">Impala Catalog</a></li>
-                    {% endif %}
-                    {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
+                  </ul>    
+                {% endif %}
+                {% if 'cdh5.impala.server' in grains['roles'] %}
+                <ul>
                     <li><a href="http://{{ fqdn }}:25000">Impala Server</a></li>
-                    {% endif %}
                 </ul>
                 {% endif %}
             </div> <!-- col-md-6 -->
