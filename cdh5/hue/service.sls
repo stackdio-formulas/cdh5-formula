@@ -9,9 +9,9 @@ hue-svc:
     - require:
       - pkg: hue
       - file: /mnt/tmp/hadoop
-      - file: /etc/hue/hue.ini
+      - file: /etc/hue/conf/hue.ini
 
-/etc/hue/hue.ini:
+/etc/hue/conf/hue.ini:
   file:
     - managed
     - template: jinja

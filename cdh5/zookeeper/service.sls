@@ -38,8 +38,18 @@ myid:
 zookeeper-init:
   cmd:
     - run
-    - name: 'service zookeeper-server init'
+    - name: 'service zookeeper-server init --force'
     - unless: 'ls {{pillar.cdh5.zookeeper.data_dir}}/*'
     - require:
-      - pkg: zookeeper-server
+      - file: zk_data_dir
 
+zk_data_dir:
+  file:
+    - directory
+    - name: {{pillar.cdh5.zookeeper.data_dir}}
+    - user: zookeeper
+    - group: zookeeper
+    - dir_mode: 755
+    - makedirs: true
+    - require:
+      - pkg: zookeeper-server
