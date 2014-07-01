@@ -1,4 +1,5 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
+{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh4.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn_ip4'][0] %}
 
 # 
 # Start the Oozie service
@@ -41,25 +42,11 @@ create-oozie-sharelibs:
     - require:
       - service: oozie-svc
 
-unpack-oozie-sharelibs:
-  cmd:
-    - run
-    - name: 'mkdir /tmp/ooziesharelib && cd /tmp/ooziesharelib && tar xzf /usr/lib/oozie/oozie-sharelib-yarn.tar.gz'
-    - require:
-      - cmd: create-oozie-sharelibs
-
 populate-oozie-sharelibs:
   cmd:
     - run
-    - name: 'cd /tmp/ooziesharelib && hdfs dfs -put share /user/oozie/share'
+    - name: 'sudo oozie-setup sharelib create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz'
     - unless: 'hdfs dfs -test -d /user/oozie/share'
-    - user: oozie
     - require:
-      - cmd: unpack-oozie-sharelibs
+      - cmd: create-oozie-sharelibs
 
-remove-oozie-sharelibs-tmp:
-  cmd:
-    - run
-    - name: 'rm -rf /tmp/ooziesharelib'
-    - require:
-      - cmd: populate-oozie-sharelibs
