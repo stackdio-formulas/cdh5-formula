@@ -14,18 +14,6 @@
     - require:
       - file: add_policy_file
 
-/etc/apt/sources.list.d/impala.list:
-  file:
-    - managed
-    - name: /etc/apt/sources.list.d/impala.list
-    - source: http://archive.cloudera.com/impala/ubuntu/{{ grains['lsb_distrib_codename'] }}/amd64/impala/cloudera.list
-    - user: root
-    - group: root
-    - mode: 664
-    - template: jinja
-    - require:
-      - file: add_policy_file
-
 cdh5_gpg:
   cmd:
     - run
@@ -33,14 +21,6 @@ cdh5_gpg:
     - unless: 'apt-key list | grep "Cloudera Apt Repository"'
     - require:
       - file: /etc/apt/sources.list.d/cloudera.list
-
-impala_gpg:
-  cmd:
-    - run
-    - name: 'curl -s http://archive.cloudera.com/impala/ubuntu/{{ grains["lsb_distrib_codename"] }}/amd64/impala/archive.key | apt-key add -'
-    #- unless: 'apt-key list | grep "Impala Apt Repository"'
-    - require:
-      - file: /etc/apt/sources.list.d/cloudera.list 
 
 cdh5_refresh_db:
   module:
@@ -78,13 +58,13 @@ cloudera_cdh5:
     - gpgkey: http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
     - gpgcheck: 1
 
-cloudera_impala:
-  pkgrepo:
-    - managed
-    - humanname: "Impala"
-    - baseurl: http://archive.cloudera.com/impala/redhat/6/x86_64/impala/{{ pillar.cdh5.impala.version }}/
-    - gpgkey: http://archive.cloudera.com/impala/redhat/6/x86_64/impala/RPM-GPG-KEY-cloudera
-    - gpgcheck: 1
+#cloudera_impala:
+#  pkgrepo:
+#    - managed
+#    - humanname: "Impala"
+#    - baseurl: http://archive.cloudera.com/impala/redhat/6/x86_64/impala/{{ pillar.cdh5.impala.version }}/
+#    - gpgkey: http://archive.cloudera.com/impala/redhat/6/x86_64/impala/RPM-GPG-KEY-cloudera
+#    - gpgcheck: 1
 
 cdh5_gpg:
   cmd:
