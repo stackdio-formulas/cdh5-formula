@@ -2,7 +2,7 @@
 <configuration>
     <property>
         <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:mysql://{{ nn_host }}/metastore</value>
+        <value>jdbc:mysql://localhost/metastore</value>
         <description>JDBC connect string for a JDBC metastore</description>
     </property>
 

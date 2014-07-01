@@ -14,11 +14,7 @@
 # limitations under the License.
 
 # Override JAVA_HOME detection for all bigtop packages
-{% if grains['os_family'] == 'Debian' %}
-export JAVA_HOME=/usr/lib/jvm/latest
-{% elif grains['os_family'] == 'RedHat' %}
 export JAVA_HOME=/usr/java/latest
-{% endif %}
 
 # Provide a colon-delimited list of directories to search for native Java libraries (e.g. libjvm.so)
 # export JAVA_NATIVE_PATH

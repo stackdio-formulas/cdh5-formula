@@ -10,6 +10,14 @@ include:
   - cdh5.zookeeper
   - cdh5.hbase.conf
 
+{% if grains['os_family'] == 'Debian' %}
+extend:
+  remove_policy_file:
+    file:
+      - require:
+        - service: hbase-master-svc
+{% endif %}
+
 hbase-init:
   cmd:
     - run
@@ -31,6 +39,8 @@ hbase-master-svc:
       - file: append_regionservers_etc_hosts
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
+      - file: {{ pillar.cdh5.hbase.tmp_dir }}
+      - file: {{ pillar.cdh5.hbase.log_dir }}
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh

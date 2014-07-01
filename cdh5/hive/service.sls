@@ -6,11 +6,25 @@
 include:
   - cdh5.repo
 
+{% if grains['os_family'] == 'Debian' %}
+extend:
+  remove_policy_file:
+    file:
+      - require:
+        - service: hive-metastore
+        - service: hive-server2
+        - service: mysql-svc
+{% endif %}
+
 # @todo move this out to its own formula
 mysql-svc:
   service:
     - running
+    {% if grains['os_family'] == 'Debian' %}
+    - name: mysql
+    {% elif grains['os_family'] == 'RedHat' %}
     - name: mysqld
+    {% endif %}
     - require:
       - pkg: mysql
 
@@ -22,6 +36,7 @@ configure_metastore:
     - unless: echo "show databases" | mysql -u root | grep metastore
     - require: 
       - pkg: hive
+      - pkg: mysql-svc
 
 create_warehouse_dir:
   cmd:

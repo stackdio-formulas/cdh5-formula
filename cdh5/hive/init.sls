@@ -26,7 +26,11 @@ mysql:
     - installed
     - pkgs:
       - mysql-server
+      {% if grains['os_family'] == 'Debian' %}
+      - libmysql-java
+      {% elif grains['os_family'] == 'RedHat' %}
       - mysql-connector-java
+      {% endif %}
 
 /usr/lib/hive/lib/mysql-connector-java.jar:
   file:
