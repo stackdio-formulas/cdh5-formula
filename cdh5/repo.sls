@@ -12,7 +12,7 @@
     - mode: 644
     - template: jinja
     - require:
-      - pkg: add_policy_file
+      - file: add_policy_file
 
 /etc/apt/sources.list.d/impala.list:
   file:
