@@ -4,6 +4,15 @@
 {% set mapred_staging_dir = '/user/history' %}
 {% set mapred_log_dir = '/var/log/hadoop-yarn' %}
 
+{% if grains['os_family'] == 'Debian' %}
+extend:
+  remove_policy_file:
+    file:
+      - require:
+        - service: hadoop-hdfs-namenode-svc
+        - service: hadoop-yarn-resourcemanager-svc
+        - service: hadoop-mapreduce-historyserver-svc
+{% endif %}
 
 ##
 # Starts the namenode service.

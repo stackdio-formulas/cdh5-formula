@@ -12,7 +12,7 @@
     - mode: 644
     - template: jinja
     - require:
-      - pkg: oracle-java6-installer
+      - file: add_policy_file
 
 cdh5_gpg:
   cmd:
@@ -29,6 +29,24 @@ cdh5_refresh_db:
     - require:
       - cmd: cdh5_gpg
 
+# This is used on ubuntu so that services don't start 
+add_policy_file:
+  file:
+    - managed
+    - name: /usr/sbin/policy-rc.d
+    - contents: exit 101
+    - user: root
+    - group: root
+    - mode: 755
+    - makedirs: True
+
+remove_policy_file:
+  file:
+    - absent
+    - name: /usr/sbin/policy-rc.d
+    - require:
+      - file: add_policy_file
+
 {% elif grains['os_family'] == 'RedHat' %}
 
 # Set up the CDH5 yum repository
@@ -40,13 +58,13 @@ cloudera_cdh5:
     - gpgkey: http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
     - gpgcheck: 1
 
-cloudera_impala:
-  pkgrepo:
-    - managed
-    - humanname: "Impala"
-    - baseurl: http://archive.cloudera.com/impala/redhat/6/x86_64/impala/{{ pillar.cdh5.impala.version }}/
-    - gpgkey: http://archive.cloudera.com/impala/redhat/6/x86_64/impala/RPM-GPG-KEY-cloudera
-    - gpgcheck: 1
+#cloudera_impala:
+#  pkgrepo:
+#    - managed
+#    - humanname: "Impala"
+#    - baseurl: http://archive.cloudera.com/impala/redhat/6/x86_64/impala/{{ pillar.cdh5.impala.version }}/
+#    - gpgkey: http://archive.cloudera.com/impala/redhat/6/x86_64/impala/RPM-GPG-KEY-cloudera
+#    - gpgcheck: 1
 
 cdh5_gpg:
   cmd:

@@ -1,6 +1,16 @@
 {% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/yarn') %}
 {% set dfs_data_dir = salt['pillar.get']('cdh5:dfs:data_dir', '/mnt/hadoop/hdfs/data') %}
 
+{% if grains['os_family'] == 'Debian' %}
+extend:
+  remove_policy_file:
+    file:
+      - require:
+        - service: hadoop-hdfs-datanode-svc
+        - service: hadoop-yarn-nodemanager-svc
+{% endif %}
+
+
 ##
 # Starts the datanode service
 #

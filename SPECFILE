@@ -29,9 +29,12 @@ components:
   - title: Hive
     description: Hive
     sls_path: cdh5.hive
-  - title: Impala
-    description: Impala
-    sls_path: cdh5.impala
+  - title: Impala State Store
+    description: Impala State Store
+    sls_path: cdh5.impala.state-store
+  - title: Impala Server
+    description: Impala Server
+    sls_path: cdh5.impala.server
 
 pillar_defaults:
   cdh5:

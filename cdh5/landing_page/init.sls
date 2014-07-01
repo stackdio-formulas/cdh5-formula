@@ -1,25 +1,42 @@
-{% if pillar.get('cdh5.landing_page', True) %}
-#
-# Install thttpd
-thttpd:
+{% if salt['pillar.get']('cdh5:landing_page', True) %}
+
+{% set settings = salt['grains.filter_by']({
+      'Debian': {
+          'package_name': 'apache2',
+          'html_file': '/var/www/index.html',
+      },
+      'RedHat': {
+          'package_name': 'thttpd',
+          'html_file': '/var/www/thttpd/index.html',
+      },
+}) %}
+
+
+# Install thttpd or apache
+webserver:
   pkg:
     - installed
+    - name: {{ settings.package_name }}
   service:
     - running
+    - name: {{ settings.package_name }}
     - require:
-      - pkg: thttpd
-      - file: /var/www/thttpd/index.html
+      - pkg: webserver
+      - file: landing_html
+
 
 # Setup the landing page
-/var/www/thttpd/index.html:
+landing_html:
   file:
     - managed
+    - name: {{ settings.html_file }}
     - source: salt://cdh5/landing_page/index.html
     - user: root
     - group: root
     - mode: 644
     - template: jinja
+    - makedirs: true
     - require:
-      - pkg: thttpd
+      - pkg: webserver
 
 {% endif %}
