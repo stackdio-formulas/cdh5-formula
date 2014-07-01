@@ -36,7 +36,7 @@ configure_metastore:
     - unless: echo "show databases" | mysql -u root | grep metastore
     - require: 
       - pkg: hive
-      - pkg: mysql-svc
+      - service: mysql-svc
 
 create_warehouse_dir:
   cmd:
