@@ -16,6 +16,7 @@ extend:
     file:
       - require:
         - service: hbase-master-svc
+        - service: hbase-thrift-svc
 {% endif %}
 
 hbase-init:
@@ -46,10 +47,9 @@ hbase-master-svc:
       - file: /etc/hbase/conf/hbase-env.sh
 
 hbase-thrift-svc:
-  cmd:
-    - run
-    - user: hbase
-    - group: hbase
-    - name: '/usr/lib/hbase/bin/hbase-daemon.sh start thrift'
-    - unless: 'netstat -an | grep 9090'
+  service:
+    - running
+    - name: hbase-thrift
+    - require:
+      - service: hbase-master
 

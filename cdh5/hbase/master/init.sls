@@ -34,6 +34,8 @@ extend:
 hbase-master:
   pkg:
     - installed 
+    - pkgs:
+      - hbase-master
+      - hbase-thrift
     - require:
       - module: cdh5_refresh_db
-
