@@ -80,4 +80,62 @@
       <value>true</value>
     </property> 
 
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% from 'krb5/settings.sls' import krb5 with context %}
+    <!-- General HDFS security config -->
+    <property>
+      <name>dfs.block.access.token.enable</name>
+      <value>true</value>
+    </property>
+ 
+    <!-- NameNode security config -->
+    <property>
+      <name>dfs.namenode.keytab.file</name>
+      <value>/etc/hadoop/conf/hdfs.keytab</value> <!-- path to the HDFS keytab -->
+    </property>
+    <property>
+      <name>dfs.namenode.kerberos.principal</name>
+      <value>hdfs/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+    </property>
+    <property>
+      <name>dfs.namenode.kerberos.internal.spnego.principal</name>
+      <value>HTTP/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+    </property>
+
+    <!-- Secondary NameNode security config -->
+    <property>
+      <name>dfs.secondary.namenode.keytab.file</name>
+      <value>/etc/hadoop/conf/hdfs.keytab</value> <!-- path to the HDFS keytab -->
+    </property>
+    <property>
+      <name>dfs.secondary.namenode.kerberos.principal</name>
+      <value>hdfs/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+    </property>
+    <property>
+      <name>dfs.secondary.namenode.kerberos.internal.spnego.principal</name>
+      <value>HTTP/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+    </property>
+
+    <!-- DataNode security config -->
+    <property>
+      <name>dfs.datanode.keytab.file</name>
+      <value>/etc/hadoop/conf/hdfs.keytab</value> <!-- path to the HDFS keytab -->
+    </property>
+    <property>
+      <name>dfs.datanode.kerberos.principal</name>
+      <value>hdfs/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+    </property>
+
+    <!-- Web Authentication config -->
+    <property>
+      <name>dfs.web.authentication.kerberos.principal</name>
+      <value>HTTP/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+     </property>
+    <!--
+    <property>
+    <name>dfs.http.policy</name>
+    <value>HTTPS_ONLY</value>
+    </property>
+    -->
+{% endif %}
 </configuration>

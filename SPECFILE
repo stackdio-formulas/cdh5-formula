@@ -41,6 +41,8 @@ pillar_defaults:
     version: 5
     landing_page: true
     max_log_index: 1
+    security:
+      enable: false
     namenode:
       start_service: true
     datanode:
@@ -90,5 +92,3 @@ pillar_defaults:
     hue:
       start_service: true
       secret_key: CHANGE_THIS
-
-
