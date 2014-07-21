@@ -1,12 +1,12 @@
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
-generate_hbase_keytabs:
+generate_hive_keytabs:
   cmd:
     - script 
-    - source: salt://cdh5/hbase/security/generate_keytabs.sh
+    - source: salt://cdh5/hive/security/generate_keytabs.sh
     - template: jinja
     - user: root
     - group: root
-    - cwd: /etc/hbase/conf
+    - cwd: /etc/hive/conf
     - require:
       - module: load_admin_keytab
 {% endif %}

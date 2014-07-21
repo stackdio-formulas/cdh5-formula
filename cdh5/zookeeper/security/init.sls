@@ -2,7 +2,7 @@
 generate_zookeeper_keytabs:
   cmd:
     - script 
-    - source: salt://cdh5/zookeeper/security/generate_zookeeper_keytabs.sh
+    - source: salt://cdh5/zookeeper/security/generate_keytabs.sh
     - template: jinja
     - user: root
     - group: root

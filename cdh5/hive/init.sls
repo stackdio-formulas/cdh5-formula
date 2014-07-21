@@ -1,12 +1,15 @@
-
 # 
 # Install the Hive package
 #
-
 include:
   - cdh5.repo
 {% if salt['pillar.get']('cdh5:hive:start_service', True) %}
   - cdh5.hive.service
+{% endif %}
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+  - krb5
+  - cdh5.security
+  - cdh5.hive.security
 {% endif %}
 
 hive:

@@ -46,6 +46,9 @@ create_warehouse_dir:
     - group: hdfs
     - require:
       - pkg: hive
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hive_keytabs 
+{% endif %}
 
 warehouse_dir_owner:
   cmd:
@@ -82,6 +85,9 @@ hive-server2:
     - running
     - require: 
       - service: hive-metastore
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hive_keytabs 
+{% endif %}
 
 /mnt/tmp/:
   file:
