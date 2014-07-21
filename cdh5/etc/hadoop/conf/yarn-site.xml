@@ -1,3 +1,4 @@
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 <?xml version="1.0"?>
 <!--
   Licensed to the Apache Software Foundation (ASF) under one or more
@@ -20,7 +21,7 @@
 <configuration>
   <property>
     <name>yarn.resourcemanager.hostname</name>
-    <value>{{ salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] }}</value>
+    <value>{{ namenode_fqdn }}</value>
   </property>
 
   <property>
@@ -97,7 +98,7 @@
   </property>
   <property>
     <name>yarn.resourcemanager.principal</name>   
-    <value>yarn/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+    <value>yarn/_HOST@{{ krb5.realm }}</value>
   </property>
 
   <!-- NodeManager security configs -->
@@ -107,7 +108,21 @@
   </property>
   <property>
     <name>yarn.nodemanager.principal</name>   
-    <value>yarn/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+    <value>yarn/_HOST@{{ krb5.realm }}</value>
   </property>
+  <property>
+    <name>yarn.nodemanager.container-executor.class</name>    
+    <value>org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor</value>
+  </property> 
+  <property>
+    <name>yarn.nodemanager.linux-container-executor.group</name>
+    <value>yarn</value>
+  </property>
+  <!-- To enable SSL
+  <property>
+    <name>yarn.http.policy</name>
+    <value>HTTPS_ONLY</value>
+  </property>
+  -->
 {% endif %}
 </configuration>

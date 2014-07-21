@@ -1,8 +1,6 @@
-
 # 
 # Install the Hue package
 #
-
 include:
   - cdh5.repo
   - cdh5.landing_page
@@ -26,5 +24,3 @@ hue:
     - directory
     - makedirs: true
     - mode: 777
-
-

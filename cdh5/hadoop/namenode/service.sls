@@ -94,6 +94,10 @@ cdh5_dfs_dirs:
     - require:
       - pkg: hadoop-hdfs-namenode
       - file: /etc/hadoop/conf
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+{% endif %}
+
 
 # Initialize HDFS. This should only run once, immediately
 # following an install of hadoop.
@@ -107,6 +111,23 @@ init_hdfs:
     - require:
       - cmd: cdh5_dfs_dirs
 
+# When security is enabled, we need to get a kerberos ticket
+# for the hdfs principal so that any interaction with HDFS
+# through the hadoop client may authorize successfully.
+# NOTE this means that any 'hadoop fs' commands will need
+# to require this state to be sure we have a krb ticket
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+hdfs_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
+    - user: hdfs
+    - group: hdfs
+    - require:
+      - service: hadoop-hdfs-namenode-svc
+      - cmd: generate_hadoop_keytabs
+{% endif %}
+
 # HDFS tmp directory
 hdfs_tmp_dir:
   cmd:
@@ -117,6 +138,9 @@ hdfs_tmp_dir:
     - unless: 'hadoop fs -test -d /tmp'
     - require:
       - service: hadoop-hdfs-namenode-svc
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hdfs_kinit
+{% endif %}
 
 # HDFS MapReduce log directories
 hdfs_mapreduce_log_dir:
@@ -128,6 +152,9 @@ hdfs_mapreduce_log_dir:
     - unless: 'hadoop fs -test -d {{ mapred_log_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hdfs_kinit
+{% endif %}
 
 # HDFS MapReduce var directories
 hdfs_mapreduce_var_dir:
@@ -139,6 +166,23 @@ hdfs_mapreduce_var_dir:
     - unless: 'hadoop fs -test -d {{ mapred_staging_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hdfs_kinit
+{% endif %}
+
+# set permissions at the root level of HDFS so any user can write to it
+hdfs_permissions:
+  cmd:
+    - run
+    - user: hdfs
+    - group: hdfs
+    - name: 'hadoop fs -chmod 777 /'
+    - require:
+      - service: hadoop-yarn-resourcemanager-svc
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hdfs_kinit
+{% endif %}
+
 
 # MR local directory
 #namenode_mapred_local_dirs:
@@ -160,14 +204,3 @@ hdfs_mapreduce_var_dir:
 #    - unless: 'hadoop fs -test -d {{ mapred_system_dir }}'
 #    - require:
 #      - service: hadoop-hdfs-namenode-svc
-
-# set permissions at the root level of HDFS so any user can write to it
-hdfs_permissions:
-  cmd:
-    - run
-    - user: hdfs
-    - group: hdfs
-    - name: 'hadoop fs -chmod 777 /'
-    - require:
-      - service: hadoop-yarn-resourcemanager-svc
-

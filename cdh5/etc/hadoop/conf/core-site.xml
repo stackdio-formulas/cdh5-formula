@@ -1,3 +1,4 @@
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 <?xml version="1.0"?>
 <configuration>
     <property>
@@ -15,7 +16,7 @@
     </property>
     <property>
       <name>fs.defaultFS</name>
-      <value>hdfs://{{ salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] }}:8020/</value>
+      <value>hdfs://{{ namenode_fqdn }}:8020/</value>
     </property>
     <property>
       <name>fs.trash.interval</name>
@@ -65,4 +66,15 @@
        <name>dfs.client.read.shortcircuit</name>
        <value>true</value>
     </property>
+{%- if salt['pillar.get']('cdh5:security:enable', False) %}
+{%- from 'krb5/settings.sls' import krb5 with context %}
+<property>
+  <name>hadoop.security.authentication</name>
+  <value>kerberos</value>
+</property>
+<property>
+  <name>hadoop.security.authorization</name>
+  <value>true</value>
+</property>
+{%- endif %}
 </configuration>

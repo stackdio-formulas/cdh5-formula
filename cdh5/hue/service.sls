@@ -1,7 +1,6 @@
 # 
 # Start the Hue service
 #
-
 {% if grains['os_family'] == 'Debian' %}
 extend:
   remove_policy_file:
@@ -25,6 +24,3 @@ hue-svc:
     - template: jinja
     - source: salt://cdh5/etc/hue/hue.ini
     - mode: 755
-
-
-

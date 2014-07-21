@@ -58,4 +58,51 @@
         <name>hbase.bulk.assignment.threadpool.size</name>
         <value>60</value>
     </property>
+{%- if salt['pillar.get']('cdh5:security:enable', False) %}
+{%- from 'krb5/settings.sls' import krb5 with context %}
+    <property>
+        <name>hbase.security.authentication</name>
+        <value>kerberos</value>
+    </property>
+    <property>
+        <name>hbase.rpc.engine</name>
+        <value>org.apache.hadoop.hbase.ipc.SecureRpcEngine</value>
+    </property>
+    <property> 
+        <name>hbase.regionserver.kerberos.principal</name> 
+        <value>hbase/_HOST@{{ krb5.realm }}</value> 
+    </property> 
+    <property> 
+        <name>hbase.regionserver.keytab.file</name> 
+        <value>/etc/hbase/conf/hbase.keytab</value> 
+    </property>
+    <property> 
+        <name>hbase.master.kerberos.principal</name> 
+        <value>hbase/_HOST@{{ krb5.realm }}</value> 
+    </property> 
+    <property> 
+        <name>hbase.master.keytab.file</name> 
+        <value>/etc/hbase/conf/hbase.keytab</value> 
+    </property>
+    <property>
+        <name>hbase.security.authorization</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>hbase.coprocessor.master.classes</name>
+        <value>org.apache.hadoop.hbase.security.access.AccessController</value>
+    </property>
+    <property>
+        <name>hbase.coprocessor.region.classes</name>
+        <value>org.apache.hadoop.hbase.security.token.TokenProvider,org.apache.hadoop.hbase.security.access.AccessController</value>
+    </property>
+    <property>
+        <name>hbase.thrift.keytab.file</name>
+        <value>/etc/hbase/conf/hbase.keytab</value>
+    </property>
+    <property>
+        <name>hbase.thrift.kerberos.principal</name>
+        <value>hbase/_HOST@{{ krb5.realm }}</value>
+    </property>
+{%- endif %}
 </configuration>

@@ -1,8 +1,6 @@
-
 #
 # Start the ZooKeeper service
 #
-
 include:
   - cdh5.repo
 
@@ -22,6 +20,32 @@ extend:
     - mode: 755
     - require: 
       - pkg: zookeeper
+
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+/etc/zookeeper/conf/jaas.conf:
+  file:
+    - managed
+    - template: jinja
+    - source: salt://cdh5/etc/zookeeper/conf/jaas.conf
+    - user: root
+    - group: root
+    - mode: 644
+    - require: 
+      - pkg: zookeeper
+      - file: /etc/zookeeper/conf/zoo.cfg
+
+/etc/zookeeper/conf/java.env:
+  file:
+    - managed
+    - template: jinja
+    - source: salt://cdh5/etc/zookeeper/conf/java.env
+    - user: root
+    - group: root
+    - mode: 644
+    - require: 
+      - pkg: zookeeper
+      - file: /etc/zookeeper/conf/zoo.cfg
+{% endif %}
     
 zookeeper-server-svc:
   service:
@@ -29,7 +53,12 @@ zookeeper-server-svc:
     - name: zookeeper-server
     - unless: service zookeeper-server status
     - require:
-        - file: myid
+        - cmd: zookeeper-init
+        - file: /etc/zookeeper/conf/zoo.cfg
+        - file: /etc/zookeeper/conf/log4j.properties
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+        - cmd: generate_zookeeper_keytabs
+{% endif %}
 
 myid:
   file:
@@ -41,15 +70,15 @@ myid:
     - mode: 755
     - source: salt://cdh5/etc/zookeeper/conf/myid
     - require:
-        - cmd: zookeeper-init
+      - file: zk_data_dir
 
 zookeeper-init:
   cmd:
     - run
     - name: 'service zookeeper-server init --force'
-    - unless: 'ls {{pillar.cdh5.zookeeper.data_dir}}/*'
+    - unless: 'ls {{pillar.cdh5.zookeeper.data_dir}}/version-*'
     - require:
-      - file: zk_data_dir
+      - file: myid
 
 zk_data_dir:
   file:
@@ -61,3 +90,6 @@ zk_data_dir:
     - makedirs: true
     - require:
       - pkg: zookeeper-server
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_zookeeper_keytabs
+{% endif %}

@@ -25,6 +25,10 @@ hadoop-hdfs-datanode-svc:
       - pkg: hadoop-hdfs-datanode
       - cmd: dfs_data_dir
       - file: /etc/hadoop/conf
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: /etc/default/hadoop-hdfs-datanode
+      - cmd: generate_hadoop_keytabs
+{% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
@@ -41,6 +45,10 @@ hadoop-yarn-nodemanager-svc:
       - pkg: hadoop-yarn-nodemanager
       - cmd: datanode_mapred_local_dirs
       - file: /etc/hadoop/conf
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: /etc/default/hadoop-hdfs-datanode
+      - cmd: generate_hadoop_keytabs
+{% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
