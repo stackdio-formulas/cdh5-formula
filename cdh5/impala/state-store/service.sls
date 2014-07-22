@@ -22,6 +22,9 @@ impala-state-store:
       - file: /etc/impala/conf/core-site.xml
       - file: /etc/impala/conf/hdfs-site.xml
       - file: /etc/impala/conf/hbase-site.xml
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_impala_keytabs
+{% endif %}
 
 impala-catalog:
   service:
@@ -35,4 +38,6 @@ impala-catalog:
       - file: /etc/impala/conf/core-site.xml
       - file: /etc/impala/conf/hdfs-site.xml
       - file: /etc/impala/conf/hbase-site.xml
-
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_impala_keytabs
+{% endif %}
