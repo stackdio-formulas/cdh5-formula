@@ -76,13 +76,17 @@
     </property>
 {%- if salt['pillar.get']('cdh5:security:enable', False) %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
-<property>
-  <name>hadoop.security.authentication</name>
-  <value>kerberos</value>
-</property>
-<property>
-  <name>hadoop.security.authorization</name>
-  <value>true</value>
-</property>
+    <property>
+      <name>hadoop.security.authentication</name>
+      <value>kerberos</value>
+    </property>
+    <property>
+      <name>hadoop.security.authorization</name>
+      <value>true</value>
+    </property>
+    <property>
+      <name>hue.kerberos.principal.shortname</name>
+      <value>hue</value>
+    </property>
 {%- endif %}
 </configuration>

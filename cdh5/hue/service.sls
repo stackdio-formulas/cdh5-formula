@@ -17,6 +17,9 @@ hue-svc:
       - pkg: hue
       - file: /mnt/tmp/hadoop
       - file: /etc/hue/conf/hue.ini
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hue_keytabs 
+{% endif %}
 
 /etc/hue/conf/hue.ini:
   file:
