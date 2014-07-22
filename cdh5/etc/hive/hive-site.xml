@@ -55,5 +55,36 @@
     </property>
     {% endif %}
 
-</configuration>
+    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    {% from 'krb5/settings.sls' import krb5 with context %}
 
+    <!-- HiveServer2 security -->
+    <property>
+        <name>hive.server2.authentication</name>
+        <value>KERBEROS</value>
+    </property>
+    <property>
+        <name>hive.server2.authentication.kerberos.principal</name>
+        <value>hive/_HOST@{{ krb5.realm }}</value>
+    </property>
+    <property>
+        <name>hive.server2.authentication.kerberos.keytab</name>
+        <value>/etc/hive/conf/hive.keytab</value>
+    </property>
+
+    <!-- Hive metastore security -->
+    <property>
+        <name>hive.metastore.sasl.enabled</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>hive.metastore.kerberos.keytab.file</name>
+        <value>/etc/hive/conf/hive.keytab</value>
+    </property>
+    <property>
+        <name>hive.metastore.kerberos.principal</name>
+        <value>hive/_HOST@{{ krb5.realm }}</value>
+    </property>
+    {% endif %}
+
+</configuration>

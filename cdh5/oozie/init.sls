@@ -10,6 +10,11 @@ include:
 {% if salt['pillar.get']('cdh5:oozie:start_service', True) %}
   - cdh5.oozie.service
 {% endif %}
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+  - krb5
+  - cdh5.security
+  - cdh5.oozie.security
+{% endif %}
 
 unzip:
   pkg:
@@ -23,6 +28,19 @@ oozie:
       - oozie-client
     - require:
       - module: cdh5_refresh_db
+
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+/etc/oozie/conf/oozie-site.xml:
+  file:
+    - managed
+    - source: salt://cdh5/etc/oozie/conf/oozie-site.xml
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - require:
+      - pkg: oozie
+{% endif %}
 
 extjs:
   file:

@@ -36,10 +36,21 @@
     - pattern: 'maxbackupindex=20'
     - repl: 'maxbackupindex={{ pillar.cdh5.max_log_index }}'
     - require:
-      {% if 'cdh5.hbase.master' in grains['roles'] %}
-      - pkg: hbase-master
-      {% endif %}
-      {% if 'cdh5.hbase.regionserver' in grains['roles'] %}
-      - pkg: hbase-regionserver
-      {% endif %}
+      - file: /etc/hbase/conf/hbase-site.xml
+      - file: /etc/hbase/conf/hbase-env.sh
+      - file: {{ pillar.cdh5.hbase.tmp_dir }}
+      - file: {{ pillar.cdh5.hbase.log_dir }}
 
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+/etc/hbase/conf/zk-jaas.conf:
+  file:
+    - managed
+    - source: salt://cdh5/etc/hbase/conf/zk-jaas.conf
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - require:
+      - file: /etc/hbase/conf/hbase-site.xml
+      - file: /etc/hbase/conf/hbase-env.sh
+{% endif %}

@@ -95,11 +95,11 @@
     </property>
     <property>
       <name>dfs.namenode.kerberos.principal</name>
-      <value>hdfs/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+      <value>hdfs/_HOST@{{ krb5.realm }}</value>
     </property>
     <property>
       <name>dfs.namenode.kerberos.internal.spnego.principal</name>
-      <value>HTTP/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+      <value>HTTP/_HOST@{{ krb5.realm }}</value>
     </property>
 
     <!-- Secondary NameNode security config -->
@@ -109,27 +109,35 @@
     </property>
     <property>
       <name>dfs.secondary.namenode.kerberos.principal</name>
-      <value>hdfs/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+      <value>hdfs/_HOST@{{ krb5.realm }}</value>
     </property>
     <property>
       <name>dfs.secondary.namenode.kerberos.internal.spnego.principal</name>
-      <value>HTTP/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+      <value>HTTP/_HOST@{{ krb5.realm }}</value>
     </property>
 
     <!-- DataNode security config -->
+    <property>
+        <name>dfs.datanode.address</name>
+        <value>0.0.0.0:1004</value>
+    </property>
+    <property>
+        <name>dfs.datanode.http.address</name>
+        <value>0.0.0.0:1006</value>
+    </property>
     <property>
       <name>dfs.datanode.keytab.file</name>
       <value>/etc/hadoop/conf/hdfs.keytab</value> <!-- path to the HDFS keytab -->
     </property>
     <property>
       <name>dfs.datanode.kerberos.principal</name>
-      <value>hdfs/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+      <value>hdfs/_HOST@{{ krb5.realm }}</value>
     </property>
 
     <!-- Web Authentication config -->
     <property>
       <name>dfs.web.authentication.kerberos.principal</name>
-      <value>HTTP/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+      <value>HTTP/_HOST@{{ krb5.realm }}</value>
      </property>
     <!--
     <property>

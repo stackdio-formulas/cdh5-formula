@@ -1,7 +1,6 @@
 # 
 # Start the Hue service
 #
-
 {% if grains['os_family'] == 'Debian' %}
 extend:
   remove_policy_file:
@@ -18,6 +17,9 @@ hue-svc:
       - pkg: hue
       - file: /mnt/tmp/hadoop
       - file: /etc/hue/conf/hue.ini
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hue_keytabs 
+{% endif %}
 
 /etc/hue/conf/hue.ini:
   file:
@@ -25,6 +27,3 @@ hue-svc:
     - template: jinja
     - source: salt://cdh5/etc/hue/hue.ini
     - mode: 755
-
-
-

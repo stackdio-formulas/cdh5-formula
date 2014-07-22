@@ -9,6 +9,11 @@ include:
 {% if salt['pillar.get']('cdh5:datanode:start_service', True) %}
   - cdh5.hadoop.datanode.service
 {% endif %}
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+  - krb5
+  - cdh5.security
+  - cdh5.hadoop.security
+{% endif %}
 
 extend:
   /etc/hadoop/conf:
@@ -17,6 +22,20 @@ extend:
         - pkg: hadoop-hdfs-datanode
         - pkg: hadoop-yarn-nodemanager
         - pkg: hadoop-mapreduce
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+  load_admin_keytab:
+    module:
+      - require:
+        - file: /etc/krb5.conf
+        - file: /etc/hadoop/conf
+  generate_hadoop_keytabs:
+    cmd:
+      - require:
+        - pkg: hadoop-hdfs-datanode
+        - pkg: hadoop-yarn-nodemanager
+        - pkg: hadoop-mapreduce
+        - module: load_admin_keytab
+{% endif %}
 
 ##
 # Installs the datanode service
@@ -29,6 +48,23 @@ hadoop-hdfs-datanode:
     - installed 
     - require:
       - module: cdh5_refresh_db
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: /etc/krb5.conf
+{% endif %}
+
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+/etc/default/hadoop-hdfs-datanode:
+  file:
+    - managed
+    - source: salt://cdh5/etc/default/hadoop-hdfs-datanode
+    - template: jinja
+    - makedirs: true
+    - user: root
+    - group: root
+    - file_mode: 644
+    - require:
+      - pkg: hadoop-hdfs-datanode
+{% endif %}
 
 ##
 # Installs the yarn nodemanager service
@@ -40,6 +76,9 @@ hadoop-yarn-nodemanager:
     - installed 
     - require:
       - module: cdh5_refresh_db
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: /etc/krb5.conf
+{% endif %}
 
 ##
 # Installs the mapreduce service
@@ -51,5 +90,8 @@ hadoop-mapreduce:
     - installed
     - require:
       - module: cdh5_refresh_db
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: /etc/krb5.conf
+{% endif %}
 
 

@@ -14,6 +14,11 @@ include:
 {% if salt['pillar.get']('cdh5:namenode:start_service', True) %}
   - cdh5.hadoop.namenode.service
 {% endif %}
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+  - krb5
+  - cdh5.security
+  - cdh5.hadoop.security
+{% endif %}
 
 extend:
   /etc/hadoop/conf:
@@ -23,6 +28,20 @@ extend:
         - pkg: hadoop-yarn-resourcemanager 
         - pkg: hadoop-mapreduce-historyserver
 #        - pkg: hadoop-yarn-proxyserver
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+  load_admin_keytab:
+    module:
+      - require:
+        - file: /etc/krb5.conf
+        - file: /etc/hadoop/conf
+  generate_hadoop_keytabs:
+    cmd:
+      - require:
+        - pkg: hadoop-hdfs-namenode
+        - pkg: hadoop-yarn-resourcemanager
+        - pkg: hadoop-mapreduce-historyserver
+        - module: load_admin_keytab
+{% endif %}
 
 ##
 # Installs the namenode package.
@@ -34,6 +53,9 @@ hadoop-hdfs-namenode:
     - installed 
     - require:
       - module: cdh5_refresh_db
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: /etc/krb5.conf
+{% endif %}
 
 ##
 # Installs the yarn resourcemanager package.
@@ -45,6 +67,9 @@ hadoop-yarn-resourcemanager:
     - installed
     - require:
       - module: cdh5_refresh_db
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: /etc/krb5.conf
+{% endif %}
 
 ##
 # Installs the mapreduce historyserver package.
@@ -56,6 +81,9 @@ hadoop-mapreduce-historyserver:
     - installed
     - require:
       - module: cdh5_refresh_db
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: /etc/krb5.conf
+{% endif %}
 
 ##
 # Installs the hadoop job tracker package.
@@ -68,4 +96,3 @@ hadoop-mapreduce-historyserver:
 #    - require:
 #      - module: cdh5_refresh_db
 #
-

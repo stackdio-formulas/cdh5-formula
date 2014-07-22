@@ -103,3 +103,8 @@ HBASE_LOG_DIR={{ pillar.cdh5.hbase.log_dir }}
 export HBASE_MANAGES_ZK=false
 {% endif %}
 
+{%- if salt['pillar.get']('cdh5:security:enable', False) %}
+{%- from 'krb5/settings.sls' import krb5 with context %}
+export HBASE_OPTS="$HBASE_OPTS -Djava.security.auth.login.config=/etc/hbase/conf/zk-jaas.conf"
+export HBASE_MANAGES_ZK=false
+{%- endif -%}
