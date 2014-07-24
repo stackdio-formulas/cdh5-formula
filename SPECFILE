@@ -5,6 +5,9 @@ components:
   - title: NameNode
     description: Hadoop NameNode component of CDH5
     sls_path: cdh5.hadoop.namenode
+  - title: Standby NameNode
+    description: Standby NameNode for high-availability
+    sls_path: cdh5.hadoop.namenode.standby
   - title: DataNode
     description: Hadoop DataNode component of CDH5
     sls_path: cdh5.hadoop.datanode
