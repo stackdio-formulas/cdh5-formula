@@ -1,3 +1,4 @@
+{%- set hann = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode.standby', 'grains.items', 'compound') -%}
 {% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
 {% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
 {% set mapred_system_dir = salt['pillar.get']('cdh5:mapred:system_dir', '/hadoop/system/mapred') %}
@@ -55,6 +56,19 @@ hadoop-hdfs-namenode:
       - module: cdh5_refresh_db
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - file: /etc/krb5.conf
+{% endif %}
+
+{% if hann %}
+##
+# Installs the journalnode package for high availability
+#
+# Depends on: JDK7
+##
+hadoop-hdfs-journalnode:
+  pkg:
+    - installed
+    - require:
+      - module: cdh5_refresh_db
 {% endif %}
 
 ##

@@ -6,6 +6,7 @@
     - user: root
     - group: root
     - file_mode: 644
+    - exclude_pat: '.*.swp'
 
 /etc/hadoop/conf/container-executor.cfg:
   file:

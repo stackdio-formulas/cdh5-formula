@@ -1,4 +1,6 @@
+{%- set hann = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode.standby', 'grains.items', 'compound') -%}
 {% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
+{% set journal_dir = salt['pillar.get']('cdh5:dfs:journal_dir', '/mnt/hadoop/hdfs/jn') %}
 {% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
 {% set mapred_system_dir = salt['pillar.get']('cdh5:mapred:system_dir', '/hadoop/system/mapred') %}
 {% set mapred_staging_dir = '/user/history' %}
@@ -29,8 +31,31 @@ hadoop-hdfs-namenode-svc:
       # is started
       - cmd: init_hdfs
       - file: /etc/hadoop/conf
+{% if hann %}
+      - service: hadoop-hdfs-journalnode-svc
+{% endif %}
     - watch:
       - file: /etc/hadoop/conf
+
+{% if hann %}
+##
+# Starts the journalnode service.
+#
+# Depends on: JDK7
+##
+hadoop-hdfs-journalnode-svc:
+  service:
+    - running
+    - name: hadoop-hdfs-journalnode
+    - require:
+      - pkg: hadoop-hdfs-journalnode
+      - file: /etc/hadoop/conf
+{% if hann %}
+      - cmd: cdh5_journal_dir
+{% endif %}
+    - watch:
+      - file: /etc/hadoop/conf
+{% endif %}
 
 ##
 # Starts yarn resourcemanager service.
@@ -98,6 +123,17 @@ cdh5_dfs_dirs:
       - cmd: generate_hadoop_keytabs
 {% endif %}
 
+{% if hann %}
+# Make sure the journal data directory exists if necessary
+cdh5_journal_dir:
+  cmd:
+    - run
+    - name: 'mkdir -p {{ journal_dir }} && chown -R hdfs:hdfs `dirname {{ journal_dir }}`'
+    - unless: 'test -d {{ journal_dir }}'
+    - require:
+      - pkg: hadoop-hdfs-namenode
+      - file: /etc/hadoop/conf
+{% endif %}
 
 # Initialize HDFS. This should only run once, immediately
 # following an install of hadoop.
