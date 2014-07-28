@@ -10,11 +10,6 @@
     {%- do journal_nodes.append(first_dn_fqdn ~ ':8485') -%}
   {%- endif -%}
 {%- endif -%}
-<!--
-{%- if hann %}
-{{ hann_items }}
-{%- endif %}
--->
 <?xml version="1.0"?>
 <configuration>
     <property>
