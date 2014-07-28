@@ -53,6 +53,8 @@ pillar_defaults:
       start_service: true
     datanode:
       start_service: true
+    journalnode:
+      start_service: true
     yarn:
       max_container_size_mb: 11264
     io:

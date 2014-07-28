@@ -8,6 +8,7 @@
     - file_mode: 644
     - exclude_pat: '.*.swp'
 
+{% if 'cdh5.hadoop.namenode' in grains.roles or 'cdh5.hadoop.datanode' in grains.roles %}
 /etc/hadoop/conf/container-executor.cfg:
   file:
     - managed
@@ -17,6 +18,7 @@
     - group: yarn
     - require:
       - file: /etc/hadoop/conf
+{% endif %}
 
 /etc/hadoop/conf/log4j.properties:
   file:
