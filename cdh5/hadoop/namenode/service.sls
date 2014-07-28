@@ -47,7 +47,7 @@ hadoop-hdfs-journalnode-svc:
   service:
     - running
     - name: hadoop-hdfs-journalnode
-    - require: 
+    - require:
       - pkg: hadoop-hdfs-journalnode
       - file: /etc/hadoop/conf
 {% if hann %}

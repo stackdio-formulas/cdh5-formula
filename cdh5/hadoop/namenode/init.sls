@@ -66,7 +66,7 @@ hadoop-hdfs-namenode:
 ##
 hadoop-hdfs-journalnode:
   pkg:
-    - installed 
+    - installed
     - require:
       - module: cdh5_refresh_db
 {% endif %}
