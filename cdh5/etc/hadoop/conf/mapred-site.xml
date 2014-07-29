@@ -58,6 +58,23 @@
       <value>org.apache.hadoop.thriftfs.ThriftJobTrackerPlugin</value>
       <description>Comma-separated list of jobtracker plug-ins to be activated.</description>
   </property>
+  <property>
+      <name>mapreduce.map.java.opts</name>
+      <value>-Xmx2000m</value>
+  </property>
+  <property>
+      <name>mapreduce.map.memory.mb</name>
+      <value>3000</value>
+  </property>
+  <property>
+      <name>mapreduce.reduce.java.opts</name>
+      <value>-Xmx2000m</value>
+  </property>
+  <property>
+      <name>mapreduce.reduce.memory.mb</name>
+      <value>3000</value>
+  </property>
+
 
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
 {% from 'krb5/settings.sls' import krb5 with context %}
