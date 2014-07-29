@@ -1,14 +1,9 @@
-{%- set hann = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode.standby', 'grains.items', 'compound') -%}
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
-{%- if hann -%}
-  {%- set hann_items = hann.values()[0] if hann else None -%}
-  {%- set hann_fqdn = hann_items['fqdn'] if hann else None -%}
-  {%- set datanodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.datanode', 'grains.items', 'compound').values()|sort -%}
-  {%- set first_dn_fqdn = datanodes[0]['fqdn'] if datanodes else None -%}
-  {%- set journal_nodes = [namenode_fqdn ~ ':8485', hann_fqdn ~ ':8485'] -%}
-  {%- if first_dn_fqdn -%}
-    {%- do journal_nodes.append(first_dn_fqdn ~ ':8485') -%}
-  {%- endif -%}
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- if standby -%}
+  {%- set standby_items = standby.values()[0] if standby else None -%}
+  {%- set standby_fqdn = standby_items['fqdn'] if standby else None -%}
+  {%- set journal_nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.journalnode', 'grains.items', 'compound').values() -%}
 {%- endif -%}
 <?xml version="1.0"?>
 <configuration>
@@ -25,7 +20,7 @@
       <name>io.compression.codecs</name>
       <value>org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.SnappyCodec</value>
     </property>
-    {%- if hann %}
+    {%- if standby %}
     <property>
       <name>dfs.nameservices</name>
       <value>default</value>
@@ -44,7 +39,7 @@
     </property>
     <property>
       <name>dfs.namenode.rpc-address.default.nn2</name>
-      <value>{{ hann_fqdn }}:8020</value>
+      <value>{{ standby_fqdn }}:8020</value>
     </property>
     <property>
       <name>dfs.namenode.http-address.default.nn1</name>
@@ -52,18 +47,18 @@
     </property>
     <property>
       <name>dfs.namenode.http-address.default.nn2</name>
-      <value>{{ hann_fqdn }}:50070</value>
+      <value>{{ standby_fqdn }}:50070</value>
     </property>
     <property>
       <name>dfs.namenode.shared.edits.dir</name>
-      <value>qjournal://{% for j in journal_nodes %}{{ j }}{% if not loop.last %};{% endif %}{% endfor %}/default</value>
+      <value>qjournal://{% for j in journal_nodes %}{{ j['fqdn'] }}:8485{% if not loop.last %};{% endif %}{% endfor %}/default</value>
     </property>
     <property>
       <name>dfs.journalnode.edits.dir</name>
       <value>{{ pillar.cdh5.dfs.journal_dir }}</value>
     </property>
     <property>
-      <name>dfs.client.failover.proxy.provider.mycluster</name>
+      <name>dfs.client.failover.proxy.provider.default</name>
       <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
     </property>
     <property>

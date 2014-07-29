@@ -1,10 +1,23 @@
-{%- set hann = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode.standby', 'grains.items', 'compound') -%}
 {% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
-{% set journal_dir = salt['pillar.get']('cdh5:dfs:journal_dir', '/mnt/hadoop/hdfs/jn') %}
 {% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
 {% set mapred_system_dir = salt['pillar.get']('cdh5:mapred:system_dir', '/hadoop/system/mapred') %}
 {% set mapred_staging_dir = '/user/history' %}
 {% set mapred_log_dir = '/var/log/hadoop-yarn' %}
+
+##
+# Standby NN specific SLS
+##
+{% if 'cdh5.hadoop.standby' in grains.roles %}
+include:
+  - cdh5.hadoop.standby.service
+##
+# END STANDBY NN
+##
+
+##
+# Regular NN SLS
+##
+{% else %}
 
 {% if grains['os_family'] == 'Debian' %}
 extend:
@@ -31,31 +44,20 @@ hadoop-hdfs-namenode-svc:
       # is started
       - cmd: init_hdfs
       - file: /etc/hadoop/conf
-{% if hann %}
-      - service: hadoop-hdfs-journalnode-svc
-{% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
-{% if hann %}
 ##
-# Starts the journalnode service.
-#
-# Depends on: JDK7
+# Sets this namenode as the "Active" namenode
 ##
-hadoop-hdfs-journalnode-svc:
-  service:
-    - running
-    - name: hadoop-hdfs-journalnode
+activate_namenode:
+  cmd:
+    - run
+    - name: 'hdfs haadmin -transitionToActive nn1'
+    - user: hdfs
+    - group: hdfs
     - require:
-      - pkg: hadoop-hdfs-journalnode
-      - file: /etc/hadoop/conf
-{% if hann %}
-      - cmd: cdh5_journal_dir
-{% endif %}
-    - watch:
-      - file: /etc/hadoop/conf
-{% endif %}
+      - service: hadoop-hdfs-namenode-svc
 
 ##
 # Starts yarn resourcemanager service.
@@ -68,9 +70,7 @@ hadoop-yarn-resourcemanager-svc:
     - name: hadoop-yarn-resourcemanager
     - require: 
       - pkg: hadoop-yarn-resourcemanager
-      - service: hadoop-hdfs-namenode
-#      - cmd: namenode_mapred_local_dirs
-#      - cmd: mapred_system_dirs
+      - service: hadoop-hdfs-namenode-svc
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
       - file: /etc/hadoop/conf
@@ -88,29 +88,15 @@ hadoop-mapreduce-historyserver-svc:
     - name: hadoop-mapreduce-historyserver
     - require:
       - pkg: hadoop-mapreduce-historyserver
-      - service: hadoop-hdfs-namenode
+      - service: hadoop-hdfs-namenode-svc
       - file: /etc/hadoop/conf
     - watch:
       - file: /etc/hadoop/conf
 
 ##
-# Installs the hadoop job tracker service and starts it.
-#
-# Depends on: JDK7
-##
-#hadoop-yarn-proxyserver-svc:
-#  service:
-#    - running
-#    - name: hadoop-yarn-proxyserver
-#    - require:
-#      - pkg: hadoop-yarn-proxyserver
-#      - file: /etc/hadoop/conf
-#    - watch:
-#      - file: /etc/hadoop/conf
-#
-#
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
+##
 cdh5_dfs_dirs:
   cmd:
     - run
@@ -123,18 +109,6 @@ cdh5_dfs_dirs:
       - cmd: generate_hadoop_keytabs
 {% endif %}
 
-{% if hann %}
-# Make sure the journal data directory exists if necessary
-cdh5_journal_dir:
-  cmd:
-    - run
-    - name: 'mkdir -p {{ journal_dir }} && chown -R hdfs:hdfs `dirname {{ journal_dir }}`'
-    - unless: 'test -d {{ journal_dir }}'
-    - require:
-      - pkg: hadoop-hdfs-namenode
-      - file: /etc/hadoop/conf
-{% endif %}
-
 # Initialize HDFS. This should only run once, immediately
 # following an install of hadoop.
 init_hdfs:
@@ -142,7 +116,7 @@ init_hdfs:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hdfs namenode -format'
+    - name: 'hdfs namenode -format -force -nonInteractive'
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
       - cmd: cdh5_dfs_dirs
@@ -219,24 +193,8 @@ hdfs_permissions:
       - cmd: hdfs_kinit
 {% endif %}
 
-
-# MR local directory
-#namenode_mapred_local_dirs:
-#  cmd:
-#    - run
-#    - name: 'mkdir -p {{ mapred_local_dir }} && chown -R mapred:hadoop {{ mapred_local_dir }}'
-#    - unless: 'test -d {{ mapred_local_dir }}'
-#    - require:
-#      - pkg: hadoop-hdfs-namenode-svc
-#      - pkg: hadoop-yarn-resourcemanager-svc
-
-# MR system directory
-#mapred_system_dirs:
-#  cmd:
-#    - run
-#    - user: hdfs
-#    - group: hdfs
-#    - name: 'hadoop fs -mkdir {{ mapred_system_dir }} && hadoop fs -chown mapred:hadoop {{ mapred_system_dir }}'
-#    - unless: 'hadoop fs -test -d {{ mapred_system_dir }}'
-#    - require:
-#      - service: hadoop-hdfs-namenode-svc
+#
+##
+# END REGULAR NAMENODE 
+##
+{% endif %}
