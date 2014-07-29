@@ -145,5 +145,19 @@
     <value>HTTPS_ONLY</value>
     </property>
     -->
+    
+    <!-- High-availability security config -->
+    <property>
+      <name>dfs.journalnode.keytab.file</name>
+      <value>/etc/hadoop/conf/hdfs.keytab</value>
+    </property>
+    <property>
+      <name>dfs.journalnode.kerberos.principal</name>
+      <value>hdfs/_HOST@{{ krb5.realm }}</value>
+    </property>
+    <property>
+      <name>dfs.journalnode.kerberos.internal.spnego.principal</name>
+      <value>HTTP/_HOST@{{ krb5.realm }}</value>
+    </property>
 {% endif %}
 </configuration>

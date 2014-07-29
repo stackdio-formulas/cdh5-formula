@@ -11,7 +11,6 @@ echo "xst -k mapred.keytab mapred/{{ grains.fqdn }}@{{ realm }}  HTTP/{{ grains.
 echo "xst -k yarn.keytab yarn/{{ grains.fqdn }}@{{ realm }}  HTTP/{{ grains.fqdn }}@{{ realm }}"
 ) | kadmin -p kadmin/admin -kt /root/admin.keytab
 
-chown root:root HTTP.keytab
 chown hdfs:hadoop hdfs.keytab
 chown mapred:hadoop mapred.keytab
 chown yarn:hadoop yarn.keytab

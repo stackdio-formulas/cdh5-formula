@@ -33,3 +33,6 @@ cdh5_journal_dir:
     - require:
       - pkg: hadoop-hdfs-journalnode
       - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
