@@ -62,9 +62,11 @@ a:hover {
                     <li><a href='http://{{ fqdn }}:8888/home'>Hue</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS NameNode</a></li>
+                    {% endif %}
+                    {% if 'cdh5.hadoop.namenode' in grains['roles'] and 'cdh5.hadoop.standby' not in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:8088/'>Hadoop Yarn ResourceManager</a></li>
                     <li><a href='http://{{ fqdn }}:19888/'>Hadoop Mapreduce HistoryServer</a></li>
-                    <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS NameNode</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:8042/'>Hadoop NodeManager</a></li>

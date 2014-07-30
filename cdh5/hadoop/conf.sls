@@ -6,6 +6,7 @@
     - user: root
     - group: root
     - file_mode: 644
+    - exclude_pat: '.*.swp'
 
 /etc/hadoop/conf/container-executor.cfg:
   file:
@@ -13,7 +14,7 @@
     - mode: 400
     - replace: false
     - user: root
-    - group: yarn
+    - group: root
     - require:
       - file: /etc/hadoop/conf
 

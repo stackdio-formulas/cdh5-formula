@@ -1,4 +1,10 @@
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- if standby -%}
+  {%- set standby_items = standby.values()[0] if standby else None -%}
+  {%- set standby_fqdn = standby_items['fqdn'] if standby else None -%}
+  {%- set journal_nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.journalnode', 'grains.items', 'compound').values() -%}
+{%- endif -%}
 <?xml version="1.0"?>
 <configuration>
     <property>
@@ -14,10 +20,57 @@
       <name>io.compression.codecs</name>
       <value>org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.SnappyCodec</value>
     </property>
+    {%- if standby %}
+    <property>
+      <name>dfs.nameservices</name>
+      <value>default</value>
+    </property>
+    <property>
+      <name>fs.defaultFS</name>
+      <value>hdfs://default</value>
+    </property>
+    <property>
+      <name>dfs.ha.namenodes.default</name>
+      <value>nn1,nn2</value>
+    </property>
+    <property>
+      <name>dfs.namenode.rpc-address.default.nn1</name>
+      <value>{{ namenode_fqdn }}:8020</value>
+    </property>
+    <property>
+      <name>dfs.namenode.rpc-address.default.nn2</name>
+      <value>{{ standby_fqdn }}:8020</value>
+    </property>
+    <property>
+      <name>dfs.namenode.http-address.default.nn1</name>
+      <value>{{ namenode_fqdn }}:50070</value>
+    </property>
+    <property>
+      <name>dfs.namenode.http-address.default.nn2</name>
+      <value>{{ standby_fqdn }}:50070</value>
+    </property>
+    <property>
+      <name>dfs.namenode.shared.edits.dir</name>
+      <value>qjournal://{% for j in journal_nodes %}{{ j['fqdn'] }}:8485{% if not loop.last %};{% endif %}{% endfor %}/default</value>
+    </property>
+    <property>
+      <name>dfs.journalnode.edits.dir</name>
+      <value>{{ pillar.cdh5.dfs.journal_dir }}</value>
+    </property>
+    <property>
+      <name>dfs.client.failover.proxy.provider.default</name>
+      <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+    </property>
+    <property>
+      <name>dfs.ha.fencing.methods</name>
+      <value>shell(/bin/true)</value>
+    </property>
+    {%- else %}
     <property>
       <name>fs.defaultFS</name>
       <value>hdfs://{{ namenode_fqdn }}:8020/</value>
     </property>
+    {%- endif %}
     <property>
       <name>fs.trash.interval</name>
       <value>1440</value>

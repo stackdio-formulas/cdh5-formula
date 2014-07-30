@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') -%}
+{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] %}
 {% set master_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hbase.master', 'grains.items', 'compound').values()[0]['fqdn'] %}
 <configuration>
     <property>
@@ -8,7 +9,11 @@
     </property>
     <property>
         <name>hbase.rootdir</name>
+        {% if standby %}
+        <value>hdfs://default/hbase</value>
+        {% else %}
         <value>hdfs://{{ nn_host }}:8020/hbase</value>
+        {% endif %}
     </property>
     <property>
         <name>hbase.cluster.distributed</name>

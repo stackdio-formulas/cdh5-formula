@@ -5,6 +5,12 @@ components:
   - title: NameNode
     description: Hadoop NameNode component of CDH5
     sls_path: cdh5.hadoop.namenode
+  - title: Standby NameNode
+    description: Standby NameNode for high-availability
+    sls_path: cdh5.hadoop.standby
+  - title: JournalNode
+    description: Hadoop JournalNode for high-availability
+    sls_path: cdh5.hadoop.journalnode
   - title: DataNode
     description: Hadoop DataNode component of CDH5
     sls_path: cdh5.hadoop.datanode
@@ -47,6 +53,8 @@ pillar_defaults:
       start_service: true
     datanode:
       start_service: true
+    journalnode:
+      start_service: true
     yarn:
       max_container_size_mb: 11264
     io:
@@ -55,6 +63,7 @@ pillar_defaults:
     dfs:
       name_dir: /mnt/hadoop/hdfs/nn
       data_dir: /mnt/hadoop/hdfs/data
+      journal_dir: /mnt/hadoop/hdfs/jn
       permissions: true
     mapred:
       local_dir: /mnt/yarn

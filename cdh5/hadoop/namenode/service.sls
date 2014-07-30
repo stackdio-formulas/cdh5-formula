@@ -1,8 +1,24 @@
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') -%}
 {% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
 {% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
 {% set mapred_system_dir = salt['pillar.get']('cdh5:mapred:system_dir', '/hadoop/system/mapred') %}
 {% set mapred_staging_dir = '/user/history' %}
 {% set mapred_log_dir = '/var/log/hadoop-yarn' %}
+
+##
+# Standby NN specific SLS
+##
+{% if 'cdh5.hadoop.standby' in grains.roles %}
+include:
+  - cdh5.hadoop.standby.service
+##
+# END STANDBY NN
+##
+
+##
+# Regular NN SLS
+##
+{% else %}
 
 {% if grains['os_family'] == 'Debian' %}
 extend:
@@ -32,6 +48,20 @@ hadoop-hdfs-namenode-svc:
     - watch:
       - file: /etc/hadoop/conf
 
+{% if standby %}
+##
+# Sets this namenode as the "Active" namenode
+##
+activate_namenode:
+  cmd:
+    - run
+    - name: 'hdfs haadmin -transitionToActive nn1'
+    - user: hdfs
+    - group: hdfs
+    - require:
+      - service: hadoop-hdfs-namenode-svc
+{% endif %}
+
 ##
 # Starts yarn resourcemanager service.
 #
@@ -43,9 +73,7 @@ hadoop-yarn-resourcemanager-svc:
     - name: hadoop-yarn-resourcemanager
     - require: 
       - pkg: hadoop-yarn-resourcemanager
-      - service: hadoop-hdfs-namenode
-#      - cmd: namenode_mapred_local_dirs
-#      - cmd: mapred_system_dirs
+      - service: hadoop-hdfs-namenode-svc
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
       - file: /etc/hadoop/conf
@@ -63,29 +91,15 @@ hadoop-mapreduce-historyserver-svc:
     - name: hadoop-mapreduce-historyserver
     - require:
       - pkg: hadoop-mapreduce-historyserver
-      - service: hadoop-hdfs-namenode
+      - service: hadoop-hdfs-namenode-svc
       - file: /etc/hadoop/conf
     - watch:
       - file: /etc/hadoop/conf
 
 ##
-# Installs the hadoop job tracker service and starts it.
-#
-# Depends on: JDK7
-##
-#hadoop-yarn-proxyserver-svc:
-#  service:
-#    - running
-#    - name: hadoop-yarn-proxyserver
-#    - require:
-#      - pkg: hadoop-yarn-proxyserver
-#      - file: /etc/hadoop/conf
-#    - watch:
-#      - file: /etc/hadoop/conf
-#
-#
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
+##
 cdh5_dfs_dirs:
   cmd:
     - run
@@ -98,7 +112,6 @@ cdh5_dfs_dirs:
       - cmd: generate_hadoop_keytabs
 {% endif %}
 
-
 # Initialize HDFS. This should only run once, immediately
 # following an install of hadoop.
 init_hdfs:
@@ -106,7 +119,7 @@ init_hdfs:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hdfs namenode -format'
+    - name: 'hdfs namenode -format -force'
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
       - cmd: cdh5_dfs_dirs
@@ -138,9 +151,12 @@ hdfs_tmp_dir:
     - unless: 'hadoop fs -test -d /tmp'
     - require:
       - service: hadoop-hdfs-namenode-svc
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
-{% endif %}
+      {% endif %}
+      {% if standby %}
+      - cmd: activate_namenode 
+      {% endif %}
 
 # HDFS MapReduce log directories
 hdfs_mapreduce_log_dir:
@@ -152,9 +168,12 @@ hdfs_mapreduce_log_dir:
     - unless: 'hadoop fs -test -d {{ mapred_log_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
-{% endif %}
+      {% endif %}
+      {% if standby %}
+      - cmd: activate_namenode 
+      {% endif %}
 
 # HDFS MapReduce var directories
 hdfs_mapreduce_var_dir:
@@ -166,9 +185,12 @@ hdfs_mapreduce_var_dir:
     - unless: 'hadoop fs -test -d {{ mapred_staging_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
-{% endif %}
+      {% endif %}
+      {% if standby %}
+      - cmd: activate_namenode 
+      {% endif %}
 
 # set permissions at the root level of HDFS so any user can write to it
 hdfs_permissions:
@@ -179,28 +201,15 @@ hdfs_permissions:
     - name: 'hadoop fs -chmod 777 /'
     - require:
       - service: hadoop-yarn-resourcemanager-svc
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
+      {% endif %}
+      {% if standby %}
+      - cmd: activate_namenode 
+      {% endif %}
+
+#
+##
+# END REGULAR NAMENODE 
+##
 {% endif %}
-
-
-# MR local directory
-#namenode_mapred_local_dirs:
-#  cmd:
-#    - run
-#    - name: 'mkdir -p {{ mapred_local_dir }} && chown -R mapred:hadoop {{ mapred_local_dir }}'
-#    - unless: 'test -d {{ mapred_local_dir }}'
-#    - require:
-#      - pkg: hadoop-hdfs-namenode-svc
-#      - pkg: hadoop-yarn-resourcemanager-svc
-
-# MR system directory
-#mapred_system_dirs:
-#  cmd:
-#    - run
-#    - user: hdfs
-#    - group: hdfs
-#    - name: 'hadoop fs -mkdir {{ mapred_system_dir }} && hadoop fs -chown mapred:hadoop {{ mapred_system_dir }}'
-#    - unless: 'hadoop fs -test -d {{ mapred_system_dir }}'
-#    - require:
-#      - service: hadoop-hdfs-namenode-svc
