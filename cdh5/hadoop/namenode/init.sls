@@ -25,6 +25,11 @@ include:
   {% if salt['pillar.get']('cdh5:namenode:start_service', True) %}
   - cdh5.hadoop.standby.service
   {% endif %}
+  {% if salt['pillar.get']('cdh5:security:enable', False) %}
+  - krb5
+  - cdh5.security
+  - cdh5.hadoop.security
+  {% endif %}
 
 extend:
   /etc/hadoop/conf:

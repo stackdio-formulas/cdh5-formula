@@ -1,3 +1,4 @@
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') -%}
 {% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
 {% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
 {% set mapred_system_dir = salt['pillar.get']('cdh5:mapred:system_dir', '/hadoop/system/mapred') %}
@@ -47,6 +48,7 @@ hadoop-hdfs-namenode-svc:
     - watch:
       - file: /etc/hadoop/conf
 
+{% if standby %}
 ##
 # Sets this namenode as the "Active" namenode
 ##
@@ -58,6 +60,7 @@ activate_namenode:
     - group: hdfs
     - require:
       - service: hadoop-hdfs-namenode-svc
+{% endif %}
 
 ##
 # Starts yarn resourcemanager service.
@@ -116,7 +119,7 @@ init_hdfs:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hdfs namenode -format -force -nonInteractive'
+    - name: 'hdfs namenode -format -force'
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
       - cmd: cdh5_dfs_dirs
@@ -148,9 +151,12 @@ hdfs_tmp_dir:
     - unless: 'hadoop fs -test -d /tmp'
     - require:
       - service: hadoop-hdfs-namenode-svc
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
-{% endif %}
+      {% endif %}
+      {% if standby %}
+      - cmd: activate_namenode 
+      {% endif %}
 
 # HDFS MapReduce log directories
 hdfs_mapreduce_log_dir:
@@ -162,9 +168,12 @@ hdfs_mapreduce_log_dir:
     - unless: 'hadoop fs -test -d {{ mapred_log_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
-{% endif %}
+      {% endif %}
+      {% if standby %}
+      - cmd: activate_namenode 
+      {% endif %}
 
 # HDFS MapReduce var directories
 hdfs_mapreduce_var_dir:
@@ -176,9 +185,12 @@ hdfs_mapreduce_var_dir:
     - unless: 'hadoop fs -test -d {{ mapred_staging_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
-{% endif %}
+      {% endif %}
+      {% if standby %}
+      - cmd: activate_namenode 
+      {% endif %}
 
 # set permissions at the root level of HDFS so any user can write to it
 hdfs_permissions:
@@ -189,9 +201,12 @@ hdfs_permissions:
     - name: 'hadoop fs -chmod 777 /'
     - require:
       - service: hadoop-yarn-resourcemanager-svc
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
-{% endif %}
+      {% endif %}
+      {% if standby %}
+      - cmd: activate_namenode 
+      {% endif %}
 
 #
 ##

@@ -27,14 +27,14 @@ hadoop-hdfs-namenode-svc:
 ##
 # Sets this namenode as the "Standby" namenode
 ##
-activate_standby:
-  cmd:
-    - run
-    - name: 'hdfs haadmin -transitionToStandby nn2'
-    - user: hdfs
-    - group: hdfs
-    - require:
-      - service: hadoop-hdfs-namenode-svc
+#activate_standby:
+#  cmd:
+#    - run
+#    - name: 'hdfs haadmin -transitionToStandby nn2'
+#    - user: hdfs
+#    - group: hdfs
+#    - require:
+#      - service: hadoop-hdfs-namenode-svc
 
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
@@ -58,3 +58,6 @@ init_standby_namenode:
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
       - cmd: cdh5_dfs_dirs
+    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+    {% endif %}
