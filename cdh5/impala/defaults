@@ -1,4 +1,4 @@
-{% set ss_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn_ip4'][0] %}
+{% set ss_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.impala.state-store', 'grains.items', 'compound').values()[0]['fqdn_ip4'][0] %}
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
 {% from 'krb5/settings.sls' import krb5 with context %}
 {% endif %}
