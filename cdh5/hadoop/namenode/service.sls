@@ -60,6 +60,9 @@ activate_namenode:
     - group: hdfs
     - require:
       - service: hadoop-hdfs-namenode-svc
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hdfs_kinit
+      {% endif %}
 {% endif %}
 
 ##
