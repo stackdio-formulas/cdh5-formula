@@ -28,6 +28,7 @@ include:
   {% if salt['pillar.get']('cdh5:security:enable', False) %}
   - krb5
   - cdh5.security
+  - cdh5.security.stackdio_user
   - cdh5.hadoop.security
   {% endif %}
 
@@ -58,6 +59,7 @@ include:
   {% if salt['pillar.get']('cdh5:security:enable', False) %}
   - krb5
   - cdh5.security
+  - cdh5.security.stackdio_user
   - cdh5.hadoop.security
   {% endif %}
 
