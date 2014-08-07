@@ -80,7 +80,7 @@ pillar_defaults:
       region_initial_heap: 1024m
       region_max_heap: 1024m
       region_young_gen: 256m
-      jute_maxbuffer: 1000000
+      jute_maxbuffer: 10485750
       manage_zk: true
     zookeeper:
       data_dir: /mnt/zk/data
@@ -92,7 +92,7 @@ pillar_defaults:
       data_dir: /mnt/zk/data
     impala:
       start_service: true
-      version: 1.2.3
+      version: 1.4.0
     hive:
       start_service: true
       user: hive

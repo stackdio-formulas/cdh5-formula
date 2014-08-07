@@ -21,6 +21,7 @@ hadoop-hdfs-namenode-svc:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode
       - file: /etc/hadoop/conf
+      - user: mapred_user
     - watch:
       - file: /etc/hadoop/conf
 
