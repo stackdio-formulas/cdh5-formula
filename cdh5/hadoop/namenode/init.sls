@@ -43,6 +43,33 @@ hadoop-hdfs-namenode:
     - installed 
     - require:
       - module: cdh5_refresh_db
+
+# we need a mapred user on the standby namenode for job history to work; if the
+# namenode state is not included we want to add it manually
+mapred_group:
+  group:
+    - present
+    - name: mapred
+
+hadoop_group:
+  group:
+    - present
+    - name: hadoop
+
+mapred_user:
+  user:
+    - present
+    - name: mapred
+    - fullname: Hadoop MapReduce
+    - shell: /bin/bash
+    - home: /var/lib/hadoop-mapreduce
+    - groups:
+      - mapred
+      - hadoop
+    - require:
+      - group: mapred_group
+      - group: hadoop_group
+
 ##
 # END HA NN
 ##
