@@ -12,6 +12,7 @@ echo "xst -k HTTP.keytab HTTP/{{ grains.fqdn }}@{{ realm }}"
 echo "rkt oozie-unmerged.keytab"
 echo "rkt HTTP.keytab"
 echo "wkt oozie.keytab"
+) | ktutil
 
 rm -rf oozie-unmerged.keytab
 rm -rf HTTP.keytab
