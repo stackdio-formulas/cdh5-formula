@@ -1,4 +1,5 @@
 include:
+  - cdh5.landing_page
   - cdh5.manager.repo
   {% if salt['pillar.get']('cdh5:manager:server:start_service', True) %}
   - cdh5.manager.server.service

@@ -1,8 +1,8 @@
 include:
   - cdh5.manager.repo
-  #{% if salt['pillar.get']('cdh5:manager:agent:start_service', True) %}
-  #- cdh5.manager.agent.service
-  #{% endif %}
+  {% if salt['pillar.get']('cdh5:manager:agent:start_service', True) %}
+  - cdh5.manager.agent.service
+  {% endif %}
 
 scm_agent_packages:
   pkg:

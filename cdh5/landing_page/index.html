@@ -61,6 +61,9 @@ a:hover {
                     {% if 'cdh5.hue' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:8888/home'>Hue</a></li>
                     {% endif %}
+                    {% if 'cdh5.manager.server' in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:7180/'>Cloudera Manager</a></li>
+                    {% endif %}
                     {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS NameNode</a></li>
                     {% endif %}
