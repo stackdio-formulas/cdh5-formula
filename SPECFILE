@@ -41,6 +41,12 @@ components:
   - title: Impala Server
     description: Impala Server
     sls_path: cdh5.impala.server
+  - title: Cloudera Manager Server
+    description: Cloudera Manager Server
+    sls_path: cdh5.manager.server
+  - title: Cloudera Manager Agent
+    description: Cloudera Manager Agent
+    sls_path: cdh5.manager.agent
 
 pillar_defaults:
   cdh5:
@@ -101,3 +107,9 @@ pillar_defaults:
     hue:
       start_service: true
       secret_key: CHANGE_THIS
+    manager:
+      server:
+        start_service: true
+      agent:
+        start_service: true
+        parcel_dir: /mnt/cloudera/parcels
