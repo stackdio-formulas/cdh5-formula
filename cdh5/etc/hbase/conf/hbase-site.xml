@@ -99,7 +99,7 @@
     </property>
     <property>
         <name>hbase.coprocessor.region.classes</name>
-        <value>org.apache.hadoop.hbase.security.token.TokenProvider,org.apache.hadoop.hbase.security.access.AccessController</value>
+        <value>org.apache.hadoop.hbase.security.token.TokenProvider,org.apache.hadoop.hbase.security.access.AccessController,org.apache.hadoop.hbase.security.access.SecureBulkLoadEndpoint</value>
     </property>
     <property>
         <name>hbase.thrift.keytab.file</name>
