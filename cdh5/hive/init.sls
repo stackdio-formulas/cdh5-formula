@@ -3,6 +3,7 @@
 #
 include:
   - cdh5.repo
+  - cdh5.hive.conf
 {% if salt['pillar.get']('cdh5:hive:start_service', True) %}
   - cdh5.hive.service
 {% endif %}
@@ -11,6 +12,12 @@ include:
   - cdh5.security
   - cdh5.hive.security
 {% endif %}
+
+extend:
+  /etc/hive/conf/hive-site.xml:
+    file:
+      - require:
+        - pkg: hive
 
 hive:
   pkg:
@@ -41,9 +48,3 @@ mysql:
     - target: /usr/share/java/mysql-connector-java.jar
     - require: 
       - pkg: mysql
-
-/etc/hive/conf/hive-site.xml:
-  file:
-    - managed
-    - template: jinja
-    - source: salt://cdh5/etc/hive/hive-site.xml
