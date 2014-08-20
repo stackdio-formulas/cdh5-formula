@@ -48,3 +48,14 @@ mysql:
     - target: /usr/share/java/mysql-connector-java.jar
     - require: 
       - pkg: mysql
+
+{% if 'cdh5.sentry' in grains.roles %}
+add_sentry_jars:
+  cmd:
+    - run
+    - name: "find /usr/lib/sentry/lib -type f -name 'sentry*.jar' | xargs -n1 -Ifile ln -s file ."
+    - unless: 'ls sentry*.jar &> /dev/null'
+    - cwd: /usr/lib/hive/lib
+    - require:
+      - pkg: hive
+{% endif %}

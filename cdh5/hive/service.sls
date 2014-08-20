@@ -103,4 +103,5 @@ hive-server2:
     - user: root
     - group: root
     - dir_mode: 777
-
+    - recurse:
+      - mode
