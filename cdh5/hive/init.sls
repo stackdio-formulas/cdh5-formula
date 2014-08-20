@@ -3,6 +3,7 @@
 #
 include:
   - cdh5.repo
+  - cdh5.hive.conf
 {% if salt['pillar.get']('cdh5:hive:start_service', True) %}
   - cdh5.hive.service
 {% endif %}
@@ -11,6 +12,12 @@ include:
   - cdh5.security
   - cdh5.hive.security
 {% endif %}
+
+extend:
+  /etc/hive/conf/hive-site.xml:
+    file:
+      - require:
+        - pkg: hive
 
 hive:
   pkg:
@@ -42,8 +49,13 @@ mysql:
     - require: 
       - pkg: mysql
 
-/etc/hive/conf/hive-site.xml:
-  file:
-    - managed
-    - template: jinja
-    - source: salt://cdh5/etc/hive/hive-site.xml
+{% if 'cdh5.sentry' in grains.roles %}
+add_sentry_jars:
+  cmd:
+    - run
+    - name: "find /usr/lib/sentry/lib -type f -name 'sentry*.jar' | xargs -n1 -Ifile ln -s file ."
+    - unless: 'ls sentry*.jar &> /dev/null'
+    - cwd: /usr/lib/hive/lib
+    - require:
+      - pkg: hive
+{% endif %}
