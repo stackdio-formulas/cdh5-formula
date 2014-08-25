@@ -2,6 +2,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <property>
+        <name>sentry.service.client.server.rpc-address</name>
+        <value>{{ grains.fqdn }}</value>
+    </property>
+    <property>
         <name>sentry.service.server.rpc-address</name>
         <value>{{ grains.fqdn }}</value>
     </property>
@@ -56,6 +60,10 @@
     <property>
        <name>sentry.provider</name>
        <value>org.apache.sentry.provider.common.HadoopGroupResourceAuthorizationProvider</value>
+    </property>
+    <property>
+       <name>sentry.hive.provider.backend</name>
+       <value>org.apache.sentry.provider.db.SimpleDBProviderBackend</value>
     </property>
     <property>
         <name>sentry.hive.server</name>

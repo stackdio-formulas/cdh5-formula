@@ -19,7 +19,7 @@ sentry_log_dir:
 #sentry_service:
 #  cmd:
 #    - run
-#    - name: '/usr/bin/sentry --command service --conffile /etc/sentry/conf/sentry-site.xml'
+#    - name: '/usr/bin/sentry --log4jConf /etc/sentry/conf/sentry-log4j.properties --command service --conffile /etc/sentry/conf/sentry-site.xml'
 #    - require:
 #      - cmd: sentry_init_schema
 #      - cmd: sentry_log_dir
