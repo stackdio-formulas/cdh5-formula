@@ -53,7 +53,7 @@ remove_policy_file:
 cloudera_cdh5:
   pkgrepo:
     - managed
-    - humanname: "Cloudera's Distribution for Hadoop, Version 4"
+    - humanname: "Cloudera's Distribution for Hadoop, Version 5"
     - baseurl: "http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/{{ pillar.cdh5.version }}/"
     - gpgkey: http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
     - gpgcheck: 1
