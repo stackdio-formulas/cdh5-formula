@@ -27,7 +27,7 @@
     </property>
     <property>
         <name>sentry.service.admin.group</name>
-        <value>{{ pillar.__stackdio__.username }}</value>
+        <value>hive</value>
     </property>
     <property>
         <name>sentry.service.allow.connect</name>

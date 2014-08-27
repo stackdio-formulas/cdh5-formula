@@ -58,4 +58,13 @@ add_sentry_jars:
     - cwd: /usr/lib/hive/lib
     - require:
       - pkg: hive
+
+add_hive_jars_to_sentry:
+  cmd:
+    - run
+    - name: "find /usr/lib/hive/lib -type f -name 'hive*.jar' | xargs -n1 -Ifile ln -s file ."
+    - unless: 'ls hive*.jar &> /dev/null'
+    - cwd: /usr/lib/sentry/lib
+    - require:
+      - pkg: hive
 {% endif %}
