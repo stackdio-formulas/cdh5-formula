@@ -16,10 +16,18 @@ sentry_log_dir:
     - require:
       - pkg: sentry
 
-#sentry_service:
-#  cmd:
-#    - run
-#    - name: '/usr/bin/sentry --log4jConf /etc/sentry/conf/sentry-log4j.properties --command service --conffile /etc/sentry/conf/sentry-site.xml'
-#    - require:
-#      - cmd: sentry_init_schema
-#      - cmd: sentry_log_dir
+sentry_service:
+  cmd:
+    - run
+    - name: 'nohup /usr/bin/sentry --log4jConf /etc/sentry/conf/sentry-log4j.properties --command service --conffile /etc/sentry/conf/sentry-site.xml &> /var/log/sentry/sentry.log &'
+    - unless: 'ps auxw | grep -e "--command service.*sentry-site" | grep -v grep'
+    - require:
+      - cmd: sentry_init_schema
+      - cmd: sentry_log_dir
+
+load_policies:
+  cmd:
+    - run
+    - name: 'sleep 5 && sentry --command config-tool -s file:///etc/sentry/conf/sentry-site.xml -I'
+    - require:
+      - cmd: sentry_service

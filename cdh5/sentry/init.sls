@@ -18,5 +18,8 @@ extend:
 sentry:
   pkg:
     - installed 
+    - pkgs:
+      - sentry
+      - cyrus-sasl-gssapi
     - require:
       - module: cdh5_refresh_db
