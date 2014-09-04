@@ -18,12 +18,20 @@
      <value>/user</value>
   </property>
   <property>
-     <name>mapreduce.job.counters.limit</name>
+     <name>mapreduce.job.counters.max</name>
      <value>240</value>
   </property>
   <property>
-    <name>mapred.reduce.tasks</name>
+    <name>mapreduce.tasktracker.map.tasks.maximum</name>
+    <value>{{ pillar.cdh5.mapred.map_tasks }}</value>
+  </property>
+  <property>
+    <name>mapreduce.tasktracker.reduce.tasks.maximum</name>
     <value>{{ pillar.cdh5.mapred.reduce_tasks }}</value>
+  </property>
+  <property>
+    <name>mapreduce.job.reduces</name>
+    <value>{{ pillar.cdh5.mapred.reduces }}</value>
   </property>
   <property>
      <name>mapreduce.output.fileoutputformat.compress</name>
@@ -40,10 +48,10 @@
   <property>
      <name>mapreduce.reduce.speculative</name>
      <value>false</value>
-  </property>
+   </property>
   <property>
-     <name>mapreduce.map.output.compress.codec</name>
-     <value>org.apache.hadoop.io.compress.SnappyCodec</value>
+    <name>mapreduce.output.fileoutputformat.compress.codec</name>
+    <value>org.apache.hadoop.io.compress.SnappyCodec</value>
   </property>
   <property>
      <name>mapreduce.reduce.shuffle.input.buffer.percent</name>
@@ -61,20 +69,30 @@
   </property>
   <property>
       <name>mapreduce.map.java.opts</name>
-      <value>-Xmx2000m</value>
+      <value>{{ pillar.cdh5.mapred.child_java_opts }}</value>
   </property>
   <property>
       <name>mapreduce.map.memory.mb</name>
-      <value>3000</value>
+      <value>{{ pillar.cdh5.mapred.memory_mb }}</value>
   </property>
   <property>
       <name>mapreduce.reduce.java.opts</name>
-      <value>-Xmx2000m</value>
+      <value>{{ pillar.cdh5.mapred.child_java_opts }}</value>
   </property>
   <property>
       <name>mapreduce.reduce.memory.mb</name>
-      <value>3000</value>
+      <value>{{ pillar.cdh5.mapred.memory_mb }}</value>
   </property>
+  <property>
+    <name>mapreduce.task.io.sort.factor</name>
+    <value>{{ pillar.cdh5.io.sort_factor }}</value>
+  </property>
+  <property>
+    <name>mapreduce.task.io.sort.mb</name>
+    <value>{{ pillar.cdh5.io.sort_mb }}</value>
+  </property>
+
+
 {%- if salt['pillar.get']('cdh5:security:enable', False) %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
   <property>

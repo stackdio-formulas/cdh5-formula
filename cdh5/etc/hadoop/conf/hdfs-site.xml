@@ -30,8 +30,7 @@
     </property>
     <property>
       <name>dfs.block.size</name>
-      <value>134217728</value>
-      <final>true</final>
+      <value>{{ pillar.cdh5.dfs.block_size }}</value>
     </property>
     <property>
       <name>dfs.webhdfs.enabled</name>
