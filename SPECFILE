@@ -47,6 +47,9 @@ components:
   - title: Cloudera Manager Agent
     description: Cloudera Manager Agent
     sls_path: cdh5.manager.agent
+  - title: Sentry
+    description: Sentry
+    sls_path: cdh5.sentry
 
 pillar_defaults:
   cdh5:
@@ -119,3 +122,5 @@ pillar_defaults:
         start_service: true
         parcel_dir: /mnt/cloudera/parcels
         log_file: /mnt/log/cloudera-scm-agent/cloudera-scm-agent.log
+    sentry:
+      start_service: true

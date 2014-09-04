@@ -1,0 +1,76 @@
+{%- from 'krb5/settings.sls' import krb5 with context -%}
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property>
+        <name>sentry.service.client.server.rpc-address</name>
+        <value>{{ grains.fqdn }}</value>
+    </property>
+    <property>
+        <name>sentry.service.server.rpc-address</name>
+        <value>{{ grains.fqdn }}</value>
+    </property>
+    <property>
+        <name>sentry.service.server.rpc-port</name>
+        <value>8038</value>
+    </property>
+    <property>
+        <name>sentry.service.security.mode</name>
+        <value>kerberos</value>
+    </property>
+    <property>
+        <name>sentry.service.server.principal</name>
+        <value>sentry/_HOST@{{ krb5.realm }}</value>
+    </property>
+    <property>
+        <name>sentry.service.server.keytab</name>
+        <value>/etc/sentry/conf/sentry.keytab</value>
+    </property>
+    <property>
+        <name>sentry.service.admin.group</name>
+        <value>hive</value>
+    </property>
+    <property>
+        <name>sentry.service.allow.connect</name>
+        <value>impala,hive,solr</value>
+    </property>
+    <property>
+        <name>sentry.metastore.service.users</name>
+        <value>impala,hive,solr</value>
+    </property>
+    <property>
+        <name>sentry.store.jdbc.url</name>
+        <value>jdbc:derby:;databaseName=/etc/sentry/store;create=true</value>
+    </property>
+    <property>
+        <name>sentry.store.jdbc.driver</name>
+        <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+    </property>
+    <property>
+        <name>sentry.store.jdbc.user</name>
+        <value>sentry</value>
+    </property>
+    <property>
+        <name>sentry.store.jdbc.password</name>
+        <value>password</value>
+    </property>
+    <property>
+        <name>sentry.verify.schema.version</name>
+        <value>true</value>
+    </property>
+    <property>
+       <name>sentry.provider</name>
+       <value>org.apache.sentry.provider.common.HadoopGroupResourceAuthorizationProvider</value>
+    </property>
+    <property>
+       <name>sentry.hive.provider.backend</name>
+       <value>org.apache.sentry.provider.db.SimpleDBProviderBackend</value>
+    </property>
+    <property>
+        <name>sentry.hive.server</name>
+        <value>server1</value>
+    </property>
+    <property>
+       <name>sentry.hive.provider.resource</name>
+       <value>file:///etc/sentry/conf/sentry-provider.ini</value>
+    </property>
+</configuration>

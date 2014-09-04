@@ -62,7 +62,11 @@ warehouse_dir_owner:
 warehouse_dir_permissions:
   cmd:
     - run
+    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    - name: 'hdfs dfs -chmod 771 /user/{{pillar.cdh5.hive.user}}/warehouse'
+    {% else %}
     - name: 'hdfs dfs -chmod 1777 /user/{{pillar.cdh5.hive.user}}/warehouse'
+    {% endif %}
     - user: hdfs
     - group: hdfs
     - require:
@@ -79,6 +83,8 @@ hive-metastore:
       - file: /usr/lib/hive/lib/mysql-connector-java.jar
       - file: /etc/hive/conf/hive-site.xml
       - file: /mnt/tmp/
+    - watch:
+      - file: /etc/hive/conf/hive-site.xml
 
 hive-server2:
   service:
@@ -88,6 +94,8 @@ hive-server2:
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hive_keytabs 
 {% endif %}
+    - watch:
+      - file: /etc/hive/conf/hive-site.xml
 
 /mnt/tmp/:
   file:
@@ -95,4 +103,5 @@ hive-server2:
     - user: root
     - group: root
     - dir_mode: 777
-
+    - recurse:
+      - mode
