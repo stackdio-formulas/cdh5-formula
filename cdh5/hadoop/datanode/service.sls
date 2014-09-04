@@ -81,8 +81,8 @@ datanode_mapred_local_dirs:
 dfs_data_dir:
   cmd:
     - run
-    - name: 'mkdir -p {{ dfs_data_dir }} && chmod -R 755 {{ dfs_data_dir }} && chown -R hdfs:hdfs {{ dfs_data_dir }}'
-    - unless: "test -d {{ dfs_data_dir }} && [ `stat -c '%U' {{ dfs_data_dir }}` == 'hdfs' ]"
+    - name: 'for dd in `echo {{ dfs_data_dir }} | sed "s/,/\n/g"`; do mkdir -p $dd && chmod -R 755 $dd && chown -R hdfs:hdfs $dd; done'
+    - unless: "test -d `echo {{ dfs_data_dir }} | awk -F, '{print $1}'` && [ $(stat -c '%U' $(echo {{ dfs_data_dir }} | awk -F, '{print $1}')) == 'hdfs' ]"
     - require:
       - pkg: hadoop-hdfs-datanode
 
