@@ -50,7 +50,7 @@
      <value>false</value>
    </property>
   <property>
-    <name>mapreduce.output.fileoutputformat.compress.codec</name>
+    <name>mapreduce.map.output.compress.codec</name>
     <value>org.apache.hadoop.io.compress.SnappyCodec</value>
   </property>
   <property>
