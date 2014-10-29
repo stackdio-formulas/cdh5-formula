@@ -23,7 +23,7 @@ components:
   - title: HBase RegionServer
     description: HBase RegionServer component of CDH5
     sls_path: cdh5.hbase.regionserver
-  - title: Oozie 
+  - title: Oozie
     description: Oozie
     sls_path: cdh5.oozie
   - title: Hue
@@ -35,6 +35,9 @@ components:
   - title: Hive
     description: Hive
     sls_path: cdh5.hive
+  - title: Sqoop
+    description: Sqoop
+    sls_path: cdh5.sqoop
   - title: Impala State Store
     description: Impala State Store
     sls_path: cdh5.impala.state-store

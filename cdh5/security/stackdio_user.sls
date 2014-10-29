@@ -5,7 +5,7 @@ include:
 
 generate_user_keytab:
   cmd:
-    - script 
+    - script
     - source: salt://cdh5/security/generate_user_keytab.sh
     - template: jinja
     - user: root
@@ -14,4 +14,3 @@ generate_user_keytab:
     - require:
       - module: load_admin_keytab
 {% endif %}
-
