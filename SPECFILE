@@ -101,9 +101,6 @@ pillar_defaults:
       start_service: true
     oozie:
       start_service: true
-    zookeeper:
-      start_service: true
-      data_dir: /mnt/zk/data
     impala:
       start_service: true
       version: 1.4.0
