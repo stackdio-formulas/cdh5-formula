@@ -8,4 +8,4 @@
 dummy:
   cmd:
     - run
-    - name: ps aux
+    - name: date
