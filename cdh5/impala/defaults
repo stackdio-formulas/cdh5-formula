@@ -7,7 +7,7 @@ IMPALA_STATE_STORE_HOST={{ss_host}}
 IMPALA_STATE_STORE_PORT=24000
 IMPALA_BACKEND_PORT=22000
 IMPALA_LOG_DIR=/var/log/impala
-DEFAULT_POOL_MAX_REQUESTS={% salt['pillar.get']('cdh5:impala:max_pool_requests', 20) %}
+DEFAULT_POOL_MAX_REQUESTS={{ salt['pillar.get']('cdh5:impala:max_pool_requests', 20) }}
 
 IMPALA_CATALOG_ARGS=" \
 {%- if salt['pillar.get']('cdh5:security:enable', False) %}
