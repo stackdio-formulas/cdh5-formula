@@ -110,7 +110,7 @@ pillar_defaults:
     impala:
       start_service: true
       version: 1.4.0
-	  max_pool_requests: 1000
+      max_pool_requests: 1000
     hive:
       start_service: true
       user: hive
