@@ -38,6 +38,9 @@ components:
   - title: Hive
     description: Hive
     sls_path: cdh5.hive
+  - title: Sqoop
+    description: Sqoop
+    sls_path: cdh5.sqoop
   - title: Impala State Store
     description: Impala State Store
     sls_path: cdh5.impala.state-store
@@ -107,6 +110,7 @@ pillar_defaults:
     impala:
       start_service: true
       version: 1.4.0
+      max_pool_requests: 1000
     hive:
       start_service: true
       user: hive
