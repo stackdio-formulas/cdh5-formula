@@ -23,6 +23,9 @@ components:
   - title: HBase RegionServer
     description: HBase RegionServer component of CDH5
     sls_path: cdh5.hbase.regionserver
+  - title: HBase Secure Permissions
+    description: Separate state because it needs to run on the master AFTER the regionservers are started.  Used only when security is enabled.
+    sls_path: cdh5.hbase.security.permissions
   - title: Oozie
     description: Oozie
     sls_path: cdh5.oozie
@@ -104,9 +107,6 @@ pillar_defaults:
       start_service: true
     oozie:
       start_service: true
-    zookeeper:
-      start_service: true
-      data_dir: /mnt/zk/data
     impala:
       start_service: true
       version: 1.4.0
