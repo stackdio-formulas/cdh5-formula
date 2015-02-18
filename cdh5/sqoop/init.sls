@@ -42,7 +42,7 @@ mysql_jar:
 mysql_user:
   mysql.user_create:
     - user: {% salt[pillar.get]('cdh5:sqoop:user', 'sqoop') %}
-    - host: "{{ grains.stack.namespace }}-%"
+    - host: "{{ grains.namespace }}-%"
     - password: {% salt[pillar.get]('cdh5:sqoop:password', '1234') %}
     - require:
       - cdh5.sqoop: mysql_jar
@@ -53,7 +53,7 @@ mysql_permissions:
     - grant: "*"
     - database: "*"
     - user: {% salt[pillar.get]('cdh5:sqoop:user', 'sqoop') %}
-    - host: "{{ grains.stack.namespace }}-%"
+    - host: "{{ grains.namespace }}-%"
     - require:
       - cdh5.sqoop: mysql_user
 
