@@ -120,6 +120,7 @@ pillar_defaults:
       start_service: true
       secret_key: CHANGE_THIS
     manager:
+      version: 5
       server:
         start_service: true
       agent:
