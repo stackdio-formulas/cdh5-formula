@@ -19,7 +19,7 @@ extend:
 # When security is enabled, we need to get a kerberos ticket
 # for the hdfs principal so that any interaction with HDFS
 # through the hadoop client may authorize successfully.
-# NOTE this means that any 'hadoop fs' commands will need
+# NOTE this means that any 'hdfs dfs' commands will need
 # to require this state to be sure we have a krb ticket
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
 hdfs_kinit:
@@ -37,8 +37,8 @@ hbase-init:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hadoop fs -mkdir /hbase && hadoop fs -chown hbase:hbase /hbase'
-    - unless: 'hadoop fs -test -d /hbase'
+    - name: 'hdfs dfs -mkdir /hbase && hdfs dfs -chown hbase:hbase /hbase'
+    - unless: 'hdfs dfs -test -d /hbase'
     - require:
       - pkg: hadoop-client
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
