@@ -167,7 +167,7 @@ hdfs_mapreduce_log_dir:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hdfs dfs -mkdir -p {{ mapred_log_dir }} && hdfs dfs -chmod 1777 {{ mapred_log_dir }} && hdfs dfs -chown -R yarn `dirname {{ mapred_log_dir }}`'
+    - name: 'hdfs dfs -mkdir -p {{ mapred_log_dir }} && hdfs dfs -chown yarn:mapred {{ mapred_log_dir }}'
     - unless: 'hdfs dfs -test -d {{ mapred_log_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
@@ -184,7 +184,7 @@ hdfs_mapreduce_var_dir:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hdfs dfs -mkdir -p {{ mapred_staging_dir }} && hdfs dfs -chmod 1777 {{ mapred_staging_dir }} && hdfs dfs -chown -R yarn `dirname {{ mapred_staging_dir }}`'
+    - name: 'hdfs dfs -mkdir -p {{ mapred_staging_dir }} && hdfs dfs -chmod -R 1777 {{ mapred_staging_dir }} && hdfs dfs -chown mapred:hadoop {{ mapred_staging_dir }}'
     - unless: 'hdfs dfs -test -d {{ mapred_staging_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
