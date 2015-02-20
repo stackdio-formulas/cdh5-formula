@@ -195,22 +195,6 @@ hdfs_mapreduce_var_dir:
       - cmd: activate_namenode 
       {% endif %}
 
-# set permissions at the root level of HDFS so any user can write to it
-hdfs_permissions:
-  cmd:
-    - run
-    - user: hdfs
-    - group: hdfs
-    - name: 'hadoop fs -chmod 777 /'
-    - require:
-      - service: hadoop-yarn-resourcemanager-svc
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - cmd: hdfs_kinit
-      {% endif %}
-      {% if standby %}
-      - cmd: activate_namenode 
-      {% endif %}
-
 # create a user directory owned by the stack user
 {% set user = pillar.__stackdio__.username %}
 hdfs_user_dir:
