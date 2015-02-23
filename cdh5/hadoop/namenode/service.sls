@@ -130,7 +130,7 @@ init_hdfs:
 # When security is enabled, we need to get a kerberos ticket
 # for the hdfs principal so that any interaction with HDFS
 # through the hadoop client may authorize successfully.
-# NOTE this means that any 'hadoop fs' commands will need
+# NOTE this means that any 'hdfs dfs' commands will need
 # to require this state to be sure we have a krb ticket
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
 hdfs_kinit:
@@ -150,8 +150,8 @@ hdfs_tmp_dir:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hadoop fs -mkdir /tmp && hadoop fs -chmod -R 1777 /tmp'
-    - unless: 'hadoop fs -test -d /tmp'
+    - name: 'hdfs dfs -mkdir /tmp && hdfs dfs -chmod -R 1777 /tmp'
+    - unless: 'hdfs dfs -test -d /tmp'
     - require:
       - service: hadoop-hdfs-namenode-svc
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
@@ -167,8 +167,8 @@ hdfs_mapreduce_log_dir:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hadoop fs -mkdir -p {{ mapred_log_dir }} && hadoop fs -chmod 1777 {{ mapred_log_dir }} && hadoop fs -chown -R yarn `dirname {{ mapred_log_dir }}`'
-    - unless: 'hadoop fs -test -d {{ mapred_log_dir }}'
+    - name: 'hdfs dfs -mkdir -p {{ mapred_log_dir }} && hdfs dfs -chown yarn:mapred {{ mapred_log_dir }}'
+    - unless: 'hdfs dfs -test -d {{ mapred_log_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
@@ -184,26 +184,10 @@ hdfs_mapreduce_var_dir:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hadoop fs -mkdir -p {{ mapred_staging_dir }} && hadoop fs -chmod 1777 {{ mapred_staging_dir }} && hadoop fs -chown -R yarn `dirname {{ mapred_staging_dir }}`'
-    - unless: 'hadoop fs -test -d {{ mapred_staging_dir }}'
+    - name: 'hdfs dfs -mkdir -p {{ mapred_staging_dir }} && hdfs dfs -chmod -R 1777 {{ mapred_staging_dir }} && hdfs dfs -chown mapred:hadoop {{ mapred_staging_dir }}'
+    - unless: 'hdfs dfs -test -d {{ mapred_staging_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - cmd: hdfs_kinit
-      {% endif %}
-      {% if standby %}
-      - cmd: activate_namenode 
-      {% endif %}
-
-# set permissions at the root level of HDFS so any user can write to it
-hdfs_permissions:
-  cmd:
-    - run
-    - user: hdfs
-    - group: hdfs
-    - name: 'hadoop fs -chmod 777 /'
-    - require:
-      - service: hadoop-yarn-resourcemanager-svc
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
@@ -219,7 +203,7 @@ hdfs_user_dir:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir /user/{{ user }} && hdfs dfs -chown {{ user }}:{{ user }} /user/{{ user }}'
-    - unless: 'hadoop fs -test -d /user/{{ user }}'
+    - unless: 'hdfs dfs -test -d /user/{{ user }}'
     - require:
       - service: hadoop-yarn-resourcemanager-svc
       {% if salt['pillar.get']('cdh5:security:enable', False) %}

@@ -40,7 +40,7 @@ ooziedb:
 create-oozie-sharelibs:        
   cmd:
     - run
-    - name: 'hdfs dfs -mkdir /user/oozie && hdfs dfs -chown -R oozie:oozie /user/oozie && hdfs dfs -chmod 777 /user'
+    - name: 'hdfs dfs -mkdir /user/oozie && hdfs dfs -chown -R oozie:oozie /user/oozie'
     - unless: 'hdfs dfs -test -d /user/oozie'
     - user: hdfs
     - require:
