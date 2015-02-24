@@ -1,63 +1,81 @@
-sqoop_installed:
-  pkg.installed:
-    - sqoop2-server
+sqoop2-server:
+  pkg:
+    - installed
 
+# Add this here too so sqoop doesn't depend on hive
+mysql:
+  pkg:
+    - installed
+    - pkgs:
+      - mysql-server
+      {% if grains['os_family'] == 'Debian' %}
+      - libmysql-java
+      {% elif grains['os_family'] == 'RedHat' %}
+      - mysql-connector-java
+      {% endif %}
+
+{% if grains['os_family'] == 'Debian' %}
+extend:
+  remove_policy_file:
+    file:
+      - require:
+        - service: sqoop2-server-svc
+        - service: mysql-svc
+{% endif %}
+
+mysql-svc:
+  service:
+    - running
+    {% if grains['os_family'] == 'Debian' %}
+    - name: mysql
+    {% elif grains['os_family'] == 'RedHat' %}
+    - name: mysqld
+    {% endif %}
+    - require:
+      - pkg: mysql
+
+configure_mysql:
+  cmd:
+    - script
+    - template: jinja
+    - source: salt://cdh5/sqoop/configure_mysql_sqoop.sh
+    - unless: echo "select User, Host from mysql.user" | mysql -u root | grep {{ pillar.cdh5.sqoop.user }}
+    - require:
+      - pkg: sqoop2-server
+      - service: mysql-svc
 
 sqoop2-tomcat-conf:
-  alternatives.set_:
+  alternatives:
+    - set_
+    - user: root
     - name: sqoop2-tomcat-conf
     - path: /etc/sqoop2/tomcat-conf.dist
     - require:
-      - cdh5.sqoop: installed
-
+      - pkg: sqoop2-server
 
 hdfs_dir:
-  hadoop.dfs:
-    - command: 'mkdir'
-    - args:
-      - '/user/sqoop2'
+  cmd:
+    - run
+    - user: hdfs
+    - name: 'hdfs dfs -mkdir /user/sqoop2 && hdfs dfs -chown sqoop2:sqoop2 /user/sqoop2'
     - require:
-      - cdh5.sqoop: installed
-
-
-hdfs_permissions:
-  hadoop.dfs:
-    - command: 'chown'
-    - args:
-      - 'sqoop2'
-      - '/user/sqoop2'
-    - require:
-      - cdh5.sqoop: hdfs_dir
-
+      - pkg: sqoop2-server
 
 mysql_jar:
-  file.copy:
+  file:
+    - copy
     - name: /var/lib/sqoop2/mysql-connector-java.jar
     - source: /usr/share/java/mysql-connector-java.jar
     - makedirs: True
     - require:
-      - cdh5.sqoop: installed
+      - pkg: mysql
+      - pkg: sqoop2-server
 
-
-mysql_user:
-  mysql.user_create:
-    - user: {% salt[pillar.get]('cdh5:sqoop:user', 'sqoop') %}
-    - host: "{{ grains.stack.namespace }}-%"
-    - password: {% salt[pillar.get]('cdh5:sqoop:password', '1234') %}
+sqoop2-server-svc:
+  service:
+    - running
     - require:
-      - cdh5.sqoop: mysql_jar
-
-
-mysql_permissions:
-  mysql.grant_add:
-    - grant: "*"
-    - database: "*"
-    - user: {% salt[pillar.get]('cdh5:sqoop:user', 'sqoop') %}
-    - host: "{{ grains.stack.namespace }}-%"
-    - require:
-      - cdh5.sqoop: mysql_user
-
-
-sqoop2-server:
-  service.running:
-    - order: last
+      - alternatives: sqoop2-tomcat-conf
+      - cmd: hdfs_dir
+      - file: mysql_jar
+      - cmd: configure_mysql

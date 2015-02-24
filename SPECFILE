@@ -119,6 +119,9 @@ pillar_defaults:
     hue:
       start_service: true
       secret_key: CHANGE_THIS
+    sqoop:
+      user: sqoop
+      db_password: 1234
     manager:
       server:
         start_service: true
