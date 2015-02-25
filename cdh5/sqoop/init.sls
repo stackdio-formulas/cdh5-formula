@@ -46,7 +46,7 @@ configure_mysql:
 
 sqoop2-tomcat-conf:
   alternatives:
-    - set_
+    - set
     - user: root
     - name: sqoop2-tomcat-conf
     - path: /etc/sqoop2/tomcat-conf.dist
@@ -58,6 +58,7 @@ hdfs_dir:
     - run
     - user: hdfs
     - name: 'hdfs dfs -mkdir /user/sqoop2 && hdfs dfs -chown sqoop2:sqoop2 /user/sqoop2'
+    - unlesee: 'hdfs dfs -test -d /user/sqoop2'
     - require:
       - pkg: sqoop2-server
 
@@ -74,6 +75,7 @@ mysql_jar:
 sqoop2-server-svc:
   service:
     - running
+    - name: sqoop2-server
     - require:
       - alternatives: sqoop2-tomcat-conf
       - cmd: hdfs_dir
