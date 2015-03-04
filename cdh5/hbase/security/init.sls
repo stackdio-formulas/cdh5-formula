@@ -19,6 +19,6 @@ set_hbase_permissions:
     - group: hbase
     - cwd: /etc/hbase/conf
     - require:
-      - module: generate_hbase_keytabs
+      - cmd: generate_hbase_keytabs
 
 {% endif %}
