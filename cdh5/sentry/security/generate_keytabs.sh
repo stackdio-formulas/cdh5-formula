@@ -6,7 +6,7 @@ rm -rf *.keytab
 (
 echo "addprinc -randkey sentry/{{ grains.fqdn }}"
 echo "xst -k sentry.keytab sentry/{{ grains.fqdn }}"
-) | kadmin -p kadmin/admin -kt /root/admin.keytab
+) | kadmin -p kadmin/admin -kt /root/admin.keytab -r {{ realm }}
 
 chown sentry:sentry sentry.keytab
 chmod 400 *.keytab

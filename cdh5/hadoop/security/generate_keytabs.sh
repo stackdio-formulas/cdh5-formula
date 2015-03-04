@@ -12,7 +12,7 @@ echo "xst -k hdfs-unmerged.keytab hdfs/{{ grains.fqdn }}"
 echo "xst -k mapred-unmerged.keytab mapred/{{ grains.fqdn }}"
 echo "xst -k yarn-unmerged.keytab yarn/{{ grains.fqdn }}"
 echo "xst -k HTTP.keytab HTTP/{{ grains.fqdn }}"
-) | kadmin -p kadmin/admin -kt /root/admin.keytab
+) | kadmin -p kadmin/admin -kt /root/admin.keytab -r {{ realm }}
 
 (
 echo "rkt hdfs-unmerged.keytab"

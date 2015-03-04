@@ -7,7 +7,7 @@ echo "addprinc -randkey impala/{{ grains.fqdn }}@{{ realm }}"
 echo "addprinc -randkey HTTP/{{ grains.fqdn }}@{{ realm }}"
 echo "xst -k impala-unmerged.keytab impala/{{ grains.fqdn }}@{{ realm }}"
 echo "xst -k HTTP.keytab HTTP/{{ grains.fqdn }}@{{ realm }}"
-) | kadmin -p kadmin/admin -kt /root/admin.keytab
+) | kadmin -p kadmin/admin -kt /root/admin.keytab -r {{ realm }}
 
 (
 echo "rkt impala-unmerged.keytab"

@@ -6,7 +6,7 @@ rm -rf *.keytab
 (
 echo "addprinc -randkey {{ user }}/{{ grains.fqdn }}@{{ realm }}"
 echo "xst -k {{ user }}.keytab {{ user }}/{{ grains.fqdn }}@{{ realm }}"
-) | kadmin -p kadmin/admin -kt /root/admin.keytab
+) | kadmin -p kadmin/admin -kt /root/admin.keytab -r {{ realm }}
 
 chown {{ user }}:{{ user }} {{ user }}.keytab
 chmod 400 {{ user }}.keytab

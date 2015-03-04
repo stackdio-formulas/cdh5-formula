@@ -6,7 +6,7 @@ echo "addprinc -randkey oozie/{{ grains.fqdn }}@{{ realm }}"
 echo "addprinc -randkey HTTP/{{ grains.fqdn }}@{{ realm }}"
 echo "xst -k oozie-unmerged.keytab oozie/{{ grains.fqdn }}@{{ realm }}"
 echo "xst -k HTTP.keytab HTTP/{{ grains.fqdn }}@{{ realm }}"
-) | kadmin -p kadmin/admin -kt /root/admin.keytab
+) | kadmin -p kadmin/admin -kt /root/admin.keytab -r {{ realm }}
 
 (
 echo "rkt oozie-unmerged.keytab"
