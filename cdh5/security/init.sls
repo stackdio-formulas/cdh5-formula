@@ -1,6 +1,6 @@
 # For security to work, we rely on a KDC to be available in this stack.
 # Your blueprint should include the KDC role on one machine, and it's
-# generally recommended that KDC be installed on a machien by itself
+# generally recommended that KDC be installed on a machine by itself
 {% set kdc_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:krb5.kdc', 'grains.items', 'compound').keys()[0] %}
 
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
