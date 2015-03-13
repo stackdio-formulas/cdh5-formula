@@ -17,7 +17,9 @@ extend:
     - managed
     - template: jinja
     - source: salt://cdh5/etc/zookeeper/conf/zoo.cfg
-    - mode: 755
+    - user: root
+    - group: root
+    - mode: 644
     - require: 
       - pkg: zookeeper
 
