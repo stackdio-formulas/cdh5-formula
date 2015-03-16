@@ -22,6 +22,14 @@ oozie-svc:
       - cmd: populate-oozie-sharelibs
       - file: /var/log/oozie
       - file: /var/lib/oozie
+    - watch:
+      - cmd: ooziedb
+      - cmd: populate-oozie-sharelibs
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: /etc/oozie/conf/oozie-site.xml
+      - cmd: generate_oozie_keytabs
+{% endif %}
+
 
 ooziedb:
   cmd:
