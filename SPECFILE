@@ -123,6 +123,7 @@ pillar_defaults:
       user: sqoop
       db_password: 1234
     manager:
+      version: 5
       server:
         start_service: true
       agent:
