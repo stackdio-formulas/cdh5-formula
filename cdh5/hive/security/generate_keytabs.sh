@@ -1,6 +1,7 @@
 {%- from 'krb5/settings.sls' import krb5 with context %}
 {%- set realm = krb5.realm -%}
 #!/bin/bash
+rm -rf *.keytab
 (
 echo "addprinc -randkey hive/{{ grains.fqdn }}@{{ realm }}"
 echo "xst -k hive.keytab hive/{{ grains.fqdn }}@{{ realm }}"
