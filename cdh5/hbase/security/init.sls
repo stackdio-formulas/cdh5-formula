@@ -9,16 +9,4 @@ generate_hbase_keytabs:
     - cwd: /etc/hbase/conf
     - require:
       - module: load_admin_keytab
-
-set_hbase_permissions:
-  cmd:
-    - script
-    - source: salt://cdh5/hbase/security/set_permissions.sh
-    - template: jinja
-    - user: hbase
-    - group: hbase
-    - cwd: /etc/hbase/conf
-    - require:
-      - cmd: generate_hbase_keytabs
-
 {% endif %}
