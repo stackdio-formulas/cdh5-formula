@@ -42,4 +42,6 @@ hadoop-hdfs-journalnode:
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
+      {% endif %}

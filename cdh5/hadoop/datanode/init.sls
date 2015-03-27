@@ -45,7 +45,9 @@ hadoop-hdfs-datanode:
 {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
+      {% endif %}
 
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
 /etc/default/hadoop-hdfs-datanode:
@@ -76,7 +78,9 @@ hadoop-yarn-nodemanager:
 {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
+      {% endif %}
 
 ##
 # Installs the mapreduce service
@@ -93,6 +97,8 @@ hadoop-mapreduce:
 {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
+      {% endif %}
 
 
