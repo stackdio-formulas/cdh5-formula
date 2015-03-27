@@ -15,24 +15,8 @@ include:
   - cdh5.hbase.security
 {% endif %}
 
-extend:
-  /etc/hbase/conf/hbase-site.xml:
-    file:
-      - require:
-        - pkg: hbase-master
-  /etc/hbase/conf/hbase-env.sh:
-    file:
-      - require:
-        - pkg: hbase-master
-  {{ pillar.cdh5.hbase.tmp_dir }}:
-    file:
-      - require:
-        - pkg: hbase-master
-  {{ pillar.cdh5.hbase.log_dir }}:
-    file:
-      - require:
-        - pkg: hbase-master
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
+extend:
   load_admin_keytab:
     module:
       - require:
@@ -53,3 +37,8 @@ hbase-master:
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - file: /etc/krb5.conf
 {% endif %}
+    - require_in:
+      - file: {{ pillar.cdh5.hbase.log_dir }}
+      - file: {{ pillar.cdh5.hbase.tmp_dir }}
+      - file: /etc/hbase/conf/hbase-env.sh
+      - file: /etc/hbase/conf/hbase-site.xml
