@@ -89,8 +89,8 @@ mapred_user:
 # NOT a HA NN...continue like normal with the rest of the state
 {% else %}
 
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
 extend:
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
   load_admin_keytab:
     module:
       - require:
@@ -100,7 +100,7 @@ extend:
     cmd:
       - require:
         - module: load_admin_keytab
-  {% endif %}
+{% endif %}
 
 ##
 # Installs the yarn resourcemanager package.

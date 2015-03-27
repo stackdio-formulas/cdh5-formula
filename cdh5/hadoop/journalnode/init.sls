@@ -14,8 +14,8 @@ include:
   - cdh5.hadoop.security
   {% endif %}
 
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
 extend:
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
   load_admin_keytab:
     module:
       - require:
@@ -25,7 +25,7 @@ extend:
     cmd:
       - require:
         - module: load_admin_keytab
-  {% endif %}
+{% endif %}
 
 ##
 # Installs the journalnode package for high availability

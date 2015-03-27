@@ -16,8 +16,8 @@ include:
   - cdh5.hadoop.security
 {% endif %}
 
-extend:
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
+extend:
   load_admin_keytab:
     module:
       - require:
