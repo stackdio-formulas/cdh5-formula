@@ -1,13 +1,5 @@
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: impala-state-store
-        - service: impala-catalog
-{% endif %}
 
-# 
+#
 # Start impala processes
 #
 

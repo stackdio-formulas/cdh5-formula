@@ -14,15 +14,6 @@ mysql:
       - mysql-connector-java
       {% endif %}
 
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: sqoop2-server-svc
-        - service: mysql-svc
-{% endif %}
-
 mysql-svc:
   service:
     - running
