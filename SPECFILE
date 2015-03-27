@@ -95,12 +95,12 @@ pillar_defaults:
       tmp_dir: /mnt/hbase/tmp
       log_dir: /mnt/hbase/logs
       replication: 3
-      master_initial_heap: 1024m
-      master_max_heap: 1024m
-      master_young_gen: 256m
-      region_initial_heap: 1024m
-      region_max_heap: 1024m
-      region_young_gen: 256m
+      master_initial_heap_mb: 1024
+      master_max_heap_mb: 1024
+      master_young_gen_mb: 256
+      region_initial_heap_mb: 1024
+      region_max_heap_mb: 1024
+      region_young_gen_mb: 256
       jute_maxbuffer: 10485750
       manage_zk: true
     zookeeper:
@@ -110,7 +110,6 @@ pillar_defaults:
       start_service: true
     impala:
       start_service: true
-      version: 1.4.0
       max_pool_requests: 1000
       server_max_memory: 12G
     hive:

@@ -28,7 +28,11 @@ export JAVA_HOME=/usr/java/latest
 # export HBASE_CLASSPATH=
 
 # The maximum amount of heap to use, in MB. Default is 1000.
-# export HBASE_HEAPSIZE=1000
+{% if 'cdh5.hbase.regionserver' in grains.roles %}
+export HBASE_HEAPSIZE="{{ pillar.cdh5.hbase.region_max_heap_mb }}"
+{% elif 'cdh5.hbase.master' in grains.roles %}
+export HBASE_HEAPSIZE="{{ pillar.cdh5.hbase.master_max_heap_mb }}"
+{% endif %}
 
 # Extra Java runtime options.
 # Below are what we set by default.  May only work with SUN JVM.
@@ -93,9 +97,9 @@ export HBASE_OPTS="-XX:+UseConcMarkSweepGC"
 # DRFA doesn't put any cap on the log size. Please refer to HBase-5655 for more context.
 
 # The above is all standard, adding the below for stackd.io deployment
-export HBASE_MASTER_OPTS="-Xms{{ pillar.cdh5.hbase.master_initial_heap }} -Xmx{{ pillar.cdh5.hbase.master_max_heap }} -Xmn{{ pillar.cdh5.hbase.master_young_gen }} -XX:+UseConcMarkSweepGC -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.cdh5.hbase.log_dir }}/hbase-master-gc.log -Djute.maxbuffer={{ pillar.cdh5.hbase.jute_maxbuffer }}" 
+export HBASE_MASTER_OPTS="-Xms{{ pillar.cdh5.hbase.master_initial_heap_mb }}m -Xmn{{ pillar.cdh5.hbase.master_young_gen_mb }}m -XX:+UseConcMarkSweepGC -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.cdh5.hbase.log_dir }}/hbase-master-gc.log -Djute.maxbuffer={{ pillar.cdh5.hbase.jute_maxbuffer }}"
 
-export HBASE_REGIONSERVER_OPTS="-Xms{{ pillar.cdh5.hbase.region_initial_heap }} -Xmx{{ pillar.cdh5.hbase.region_max_heap }} -Xmn{{ pillar.cdh5.hbase.region_young_gen}} -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:ParallelGCThreads=8 -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.cdh5.hbase.log_dir }}/hbase-regionserver-gc.log"
+export HBASE_REGIONSERVER_OPTS="-Xms{{ pillar.cdh5.hbase.region_initial_heap_mb }}m -Xmn{{ pillar.cdh5.hbase.region_young_gen_mb }}m -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:ParallelGCThreads=8 -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.cdh5.hbase.log_dir }}/hbase-regionserver-gc.log"
 
 HBASE_LOG_DIR={{ pillar.cdh5.hbase.log_dir }}
 
