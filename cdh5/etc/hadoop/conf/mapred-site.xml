@@ -65,7 +65,7 @@
      <value>0.4</value>
   </property>
 
-  <!-- Memory for App Masters -->
+  <!-- Resources for App Masters -->
   <property>
       <name>yarn.app.mapreduce.am.resource.mb</name>
       <value>1024</value>
@@ -74,12 +74,16 @@
       <name>yarn.app.mapreduce.am.command-opts</name>
       <value>-Xmx768m</value>
   </property>
+  <property>
+      <name>yarn.app.mapreduce.am.resource.cpu-vcores</name>
+      <value>1</value>
+  </property>
 
   {% set memory_mb = pillar.cdh5.mapred.memory_mb %}
   {% set heap_size = (memory_mb * 0.8) | int %}
   {% set java_opts= salt['pillar.get']('cdh5:mapred:child_java_opts', '-Xmx' ~ heap_size ~ 'm') %}
 
-  <!-- Memory for mappers -->
+  <!-- Resources for mappers -->
   <property>
       <name>mapreduce.map.memory.mb</name>
       <value>{{ memory_mb }}</value>
@@ -88,8 +92,12 @@
       <name>mapreduce.map.java.opts</name>
       <value>{{ java_opts }}</value>
   </property>
+  <property>
+      <name>mapreduce.map.cpu.vcores</name>
+      <value>1</value>
+  </property>
 
-  <!-- Memory for reducers -->
+  <!-- Resources for reducers -->
   <property>
       <name>mapreduce.reduce.memory.mb</name>
       <value>{{ memory_mb }}</value>
@@ -97,6 +105,10 @@
   <property>
       <name>mapreduce.reduce.java.opts</name>
       <value>{{ java_opts }}</value>
+  </property>
+  <property>
+      <name>mapreduce.reduce.cpu.vcores</name>
+      <value>1</value>
   </property>
 
   <!-- Sorting -->
