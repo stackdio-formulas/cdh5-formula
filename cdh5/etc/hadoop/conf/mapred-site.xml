@@ -76,7 +76,7 @@
   </property>
 
   {% set memory_mb = pillar.cdh5.mapred.memory_mb %}
-  {% set heap_size = memory_mb * 0.8 | int %}
+  {% set heap_size = (memory_mb * 0.8) | int %}
   {% set java_opts= salt['pillar.get']('cdh5:mapred:child_java_opts', '-Xmx' ~ heap_size ~ 'm') %}
 
   <!-- Memory for mappers -->
