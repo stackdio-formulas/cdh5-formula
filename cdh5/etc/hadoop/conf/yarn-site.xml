@@ -42,13 +42,13 @@
   <property>
     <description>List of directories to store localized files in.</description>
     <name>yarn.nodemanager.local-dirs</name>
-    <value>/mnt/yarn/${user.name}/nm-local-dir</value>
+    <value>{{ pillar.cdh5.yarn.local_dirs }}</value>
   </property>
 
   <property>
     <description>Where to store container logs.</description>
     <name>yarn.nodemanager.log-dirs</name>
-    <value>/mnt/yarn/logs/containers</value>
+    <value>{{ pillar.cdh5.yarn.log_dirs }}</value>
   </property>
 
   <property>
@@ -69,10 +69,6 @@
      </value>
   </property>
   <property>
-     <name>yarn.app.mapreduce.am.staging-dir</name>
-     <value>/user</value>
-  </property>
-  <property>
      <name>yarn.nodemanager.vmem-pmem-ratio</name>
      <value>1.0</value>
   </property>
@@ -87,6 +83,10 @@
   <property>
      <name>yarn.nodemanager.resource.memory-mb</name>
      <value>{{ pillar.cdh5.yarn.max_container_size_mb }}</value>
+  </property>
+  <property>
+      <name>yarn.nodemanager.resource.cpu-vcores</name>
+      <value>{{ pillar.cdh5.yarn.num_cpus }}</value>
   </property>
 
 {% if salt['pillar.get']('cdh5:security:enable', False) %}

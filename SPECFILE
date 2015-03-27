@@ -72,22 +72,23 @@ pillar_defaults:
       start_service: true
     yarn:
       max_container_size_mb: 11264
+      num_cpus: 8
+      local_dirs: /mnt/hadoop/yarn/local
+      log_dirs: /mnt/hadoop/yarn/logs
     io:
-      sort_factor: 25
-      sort_mb: 250
+      sort_factor: 64
+      sort_mb: 256
     dfs:
       name_dir: /mnt/hadoop/hdfs/nn
-      data_dir: /mnt/hadoop/hdfs/data
+      checkpoint_dir: /mnt/hadoop/hdfs/snn
+      data_dir: /mnt/hadoop/hdfs/dn
       journal_dir: /mnt/hadoop/hdfs/jn
+      du_reserved: 5368709120  # 5GB
       permissions: true
       block_size: 268435456
     mapred:
-      local_dir: /mnt/yarn
       system_dir: /hadoop/system/mapred
-      child_java_opts: '-Xmx2000m'
-      memory_mb: 3000
-      map_tasks: 5
-      reduce_tasks: 3
+      memory_mb: 2048
       reduces: 3
     hbase:
       start_service: true
@@ -111,6 +112,7 @@ pillar_defaults:
       start_service: true
       version: 1.4.0
       max_pool_requests: 1000
+      server_max_memory: 12GB
     hive:
       start_service: true
       user: hive

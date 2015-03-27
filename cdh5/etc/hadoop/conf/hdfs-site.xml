@@ -1,21 +1,37 @@
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- if standby -%}
+  {%- set standby_items = standby.values()[0] if standby else None -%}
+  {%- set standby_fqdn = standby_items['fqdn'] if standby else None -%}
+  {%- set journal_nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.journalnode', 'grains.items', 'compound').values() -%}
+{%- endif -%}
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
 <configuration>
     <property>
-        <name>dfs.name.dir</name>
+        <name>dfs.namenode.name.dir</name>
         <value>{{ pillar.cdh5.dfs.name_dir}}</value>
+    </property>
+    <property>
+        <name>dfs.namenode.checkpoint.dir</name>
+        <value>{{ pillar.cdh5.dfs.checkpoint_dir}}</value>
     </property>
     <property>
         <name>dfs.datanode.data.dir</name>
         <value>{{ pillar.cdh5.dfs.data_dir }}</value>
+    </property>
+    <!-- Leave a certain number of bytes of the disk space open -->
+    <property>
+        <name>dfs.datanode.du.reserved</name>
+        <value>{{ pillar.cdh5.dfs.du_reserved }}</value>
     </property>
     <property>
        <name>dfs.permissions.superusergroup</name>
        <value>hadoop</value>
     </property>
     <property>
-      <name>dfs.datanode.max.xcievers</name>
+      <name>dfs.datanode.max.transfer.threads</name>
       <value>8192</value>
     </property>
 
@@ -77,7 +93,55 @@
     <property>
       <name>dfs.datanode.hdfs-blocks-metadata.enabled</name>
       <value>true</value>
-    </property> 
+    </property>
+
+{%- if standby %}
+    <property>
+      <name>dfs.nameservices</name>
+      <value>default</value>
+    </property>
+    <property>
+      <name>dfs.ha.namenodes.default</name>
+      <value>nn1,nn2</value>
+    </property>
+    <property>
+      <name>dfs.namenode.rpc-address.default.nn1</name>
+      <value>{{ namenode_fqdn }}:8020</value>
+    </property>
+    <property>
+      <name>dfs.namenode.rpc-address.default.nn2</name>
+      <value>{{ standby_fqdn }}:8020</value>
+    </property>
+    <property>
+      <name>dfs.namenode.http-address.default.nn1</name>
+      <value>{{ namenode_fqdn }}:50070</value>
+    </property>
+    <property>
+      <name>dfs.namenode.http-address.default.nn2</name>
+      <value>{{ standby_fqdn }}:50070</value>
+    </property>
+    <property>
+      <name>dfs.namenode.shared.edits.dir</name>
+      <value>qjournal://{% for j in journal_nodes %}{{ j['fqdn'] }}:8485{% if not loop.last %};{% endif %}{% endfor %}/default</value>
+    </property>
+    <property>
+      <name>dfs.journalnode.edits.dir</name>
+      <value>{{ pillar.cdh5.dfs.journal_dir }}</value>
+    </property>
+    <property>
+      <name>dfs.client.failover.proxy.provider.default</name>
+      <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+    </property>
+    <property>
+      <name>dfs.ha.fencing.methods</name>
+      <value>shell(/bin/true)</value>
+    </property>
+{%- else  %}
+    <property>
+      <name>dfs.namenode.http-address</name>
+      <value>{{ namenode_fqdn }}:50070</value>
+    </property>
+{%- endif %}
 
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
 {% from 'krb5/settings.sls' import krb5 with context %}

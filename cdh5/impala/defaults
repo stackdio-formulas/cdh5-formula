@@ -8,6 +8,7 @@ IMPALA_STATE_STORE_PORT=24000
 IMPALA_BACKEND_PORT=22000
 IMPALA_LOG_DIR=/var/log/impala
 DEFAULT_POOL_MAX_REQUESTS={{ salt['pillar.get']('cdh5:impala:max_pool_requests', 20) }}
+DEFAULT_MEM_LIMIT={{ salt['pillar.get']('cdh5:impala:server_max_memory', '12GB') }}
 
 IMPALA_CATALOG_ARGS=" \
 {%- if salt['pillar.get']('cdh5:security:enable', False) %}
@@ -41,7 +42,8 @@ IMPALA_SERVER_ARGS=" \
     -state_store_host=${IMPALA_STATE_STORE_HOST} \
     -state_store_port=${IMPALA_STATE_STORE_PORT} \
     -be_port=${IMPALA_BACKEND_PORT} \
-    -default_pool_max_requests=${DEFAULT_POOL_MAX_REQUESTS}"
+    -default_pool_max_requests=${DEFAULT_POOL_MAX_REQUESTS} \
+    -mem_limit=${DEFAULT_MEM_LIMIT}"
 
 ENABLE_CORE_DUMPS=false
 

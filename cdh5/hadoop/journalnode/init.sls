@@ -15,10 +15,6 @@ include:
   {% endif %}
 
 extend:
-  /etc/hadoop/conf:
-    file:
-      - require:
-        - pkg: hadoop-hdfs-journalnode
   {% if salt['pillar.get']('cdh5:security:enable', False) %}
   load_admin_keytab:
     module:
@@ -28,7 +24,6 @@ extend:
   generate_hadoop_keytabs:
     cmd:
       - require:
-        - pkg: hadoop-hdfs-journalnode
         - module: load_admin_keytab
   {% endif %}
 
@@ -45,3 +40,6 @@ hadoop-hdfs-journalnode:
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - file: /etc/krb5.conf
       {% endif %}
+    - require_in:
+      - file: /etc/hadoop/conf
+      - cmd: generate_hadoop_keytabs
