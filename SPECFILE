@@ -112,7 +112,7 @@ pillar_defaults:
       start_service: true
       version: 1.4.0
       max_pool_requests: 1000
-      server_max_memory: 12GB
+      server_max_memory: 12G
     hive:
       start_service: true
       user: hive
