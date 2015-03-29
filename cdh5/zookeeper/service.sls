@@ -58,6 +58,7 @@ zookeeper-server-svc:
         - cmd: zookeeper-init
         - file: /etc/zookeeper/conf/zoo.cfg
         - file: /etc/zookeeper/conf/log4j.properties
+        - file: myid
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
         - cmd: generate_zookeeper_keytabs
 {% endif %}
@@ -72,7 +73,7 @@ myid:
     - mode: 755
     - source: salt://cdh5/etc/zookeeper/conf/myid
     - require:
-      - file: zk_data_dir
+      - cmd: zookeeper-init
 
 zookeeper-init:
   cmd:
@@ -80,7 +81,7 @@ zookeeper-init:
     - name: 'service zookeeper-server init --force'
     - unless: 'ls {{pillar.cdh5.zookeeper.data_dir}}/version-*'
     - require:
-      - file: myid
+      - file: zk_data_dir
 
 zk_data_dir:
   file:
