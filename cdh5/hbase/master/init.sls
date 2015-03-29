@@ -4,7 +4,6 @@
 include:
   - cdh5.repo
   - cdh5.hadoop.client
-  - cdh5.zookeeper
   - cdh5.hbase.conf
 {% if salt['pillar.get']('cdh5:hbase:start_service', True) %}
   - cdh5.hbase.master.service
