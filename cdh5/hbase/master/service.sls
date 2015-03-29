@@ -38,7 +38,6 @@ hbase-master-svc:
     - require: 
       - pkg: hbase-master
       - cmd: hbase-init
-      - service: zookeeper-server
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.cdh5.hbase.tmp_dir }}
