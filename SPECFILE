@@ -121,6 +121,7 @@ pillar_defaults:
       start_service: true
       secret_key: CHANGE_THIS
     sqoop:
+      start_service: true
       user: sqoop
       db_password: 1234
     manager:
