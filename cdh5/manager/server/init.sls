@@ -4,6 +4,11 @@ include:
   {% if salt['pillar.get']('cdh5:manager:server:start_service', True) %}
   - cdh5.manager.server.service
   {% endif %}
+  {% if salt['pillar.get']('cdh5:security:enable', False) %}
+  - krb5
+  - cdh5.security
+  - cdh5.manager.security
+  {% endif %}
 
 scm_server_packages:
   pkg:
