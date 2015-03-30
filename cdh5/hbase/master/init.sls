@@ -5,6 +5,9 @@ include:
   - cdh5.repo
   - cdh5.hadoop.client
   - cdh5.hbase.conf
+{% if salt['pillar.get']('cdh5:hbase:manage_zk', True) %}
+  - cdh5.zookeeper
+{% endif %}
 {% if salt['pillar.get']('cdh5:hbase:start_service', True) %}
   - cdh5.hbase.master.service
 {% endif %}
@@ -35,6 +38,9 @@ hbase-master:
       - module: cdh5_refresh_db
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - file: /etc/krb5.conf
+{% endif %}
+{% if salt['pillar.get']('cdh5:hbase:manage_zk', True) %}
+      - service: zookeeper-server-svc
 {% endif %}
     - require_in:
       - file: {{ pillar.cdh5.hbase.log_dir }}
