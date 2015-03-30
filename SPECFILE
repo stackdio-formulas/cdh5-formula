@@ -95,7 +95,6 @@ pillar_defaults:
       start_service: true
       tmp_dir: /mnt/hbase/tmp
       log_dir: /mnt/hbase/logs
-      replication: 3
       master_initial_heap_mb: 1024
       master_max_heap_mb: 1024
       master_young_gen_mb: 256

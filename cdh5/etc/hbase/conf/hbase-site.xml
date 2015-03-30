@@ -27,10 +27,6 @@
         <name>hbase.tmp.dir</name>
         <value>{{ pillar.cdh5.hbase.tmp_dir }}</value>
     </property>
-    <property>
-        <name>dfs.replication</name>
-        <value>{{ pillar.cdh5.hbase.replication }}</value>
-    </property>
     <!-- zookeeper properties -->
     <property>
         <name>zookeeper.session.timeout</name>
