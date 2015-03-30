@@ -55,4 +55,7 @@ hbase-thrift-svc:
     - name: hbase-thrift
     - require:
       - service: hbase-master
+    - watch:
+      - file: /etc/hbase/conf/hbase-site.xml
+      - file: /etc/hbase/conf/hbase-env.sh
 
