@@ -3,12 +3,10 @@
 {% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] %}
 {% set master_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hbase.master', 'grains.items', 'compound').values()[0]['fqdn'] %}
 <configuration>
-    {% if not pillar.cdh5.hbase.manage_zk %}
     <property>
         <name>hbase.zookeeper.quorum</name>
-        <value>{% for host, items in salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').items() %}{{ items['fqdn'] }}{% if not loop.last %},{% endif %}{% endfor %}</value>
+        <value>{% if pillar.cdh5.hbase.manage_zk %}{{ master_host }}{% else %}{% for host, items in salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').items() %}{{ items['fqdn'] }}{% if not loop.last %},{% endif %}{% endfor %}{% endif %}</value>
     </property>
-    {% endif %}
     <property>
         <name>hbase.rootdir</name>
         {% if standby %}
