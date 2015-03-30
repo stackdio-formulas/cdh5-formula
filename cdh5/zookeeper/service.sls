@@ -25,6 +25,8 @@
     - require: 
       - pkg: zookeeper
       - file: /etc/zookeeper/conf/zoo.cfg
+    - require_in:
+      - cmd: zookeeper-init
 
 /etc/zookeeper/conf/java.env:
   file:
@@ -37,6 +39,8 @@
     - require: 
       - pkg: zookeeper
       - file: /etc/zookeeper/conf/zoo.cfg
+    - require_in:
+      - cmd: zookeeper-init
 {% endif %}
 
 zk_data_dir:
@@ -60,6 +64,7 @@ zookeeper-init:
     - unless: 'ls {{pillar.cdh5.zookeeper.data_dir}}/version-*'
     - require:
       - file: zk_data_dir
+      - file: /etc/zookeeper/conf/zoo.cfg
 
 myid:
   file:
