@@ -44,6 +44,7 @@ remove_policy_file:
   file:
     - absent
     - name: /usr/sbin/policy-rc.d
+    - order: last
     - require:
       - file: add_policy_file
 
@@ -57,14 +58,6 @@ cloudera_cdh5:
     - baseurl: "http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/{{ pillar.cdh5.version }}/"
     - gpgkey: http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
     - gpgcheck: 1
-
-#cloudera_impala:
-#  pkgrepo:
-#    - managed
-#    - humanname: "Impala"
-#    - baseurl: http://archive.cloudera.com/impala/redhat/6/x86_64/impala/{{ pillar.cdh5.impala.version }}/
-#    - gpgkey: http://archive.cloudera.com/impala/redhat/6/x86_64/impala/RPM-GPG-KEY-cloudera
-#    - gpgcheck: 1
 
 cdh5_gpg:
   cmd:

@@ -17,32 +17,44 @@
 # This is a HA NN, reduce the normal NN state down to all we need
 # for the standby NameNode
 ##
-{% if 'cdh5.hadoop.standby' in grains.roles %}
 include:
   - cdh5.repo
   - cdh5.hadoop.conf
   - cdh5.landing_page
-  {% if salt['pillar.get']('cdh5:namenode:start_service', True) %}
+{% if salt['pillar.get']('cdh5:namenode:start_service', True) %}
+  {% if 'cdh5.hadoop.standby' in grains.roles %}
   - cdh5.hadoop.standby.service
+  {% else %}
+  - cdh5.hadoop.namenode.service
   {% endif %}
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% endif %}
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
   - krb5
   - cdh5.security
   - cdh5.security.stackdio_user
   - cdh5.hadoop.security
-  {% endif %}
+{% endif %}
 
-extend:
-  /etc/hadoop/conf:
-    file:
-      - require:
-        - pkg: hadoop-hdfs-namenode
-
+##
+# Installs the namenode package.  This happens on both regular and standy namenodes.
+#
+# Depends on: JDK7
+##
 hadoop-hdfs-namenode:
   pkg:
-    - installed 
+    - installed
     - require:
       - module: cdh5_refresh_db
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: /etc/krb5.conf
+      {% endif %}
+    - require_in:
+      - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
+
+{% if 'cdh5.hadoop.standby' in grains.roles %}
 
 # we need a mapred user on the standby namenode for job history to work; if the
 # namenode state is not included we want to add it manually
@@ -76,28 +88,9 @@ mapred_user:
 
 # NOT a HA NN...continue like normal with the rest of the state
 {% else %}
-include:
-  - cdh5.repo
-  - cdh5.hadoop.conf
-  - cdh5.landing_page
-  {% if salt['pillar.get']('cdh5:namenode:start_service', True) %}
-  - cdh5.hadoop.namenode.service
-  {% endif %}
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
-  - krb5
-  - cdh5.security
-  - cdh5.security.stackdio_user
-  - cdh5.hadoop.security
-  {% endif %}
 
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
 extend:
-  /etc/hadoop/conf:
-    file:
-      - require:
-        - pkg: hadoop-hdfs-namenode
-        - pkg: hadoop-yarn-resourcemanager 
-        - pkg: hadoop-mapreduce-historyserver
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
   load_admin_keytab:
     module:
       - require:
@@ -106,25 +99,8 @@ extend:
   generate_hadoop_keytabs:
     cmd:
       - require:
-        - pkg: hadoop-hdfs-namenode
-        - pkg: hadoop-yarn-resourcemanager
-        - pkg: hadoop-mapreduce-historyserver
         - module: load_admin_keytab
-  {% endif %}
-
-##
-# Installs the namenode package.
-#
-# Depends on: JDK7
-##
-hadoop-hdfs-namenode:
-  pkg:
-    - installed 
-    - require:
-      - module: cdh5_refresh_db
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - file: /etc/krb5.conf
-      {% endif %}
+{% endif %}
 
 ##
 # Installs the yarn resourcemanager package.
@@ -139,6 +115,11 @@ hadoop-yarn-resourcemanager:
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - file: /etc/krb5.conf
       {% endif %}
+    - require_in:
+      - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
 
 ##
 # Installs the mapreduce historyserver package.
@@ -152,6 +133,11 @@ hadoop-mapreduce-historyserver:
       - module: cdh5_refresh_db
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - file: /etc/krb5.conf
+      {% endif %}
+    - require_in:
+      - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
       {% endif %}
 
 {% endif %}

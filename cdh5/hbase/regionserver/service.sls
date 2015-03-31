@@ -1,13 +1,6 @@
 # 
 # Install the HBase regionserver package
 #
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hbase-regionserver-svc
-{% endif %}
 
 hbase-regionserver-svc:
   service:

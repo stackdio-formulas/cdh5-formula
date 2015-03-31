@@ -42,13 +42,13 @@
   <property>
     <description>List of directories to store localized files in.</description>
     <name>yarn.nodemanager.local-dirs</name>
-    <value>/mnt/yarn/${user.name}/nm-local-dir</value>
+    <value>{{ pillar.cdh5.yarn.local_dirs }}</value>
   </property>
 
   <property>
     <description>Where to store container logs.</description>
     <name>yarn.nodemanager.log-dirs</name>
-    <value>/mnt/yarn/logs/containers</value>
+    <value>{{ pillar.cdh5.yarn.log_dirs }}</value>
   </property>
 
   <property>
@@ -69,13 +69,11 @@
      </value>
   </property>
   <property>
-     <name>yarn.app.mapreduce.am.staging-dir</name>
-     <value>/user</value>
-  </property>
-  <property>
      <name>yarn.nodemanager.vmem-pmem-ratio</name>
      <value>1.0</value>
   </property>
+
+  <!-- memory allocation -->
   <property>
      <name>yarn.scheduler.minimum-allocation-mb</name>
      <value>512</value>
@@ -85,8 +83,30 @@
      <value>{{ pillar.cdh5.yarn.max_container_size_mb }}</value>
   </property>
   <property>
+      <name>yarn.scheduler.increment-allocation-mb</name>
+      <value>512</value>
+  </property>
+  <property>
      <name>yarn.nodemanager.resource.memory-mb</name>
      <value>{{ pillar.cdh5.yarn.max_container_size_mb }}</value>
+  </property>
+
+  <!-- vcore allocation -->
+  <property>
+      <name>yarn.scheduler.minimum-allocation-vcores</name>
+      <value>1</value>
+  </property>
+  <property>
+      <name>yarn.scheduler.maximum-allocation-vcores</name>
+      <value>{{ pillar.cdh5.yarn.num_cpus }}</value>
+  </property>
+  <property>
+      <name>yarn.scheduler.increment-allocation-vcores</name>
+      <value>1</value>
+  </property>
+  <property>
+      <name>yarn.nodemanager.resource.cpu-vcores</name>
+      <value>{{ pillar.cdh5.yarn.num_cpus }}</value>
   </property>
 
 {% if salt['pillar.get']('cdh5:security:enable', False) %}

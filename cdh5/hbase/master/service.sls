@@ -1,20 +1,6 @@
 # 
 # Start the HBase master service
 #
-include:
-  - cdh5.repo
-  - cdh5.hadoop.client
-  - cdh5.zookeeper
-  - cdh5.hbase.conf
-
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hbase-master-svc
-        - service: hbase-thrift-svc
-{% endif %}
 
 # When security is enabled, we need to get a kerberos ticket
 # for the hdfs principal so that any interaction with HDFS
@@ -52,7 +38,6 @@ hbase-master-svc:
     - require: 
       - pkg: hbase-master
       - cmd: hbase-init
-      - service: zookeeper-server
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.cdh5.hbase.tmp_dir }}
@@ -70,4 +55,7 @@ hbase-thrift-svc:
     - name: hbase-thrift
     - require:
       - service: hbase-master
+    - watch:
+      - file: /etc/hbase/conf/hbase-site.xml
+      - file: /etc/hbase/conf/hbase-env.sh
 

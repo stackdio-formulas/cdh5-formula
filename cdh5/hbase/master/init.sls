@@ -4,8 +4,10 @@
 include:
   - cdh5.repo
   - cdh5.hadoop.client
-  - cdh5.zookeeper
   - cdh5.hbase.conf
+{% if salt['pillar.get']('cdh5:hbase:manage_zk', True) %}
+  - cdh5.zookeeper
+{% endif %}
 {% if salt['pillar.get']('cdh5:hbase:start_service', True) %}
   - cdh5.hbase.master.service
 {% endif %}
@@ -15,24 +17,8 @@ include:
   - cdh5.hbase.security
 {% endif %}
 
-extend:
-  /etc/hbase/conf/hbase-site.xml:
-    file:
-      - require:
-        - pkg: hbase-master
-  /etc/hbase/conf/hbase-env.sh:
-    file:
-      - require:
-        - pkg: hbase-master
-  {{ pillar.cdh5.hbase.tmp_dir }}:
-    file:
-      - require:
-        - pkg: hbase-master
-  {{ pillar.cdh5.hbase.log_dir }}:
-    file:
-      - require:
-        - pkg: hbase-master
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
+extend:
   load_admin_keytab:
     module:
       - require:
@@ -53,3 +39,11 @@ hbase-master:
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - file: /etc/krb5.conf
 {% endif %}
+{% if salt['pillar.get']('cdh5:hbase:manage_zk', True) %}
+      - service: zookeeper-server-svc
+{% endif %}
+    - require_in:
+      - file: {{ pillar.cdh5.hbase.log_dir }}
+      - file: {{ pillar.cdh5.hbase.tmp_dir }}
+      - file: /etc/hbase/conf/hbase-env.sh
+      - file: /etc/hbase/conf/hbase-site.xml

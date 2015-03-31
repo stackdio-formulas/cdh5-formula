@@ -1,13 +1,6 @@
 # 
 # Start the Hue service
 #
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hue-svc
-{% endif %}
 
 hue-svc:
   service:
@@ -20,6 +13,8 @@ hue-svc:
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hue_keytabs 
 {% endif %}
+    - watch:
+      - file: /etc/hue/conf/hue.ini
 
 /etc/hue/conf/hue.ini:
   file:
