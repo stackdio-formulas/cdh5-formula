@@ -1,2 +1,2 @@
 
-export KRB5_CONFIG={{ pillar.krb5.conf_file }}
+export HADOOP_OPTS="-Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
