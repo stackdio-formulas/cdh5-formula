@@ -1,2 +1,2 @@
 
-export KRB5_CONFIG={{ pillar.krb5.config_file }}
+export KRB5_CONFIG={{ pillar.krb5.conf_file }}

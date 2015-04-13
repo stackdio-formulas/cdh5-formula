@@ -15,5 +15,5 @@ load_admin_keytab:
     - group: root
     - mode: 600
     - require:
-      - file: /etc/krb5.conf
+      - file: krb5_conf_file
 {% endif %}
