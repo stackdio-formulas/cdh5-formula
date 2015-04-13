@@ -1,6 +1,7 @@
 {%- from 'krb5/settings.sls' import krb5 with context %}
 {%- set realm = krb5.realm -%}
 #!/bin/bash
+export KRB5_CONFIG={{ pillar.krb5.conf_file }}
 rm -rf impala.keytab
 (
 echo "addprinc -randkey impala/{{ grains.fqdn }}@{{ realm }}"

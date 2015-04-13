@@ -1,6 +1,8 @@
 {%- from 'krb5/settings.sls' import krb5 with context %}
 {%- set realm = krb5.realm -%}
 #!/bin/bash
+export KRB5_CONFIG={{ pillar.krb5.conf_file }}
+
 cd /etc/hadoop/conf
 rm -rf *.keytab
 (
