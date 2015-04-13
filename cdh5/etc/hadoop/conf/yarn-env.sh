@@ -115,4 +115,7 @@ if [ "x$JAVA_LIBRARY_PATH" != "x" ]; then
 fi  
 YARN_OPTS="$YARN_OPTS -Dyarn.policy.file=$YARN_POLICYFILE"
 
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+export YARN_OPTS="$YARN_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
+{% endif %}
 
