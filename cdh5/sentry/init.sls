@@ -9,12 +9,6 @@ include:
   - cdh5.sentry.service
   {% endif %}
 
-extend:
-  generate_sentry_keytabs:
-    cmd:
-      - require:
-        - pkg: sentry
-
 sentry:
   pkg:
     - installed 
@@ -23,3 +17,5 @@ sentry:
       - cyrus-sasl-gssapi
     - require:
       - module: cdh5_refresh_db
+    - require_in:
+      - cmd: generate_sentry_keytabs
