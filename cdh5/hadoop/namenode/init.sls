@@ -89,19 +89,6 @@ mapred_user:
 # NOT a HA NN...continue like normal with the rest of the state
 {% else %}
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
-extend:
-  load_admin_keytab:
-    module:
-      - require:
-        - file: krb5_conf_file
-        - file: /etc/hadoop/conf
-  generate_hadoop_keytabs:
-    cmd:
-      - require:
-        - module: load_admin_keytab
-{% endif %}
-
 ##
 # Installs the yarn resourcemanager package.
 #

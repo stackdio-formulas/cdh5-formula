@@ -17,17 +17,6 @@ include:
   - cdh5.hbase.security
 {% endif %}
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
-extend:
-  load_admin_keytab:
-    module:
-      - require:
-        - file: krb5_conf_file
-        - file: /etc/hbase/conf/hbase-site.xml
-        - file: /etc/hbase/conf/hbase-env.sh
-        - pkg: hbase-master
-{% endif %}
-
 hbase-master:
   pkg:
     - installed 
