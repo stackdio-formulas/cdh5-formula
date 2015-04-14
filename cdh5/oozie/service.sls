@@ -30,8 +30,14 @@ create-oozie-sharelibs:
 
 populate-oozie-sharelibs:
   cmd:
+    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    - script
+    - source: salt://cdh5/oozie/create_sharelibs.sh
+    - template: jinja
+    {% else %}
     - run
     - name: 'oozie-setup sharelib create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz'
+    {% endif %}
     - unless: 'hdfs dfs -test -d /user/oozie/share'
     - user: root
     - require:
