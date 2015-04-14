@@ -28,18 +28,31 @@ create-oozie-sharelibs:
     - require:
       - cmd: ooziedb
 
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+create_sharelib_script:
+  file:
+    - managed
+    - name: /usr/lib/oozie/bin/oozie-sharelib-kerberos.sh
+    - source: salt://cdh5/oozie/create_sharelibs.sh
+    - user: root
+    - group: root
+    - mode: 755
+    - template: jinja
+    - require_in:
+      - cmd: populate-oozie-sharelibs
+{% endif %}
+
 populate-oozie-sharelibs:
   cmd:
-    {% if salt['pillar.get']('cdh5:security:enable', False) %}
-    - script
-    - source: salt://cdh5/oozie/create_sharelibs.sh
-    - template: jinja
-    {% else %}
     - run
+    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    - name: '/usr/lib/oozie/bin/oozie-sharelib-kerberos.sh create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz'
+    - user: oozie
+    {% else %}
     - name: 'oozie-setup sharelib create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz'
+    - user: root
     {% endif %}
     - unless: 'hdfs dfs -test -d /user/oozie/share'
-    - user: root
     - require:
       - cmd: create-oozie-sharelibs
 

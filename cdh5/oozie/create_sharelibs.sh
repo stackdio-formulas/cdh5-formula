@@ -1,10 +1,22 @@
-{%- set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 #!/bin/bash
 
 # This script mirrors /usr/lib/oozie/bin/oozie-setup.sh, but ONLY creates the sharelib.
 # We need this in order to support a custom location for the krb5.conf file.
 
-BASEDIR="/usr/lib/oozie"
+PRG="${0}"
+
+while [ -h "${PRG}" ]; do
+  ls=`ls -ld "${PRG}"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=`dirname "${PRG}"`/"$link"
+  fi
+done
+
+BASEDIR=`dirname ${PRG}`
+BASEDIR=`cd ${BASEDIR}/..;pwd`
 
 source ${BASEDIR}/bin/oozie-sys.sh -silent
 
@@ -25,6 +37,6 @@ else
   JAVA_BIN=${JAVA_HOME}/bin/java
 fi
 
-${JAVA_BIN} ${OOZIE_OPTS} -cp ${OOZIECPPATH} org.apache.oozie.tools.OozieSharelibCLI "create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz"
+${JAVA_BIN} ${OOZIE_OPTS} -cp ${OOZIECPPATH} org.apache.oozie.tools.OozieSharelibCLI "${@}"
 
 exit $?
