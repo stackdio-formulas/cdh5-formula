@@ -37,6 +37,7 @@ export CATALINA_OPTS="$CATALINA_OPTS -Doozie.https.keystore.pass=${OOZIE_HTTPS_K
 export CATALINA_OPTS="$CATALINA_OPTS -Xmx1024m"
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
 export CATALINA_OPTS="$CATALINA_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
+export OOZIE_OPTS="$OOZIE_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
 {% endif %}
 
 # Oozie configuration file to load from Oozie configuration directory
