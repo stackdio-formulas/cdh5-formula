@@ -15,6 +15,7 @@ ooziedb:
       - cmd: extjs
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - file: /etc/oozie/conf/oozie-site.xml
+      - file: /etc/oozie/conf/oozie-env.sh
       - cmd: generate_oozie_keytabs
 {% endif %}
 
