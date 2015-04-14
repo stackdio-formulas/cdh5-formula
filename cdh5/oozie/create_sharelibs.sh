@@ -1,3 +1,4 @@
+{%- set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 #!/bin/bash
 
 # This script mirrors /usr/lib/oozie/bin/oozie-setup.sh, but ONLY creates the sharelib.
