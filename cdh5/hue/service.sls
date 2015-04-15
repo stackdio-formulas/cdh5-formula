@@ -15,7 +15,8 @@
   file:
     - replace
     - pattern: 'USER=hue'
-    - repl: 'USER=hue\nKRB5_CONFIG={{ pillar.krb5.conf_file }}'
+    - repl: 'USER=hue\nexport KRB5_CONFIG={{ pillar.krb5.conf_file }}'
+    - unless: cat /etc/init.d/hue | grep KRB5_CONFIG
     - require:
       - pkg: hue
 
