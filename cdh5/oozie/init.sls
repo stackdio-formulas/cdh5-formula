@@ -40,6 +40,17 @@ oozie:
     - template: jinja
     - require:
       - pkg: oozie
+
+/etc/oozie/conf/oozie-env.sh:
+  file:
+    - managed
+    - source: salt://cdh5/etc/oozie/conf/oozie-env.sh
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - require:
+      - pkg: oozie
 {% endif %}
 
 extjs:

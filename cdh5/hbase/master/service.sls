@@ -14,6 +14,8 @@ hdfs_kinit:
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
     - group: hdfs
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require:
       - cmd: generate_hbase_keytabs
 {% endif %}

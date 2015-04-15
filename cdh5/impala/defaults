@@ -9,12 +9,16 @@ IMPALA_BACKEND_PORT=22000
 IMPALA_LOG_DIR=/var/log/impala
 DEFAULT_POOL_MAX_REQUESTS={{ salt['pillar.get']('cdh5:impala:max_pool_requests', 20) }}
 DEFAULT_MEM_LIMIT={{ salt['pillar.get']('cdh5:impala:server_max_memory', '12GB') }}
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+KRB5_CONFIG={{ pillar.krb5.conf_file }}
+{% endif %}
 
 IMPALA_CATALOG_ARGS=" \
 {%- if salt['pillar.get']('cdh5:security:enable', False) %}
     -kerberos_reinit_interval=60 \
     -principal=impala/{{ grains.fqdn }}@{{ krb5.realm }} \
     -keytab_file=/etc/impala/conf/impala.keytab \
+    -krb5_conf=${KRB5_CONFIG} \
 {%- endif %}
     -use_statestore \
     -state_store_host=${IMPALA_STATE_STORE_HOST} \
@@ -26,6 +30,7 @@ IMPALA_STATE_STORE_ARGS=" \
     -kerberos_reinit_interval=60 \
     -principal=impala/{{ grains.fqdn }}@{{ krb5.realm }} \
     -keytab_file=/etc/impala/conf/impala.keytab \
+    -krb5_conf=${KRB5_CONFIG} \
 {%- endif %}
     -log_dir=${IMPALA_LOG_DIR} \
     -state_store_port=${IMPALA_STATE_STORE_PORT}"
@@ -35,6 +40,7 @@ IMPALA_SERVER_ARGS=" \
     -kerberos_reinit_interval=60 \
     -principal=impala/{{ grains.fqdn }}@{{ krb5.realm }} \
     -keytab_file=/etc/impala/conf/impala.keytab \
+    -krb5_conf=${KRB5_CONFIG} \
 {%- endif %}
     -log_dir=${IMPALA_LOG_DIR} \
     -catalog_service_host=${IMPALA_CATALOG_SERVICE_HOST} \

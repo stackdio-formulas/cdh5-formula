@@ -8,6 +8,8 @@ generate_ticket:
     - run
     - name: kinit -kt /etc/hbase/conf/hbase.keytab hbase/{{ grains.fqdn }}@{{ realm }}
     - user: hbase
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
 
 grant_permissions:
   cmd:

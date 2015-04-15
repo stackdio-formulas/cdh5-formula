@@ -2,6 +2,7 @@
 {%- set realm = krb5.realm -%}
 {%- set user = pillar.__stackdio__.username -%}
 #!/bin/bash
+export KRB5_CONFIG={{ pillar.krb5.conf_file }}
 rm -rf *.keytab
 (
 echo "addprinc -randkey {{ user }}/{{ grains.fqdn }}@{{ realm }}"

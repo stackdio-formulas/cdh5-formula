@@ -14,16 +14,6 @@ include:
   - cdh5.hbase.security
 {% endif %}
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
-extend:
-  load_admin_keytab:
-    module:
-      - require:
-        - file: /etc/krb5.conf
-        - file: /etc/hbase/conf/hbase-site.xml
-        - file: /etc/hbase/conf/hbase-env.sh
-        - pkg: hbase-regionserver
-{% endif %}
 
 hbase-regionserver:
   pkg:
@@ -31,7 +21,7 @@ hbase-regionserver:
     - require:
       - module: cdh5_refresh_db
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - file: /etc/krb5.conf
+      - file: krb5_conf_file
 {% endif %}
     - require_in:
       - file: {{ pillar.cdh5.hbase.log_dir }}

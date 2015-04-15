@@ -46,7 +46,7 @@ hadoop-hdfs-namenode:
     - require:
       - module: cdh5_refresh_db
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - file: /etc/krb5.conf
+      - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
@@ -89,19 +89,6 @@ mapred_user:
 # NOT a HA NN...continue like normal with the rest of the state
 {% else %}
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
-extend:
-  load_admin_keytab:
-    module:
-      - require:
-        - file: /etc/krb5.conf
-        - file: /etc/hadoop/conf
-  generate_hadoop_keytabs:
-    cmd:
-      - require:
-        - module: load_admin_keytab
-{% endif %}
-
 ##
 # Installs the yarn resourcemanager package.
 #
@@ -113,7 +100,7 @@ hadoop-yarn-resourcemanager:
     - require:
       - module: cdh5_refresh_db
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - file: /etc/krb5.conf
+      - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
@@ -132,7 +119,7 @@ hadoop-mapreduce-historyserver:
     - require:
       - module: cdh5_refresh_db
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - file: /etc/krb5.conf
+      - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf

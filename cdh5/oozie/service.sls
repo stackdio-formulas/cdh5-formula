@@ -1,5 +1,5 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
-{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn_ip4'][0] %}
+{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] %}
 # 
 # Start the Oozie service
 #
@@ -15,6 +15,7 @@ ooziedb:
       - cmd: extjs
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - file: /etc/oozie/conf/oozie-site.xml
+      - file: /etc/oozie/conf/oozie-env.sh
       - cmd: generate_oozie_keytabs
 {% endif %}
 
@@ -27,12 +28,31 @@ create-oozie-sharelibs:
     - require:
       - cmd: ooziedb
 
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+create_sharelib_script:
+  file:
+    - managed
+    - name: /usr/lib/oozie/bin/oozie-sharelib-kerberos.sh
+    - source: salt://cdh5/oozie/create_sharelibs.sh
+    - user: root
+    - group: root
+    - mode: 755
+    - template: jinja
+    - require_in:
+      - cmd: populate-oozie-sharelibs
+{% endif %}
+
 populate-oozie-sharelibs:
   cmd:
     - run
+    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    - name: '/usr/lib/oozie/bin/oozie-sharelib-kerberos.sh create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz'
+    - user: oozie
+    {% else %}
     - name: 'oozie-setup sharelib create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz'
-    - unless: 'hdfs dfs -test -d /user/oozie/share'
     - user: root
+    {% endif %}
+    - unless: 'hdfs dfs -test -d /user/oozie/share'
     - require:
       - cmd: create-oozie-sharelibs
 

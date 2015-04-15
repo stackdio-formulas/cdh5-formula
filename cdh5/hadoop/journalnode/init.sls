@@ -14,19 +14,6 @@ include:
   - cdh5.hadoop.security
   {% endif %}
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
-extend:
-  load_admin_keytab:
-    module:
-      - require:
-        - file: /etc/krb5.conf
-        - file: /etc/hadoop/conf
-  generate_hadoop_keytabs:
-    cmd:
-      - require:
-        - module: load_admin_keytab
-{% endif %}
-
 ##
 # Installs the journalnode package for high availability
 #
@@ -38,7 +25,7 @@ hadoop-hdfs-journalnode:
     - require:
       - module: cdh5_refresh_db
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - file: /etc/krb5.conf
+      - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
