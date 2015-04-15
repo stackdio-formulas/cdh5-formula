@@ -57,3 +57,7 @@ ENABLE_CORE_DUMPS=false
 # HADOOP_CONF_DIR=/etc/impala/conf
 # HIVE_CONF_DIR=/etc/impala/conf
 # HBASE_CONF_DIR=/etc/impala/conf
+
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+export KRB5_CONFIG="{{ pillar.krb5.conf_file }}"
+{% endif %}
