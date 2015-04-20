@@ -11,6 +11,7 @@
     - require:
       - pkg: hue
 
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
 /etc/init.d/hue:
   file:
     - replace
@@ -19,6 +20,11 @@
     - unless: cat /etc/init.d/hue | grep KRB5_CONFIG
     - require:
       - pkg: hue
+    - require_in:
+      - service: hue-svc
+    - watch_in:
+      - service: hue-svc
+{% endif %}
 
 hue-svc:
   service:
@@ -28,10 +34,8 @@ hue-svc:
       - pkg: hue
       - file: /mnt/tmp/hadoop
       - file: /etc/hue/conf/hue.ini
-      - file: /etc/init.d/hue
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hue_keytabs 
 {% endif %}
     - watch:
       - file: /etc/hue/conf/hue.ini
-      - file: /etc/init.d/hue
