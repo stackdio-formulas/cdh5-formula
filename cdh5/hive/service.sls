@@ -46,14 +46,11 @@ warehouse_dir_owner:
     - require:
       - cmd: create_warehouse_dir
 
+# This was chmodding the dir to 771 permissions, and it was breaking things
 warehouse_dir_permissions:
   cmd:
     - run
-    {% if salt['pillar.get']('cdh5:security:enable', False) %}
-    - name: 'hdfs dfs -chmod 771 /user/{{pillar.cdh5.hive.user}}/warehouse'
-    {% else %}
     - name: 'hdfs dfs -chmod 1777 /user/{{pillar.cdh5.hive.user}}/warehouse'
-    {% endif %}
     - user: hdfs
     - group: hdfs
     - require:
