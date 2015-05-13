@@ -47,6 +47,9 @@ hbase-master-svc:
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hbase_keytabs
 {% endif %}
+{% if salt['pillar.get']('cdh5:hbase:manage_zk', True) %}
+      - service: zookeeper-server-svc
+{% endif %}
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
@@ -56,7 +59,7 @@ hbase-thrift-svc:
     - running
     - name: hbase-thrift
     - require:
-      - service: hbase-master
+      - service: hbase-master-svc
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
