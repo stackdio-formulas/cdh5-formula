@@ -28,9 +28,6 @@ hbase-master:
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - file: krb5_conf_file
 {% endif %}
-{% if salt['pillar.get']('cdh5:hbase:manage_zk', True) %}
-      - service: zookeeper-server-svc
-{% endif %}
     - require_in:
       - file: {{ pillar.cdh5.hbase.log_dir }}
       - file: {{ pillar.cdh5.hbase.tmp_dir }}
