@@ -91,6 +91,7 @@ pillar_defaults:
       system_dir: /hadoop/system/mapred
       memory_mb: 2048
       reduces: 3
+      heap_dump_path: /mnt
     hbase:
       start_service: true
       tmp_dir: /mnt/hbase/tmp
