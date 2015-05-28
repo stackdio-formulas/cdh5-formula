@@ -24,7 +24,7 @@ hdfs_dir:
     - run
     - user: hdfs
     - name: 'hdfs dfs -mkdir /user/sqoop2 && hdfs dfs -chown sqoop2:sqoop2 /user/sqoop2'
-    - unlesee: 'hdfs dfs -test -d /user/sqoop2'
+    - unless: 'hdfs dfs -test -d /user/sqoop2'
     - require:
       - pkg: sqoop2-server
 
