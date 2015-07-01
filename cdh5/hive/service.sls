@@ -15,6 +15,17 @@ mysql-svc:
     - require:
       - pkg: mysql
 
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+hdfs_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
+    - user: hdfs
+    - group: hdfs
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+{% endif %}
+
 configure_metastore:
   cmd:
     - script
@@ -33,9 +44,29 @@ create_warehouse_dir:
     - group: hdfs
     - require:
       - pkg: hive
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hive_keytabs 
-{% endif %}
+      {% endif %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hdfs_kinit
+      {% endif %}
+
+
+
+create_scratch_dir:
+  cmd:
+    - run
+    - name: 'hdfs dfs -mkdir -p /user/{{pillar.cdh5.hive.user}}/tmp'
+    - user: hdfs
+    - group: hdfs
+    - require:
+      - pkg: hive
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hive_keytabs
+      {% endif %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hdfs_kinit
+      {% endif %}
 
 warehouse_dir_owner:
   cmd:
@@ -45,6 +76,7 @@ warehouse_dir_owner:
     - group: hdfs
     - require:
       - cmd: create_warehouse_dir
+      - cmd: create_scratch_dir
 
 # This was chmodding the dir to 771 permissions, and it was breaking things
 warehouse_dir_permissions:
@@ -56,6 +88,43 @@ warehouse_dir_permissions:
     - require:
       - cmd: warehouse_dir_owner
 
+scratch_dir_permissions:
+  cmd:
+    - run
+    - name: 'hdfs dfs -chmod 1777 /user/{{pillar.cdh5.hive.user}}/tmp'
+    - user: hdfs
+    - group: hdfs
+    - require:
+      - cmd: warehouse_dir_owner
+
+
+{% if kms %}
+create_hive_key:
+  cmd:
+    - run
+    - user: root
+    - name: 'hadoop key create hive'
+    - unless: 'hadoop key list | grep hive'
+    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    - require:
+      - cmd: hdfs_kinit
+    {% endif %}
+
+create_hive_zone:
+  cmd:
+    - run
+    - user: hdfs
+    - name: 'hdfs crypto -createZone -keyName hive -path /user/{{ pillar.cdh5.hive.user }}'
+    - unless: 'hdfs crypto -listZones | grep /user/{{ pillar.cdh5.hive.user }}'
+    - require:
+      - cmd: create_hive_key
+      - cmd: warehouse_dir_permissions
+      - cmd: scratch_dir_permissions
+    - require_in:
+      - service: hive-metastore
+{% endif %}
+
+
 hive-metastore:
   service:
     - running
@@ -63,6 +132,7 @@ hive-metastore:
       - pkg: hive
       - cmd: configure_metastore
       - cmd: warehouse_dir_permissions
+      - cmd: scratch_dir_permissions
       - service: mysql-svc
       - file: /usr/lib/hive/lib/mysql-connector-java.jar
       - file: /etc/hive/conf/hive-site.xml

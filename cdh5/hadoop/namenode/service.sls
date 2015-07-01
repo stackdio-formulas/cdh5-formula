@@ -146,6 +146,9 @@ create_mapred_key:
     - unless: 'hadoop key list | grep mapred'
     - require:
       - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hdfs_kinit
+      {% endif %}
 
 create_mapred_zone:
   cmd:
@@ -155,11 +158,10 @@ create_mapred_zone:
     - unless: 'hdfs crypto -listZones | grep {{ mapred_staging_dir }}'
     - require:
       - cmd: create_mapred_key
+      - cmd: hdfs_mapreduce_var_dir
     - require_in:
       - service: hadoop-yarn-resourcemanager-svc
       - service: hadoop-mapreduce-historyserver-svc
-
-
 {% endif %}
 
 # create a user directory owned by the stack user
