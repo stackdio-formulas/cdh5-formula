@@ -14,6 +14,9 @@ components:
   - title: DataNode
     description: Hadoop DataNode component of CDH5
     sls_path: cdh5.hadoop.datanode
+  - title: Key Management Server
+    description: Key Management Server for HDFS encryption-at-rest
+    sls_path: cdh5.hadoop.kms
   - title: ZooKeeper
     description: ZooKeeper component of CDH5
     sls_path: cdh5.zookeeper
