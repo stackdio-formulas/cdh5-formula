@@ -1,9 +1,14 @@
 {%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') -%}
+{%- set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
 {%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- if standby -%}
-  {%- set standby_items = standby.values()[0] if standby else None -%}
-  {%- set standby_fqdn = standby_items['fqdn'] if standby else None -%}
+  {%- set standby_items = standby.values()[0] -%}
+  {%- set standby_fqdn = standby_items['fqdn'] -%}
   {%- set journal_nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.journalnode', 'grains.items', 'compound').values() -%}
+{%- endif -%}
+{%- if kms -%}
+  {%- set kms_items = kms.values()[0] -%}
+  {%- set kms_fqdn = kms_items['fqdn'] -%}
 {%- endif -%}
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -221,6 +226,12 @@
     <property>
       <name>dfs.journalnode.kerberos.internal.spnego.principal</name>
       <value>HTTP/_HOST@{{ krb5.realm }}</value>
+    </property>
+{% endif %}
+{% if kms %}
+    <property>
+        <name>dfs.encryption.key.provider.uri</name>
+        <value>kms://http@{{ kms_fqdn }}:16000/kms</value>
     </property>
 {% endif %}
 </configuration>
