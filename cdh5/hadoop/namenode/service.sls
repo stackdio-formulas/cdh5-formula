@@ -1,5 +1,5 @@
 {% set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') %}
-{% set encrypted = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 {% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
 {% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
 {% set mapred_system_dir = salt['pillar.get']('cdh5:mapred:system_dir', '/hadoop/system/mapred') %}
@@ -136,6 +136,31 @@ hdfs_mapreduce_var_dir:
     - unless: 'hdfs dfs -test -d {{ mapred_staging_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
+
+{% if kms %}
+create_mapred_key:
+  cmd:
+    - run
+    - user: root
+    - name: 'hadoop key create mapred'
+    - unless: 'hadoop key list | grep mapred'
+    - require:
+      - file: /etc/hadoop/conf
+
+create_mapred_zone:
+  cmd:
+    - run
+    - user: hdfs
+    - name: 'hdfs crypto -createZone -keyName mapred -path {{ mapred_staging_dir }}'
+    - unless: 'hdfs crypto -listZones | grep {{ mapred_staging_dir }}'
+    - require:
+      - cmd: create_mapred_key
+    - require_in:
+      - service: hadoop-yarn-resourcemanager-svc
+      - service: hadoop-mapreduce-historyserver-svc
+
+
+{% endif %}
 
 # create a user directory owned by the stack user
 {% set user = pillar.__stackdio__.username %}
