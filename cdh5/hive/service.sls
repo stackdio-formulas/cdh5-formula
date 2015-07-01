@@ -21,9 +21,18 @@ hdfs_kinit:
     - run
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
-    - group: hdfs
     - env:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+
+hive_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/hive/conf/hive.keytab hive/{{ grains.fqdn }}'
+    - user: hive
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: generate_hive_keytabs
 {% endif %}
 
 configure_metastore:
@@ -36,67 +45,15 @@ configure_metastore:
       - pkg: hive
       - service: mysql-svc
 
-create_warehouse_dir:
+create_hive_dir:
   cmd:
     - run
-    - name: 'hdfs dfs -mkdir -p /user/{{pillar.cdh5.hive.user}}/warehouse'
     - user: hdfs
-    - group: hdfs
+    - name: 'hdfs dfs -mkdir -p /user/{{ pillar.cdh5.hive.user }} && hdfs dfs -chown -R {{pillar.cdh5.hive.user}}:{{pillar.cdh5.hive.user}} /user/{{pillar.cdh5.hive.user}}'
+    {% if salt['pillar.get']('cdh5:security:enable', False) %}
     - require:
-      - pkg: hive
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - cmd: generate_hive_keytabs 
-      {% endif %}
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
-      {% endif %}
-
-
-
-create_scratch_dir:
-  cmd:
-    - run
-    - name: 'hdfs dfs -mkdir -p /user/{{pillar.cdh5.hive.user}}/tmp'
-    - user: hdfs
-    - group: hdfs
-    - require:
-      - pkg: hive
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - cmd: generate_hive_keytabs
-      {% endif %}
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - cmd: hdfs_kinit
-      {% endif %}
-
-warehouse_dir_owner:
-  cmd:
-    - run
-    - name: 'hdfs dfs -chown -R {{pillar.cdh5.hive.user}}:{{pillar.cdh5.hive.user}} /user/{{pillar.cdh5.hive.user}}'
-    - user: hdfs
-    - group: hdfs
-    - require:
-      - cmd: create_warehouse_dir
-      - cmd: create_scratch_dir
-
-# This was chmodding the dir to 771 permissions, and it was breaking things
-warehouse_dir_permissions:
-  cmd:
-    - run
-    - name: 'hdfs dfs -chmod 1777 /user/{{pillar.cdh5.hive.user}}/warehouse'
-    - user: hdfs
-    - group: hdfs
-    - require:
-      - cmd: warehouse_dir_owner
-
-scratch_dir_permissions:
-  cmd:
-    - run
-    - name: 'hdfs dfs -chmod 1777 /user/{{pillar.cdh5.hive.user}}/tmp'
-    - user: hdfs
-    - group: hdfs
-    - require:
-      - cmd: warehouse_dir_owner
-
+    {% endif %}
 
 {% if kms %}
 create_hive_key:
@@ -105,10 +62,6 @@ create_hive_key:
     - user: root
     - name: 'hadoop key create hive'
     - unless: 'hadoop key list | grep hive'
-    {% if salt['pillar.get']('cdh5:security:enable', False) %}
-    - require:
-      - cmd: hdfs_kinit
-    {% endif %}
 
 create_hive_zone:
   cmd:
@@ -118,12 +71,51 @@ create_hive_zone:
     - unless: 'hdfs crypto -listZones | grep /user/{{ pillar.cdh5.hive.user }}'
     - require:
       - cmd: create_hive_key
-      - cmd: warehouse_dir_permissions
-      - cmd: scratch_dir_permissions
+      - cmd: create_hive_dir
     - require_in:
       - service: hive-metastore
+      - cmd: create_warehouse_dir
+      - cmd: create_scratch_dir
 {% endif %}
 
+create_warehouse_dir:
+  cmd:
+    - run
+    - name: 'hdfs dfs -mkdir -p /user/{{pillar.cdh5.hive.user}}/warehouse'
+    - user: hive
+    - require:
+      - pkg: hive
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hive_kinit
+      {% endif %}
+
+create_scratch_dir:
+  cmd:
+    - run
+    - name: 'hdfs dfs -mkdir -p /user/{{pillar.cdh5.hive.user}}/tmp'
+    - user: hive
+    - require:
+      - pkg: hive
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hive_kinit
+      {% endif %}
+
+# This was chmodding the dir to 771 permissions, and it was breaking things
+warehouse_dir_permissions:
+  cmd:
+    - run
+    - name: 'hdfs dfs -chmod 1777 /user/{{pillar.cdh5.hive.user}}/warehouse'
+    - user: hive
+    - require:
+      - cmd: create_warehouse_dir
+
+scratch_dir_permissions:
+  cmd:
+    - run
+    - name: 'hdfs dfs -chmod 1777 /user/{{pillar.cdh5.hive.user}}/tmp'
+    - user: hive
+    - require:
+      - cmd: create_scratch_dir
 
 hive-metastore:
   service:
