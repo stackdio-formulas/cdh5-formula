@@ -29,7 +29,7 @@ hue_dir:
   cmd:
     - run
     - user: hdfs
-    - name: 'hdfs dfs -mkdir -p /user/hue && hdfs dfs -chown hue:hue /user/hue
+    - name: 'hdfs dfs -mkdir -p /user/hue && hdfs dfs -chown hue:hue /user/hue'
     - unless: 'hdfs dfs -test -d /user/hue'
     - require:
       - pkg: hadoop-client

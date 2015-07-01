@@ -35,6 +35,16 @@ hive_kinit:
       - cmd: generate_hive_keytabs
 {% endif %}
 
+create_anonymous_user:
+  cmd:
+    - run
+    - name: 'hdfs dfs -mkdir -p /user/anonymous && hdfs dfs -chown anonymous:anonymous /user/anonymous'
+    - user: hdfs
+    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    - require:
+      - cmd: hdfs_kinit
+    {% endif %}
+
 configure_metastore:
   cmd:
     - script
