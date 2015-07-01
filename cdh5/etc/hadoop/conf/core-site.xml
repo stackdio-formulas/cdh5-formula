@@ -102,7 +102,7 @@
 {%- endif %}
 {% if kms %}
     <property>
-        <name>dfs.encryption.key.provider.path</name>
+        <name>hadoop.security.key.provider.path</name>
         <value>kms://http@{{ kms_fqdn }}:16000/kms</value>
     </property>
 {% endif %}
