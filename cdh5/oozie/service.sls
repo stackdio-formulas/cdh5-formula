@@ -42,14 +42,20 @@ create_sharelib_script:
       - cmd: populate-oozie-sharelibs
 {% endif %}
 
+{% if pillar.cdh5.version >= '5.4.0' %}
+{% set share = 'oozie-sharelib-yarn' %}
+{% else %}
+{% set share = 'oozie-sharelib-yarn.tar.gz' %}
+{% endif %}
+
 populate-oozie-sharelibs:
   cmd:
     - run
     {% if salt['pillar.get']('cdh5:security:enable', False) %}
-    - name: '/usr/lib/oozie/bin/oozie-sharelib-kerberos.sh create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz'
+    - name: '/usr/lib/oozie/bin/oozie-sharelib-kerberos.sh create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/{{ share }}'
     - user: oozie
     {% else %}
-    - name: 'oozie-setup sharelib create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz'
+    - name: 'oozie-setup sharelib create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/{{ share }}'
     - user: root
     {% endif %}
     - unless: 'hdfs dfs -test -d /user/oozie/share'
