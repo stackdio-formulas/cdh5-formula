@@ -24,9 +24,13 @@ GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES,EXECUTE ON metastore.* TO '{{pilla
 FLUSH PRIVILEGES;
 EOF
 
-mysql -u root < $SETUPSQL
+# The script sources another scrip in that directory, so if we aren't in this directory,
+# everything breaks
+cd {{pillar.cdh5.hive.home}}/scripts/metastore/upgrade/mysql
+
+mysql -u root < ${SETUPSQL}
 
 # cleanup
-rm -f $SETUPSQL
+rm -f ${SETUPSQL}
 
 
