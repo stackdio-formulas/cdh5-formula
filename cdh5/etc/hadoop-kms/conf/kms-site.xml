@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <!-- KMS Backend KeyProvider -->
+
+  <property>
+    <name>hadoop.kms.key.provider.uri</name>
+    <value>jceks://file@/${user.home}/kms.keystore</value>
+  </property>
+
+  <property>
+    <name>hadoop.security.keystore.JavaKeyStoreProvider.password</name>
+    <value>none</value>
+  </property>
+
+  <!-- KMS Cache -->
+
+  <property>
+    <name>hadoop.kms.cache.enable</name>
+    <value>true</value>
+  </property>
+
+  <property>
+    <name>hadoop.kms.cache.timeout.ms</name>
+    <value>600000</value>
+  </property>
+
+  <property>
+    <name>hadoop.kms.current.key.cache.timeout.ms</name>
+    <value>30000</value>
+  </property>
+
+  <!-- KMS Audit -->
+
+  <property>
+    <name>hadoop.kms.audit.aggregation.window.ms</name>
+    <value>10000</value>
+  </property>
+
+  <!-- KMS Security -->
+  {%- if salt['pillar.get']('cdh5:security:enable', False) %}
+  {%- from 'krb5/settings.sls' import krb5 with context %}
+  <property>
+    <name>hadoop.kms.authentication.type</name>
+    <value>kerberos</value>
+  </property>
+
+  <property>
+    <name>hadoop.kms.authentication.kerberos.keytab</name>
+    <value>/etc/hadoop-kms/conf/kms.keytab</value>
+  </property>
+
+  <property>
+    <name>hadoop.kms.authentication.kerberos.principal</name>
+    <value>HTTP/_HOST@{{ krb5.realm }}</value>
+  </property>
+
+  <property>
+    <name>hadoop.kms.authentication.kerberos.name.rules</name>
+    <value>DEFAULT</value>
+  </property>
+
+  {%- else -%}
+
+  <property>
+    <name>hadoop.kms.authentication.type</name>
+    <value>simple</value>
+  </property>
+
+  {%- endif %}
+
+
+
+  <!-- Authentication cookie signature source -->
+
+  <property>
+    <name>hadoop.kms.authentication.signer.secret.provider</name>
+    <value>random</value>
+    <description>
+      Indicates how the secret to sign the authentication cookies will be
+      stored. Options are 'random' (default), 'string' and 'zookeeper'.
+      If using a setup with multiple KMS instances, 'zookeeper' should be used.
+    </description>
+  </property>
+
+  <!-- Configuration for 'zookeeper' authentication cookie signature source -->
+
+  <property>
+    <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.path</name>
+    <value>/hadoop-kms/hadoop-auth-signature-secret</value>
+    <description>
+      The Zookeeper ZNode path where the KMS instances will store and retrieve
+      the secret from.
+    </description>
+  </property>
+
+  <property>
+    <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.connection.string</name>
+    <value>#HOSTNAME#:#PORT#,...</value>
+    <description>
+      The Zookeeper connection string, a list of hostnames and port comma
+      separated.
+    </description>
+  </property>
+
+  <property>
+    <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.auth.type</name>
+    <value>kerberos</value>
+    <description>
+      The Zookeeper authentication type, 'none' or 'sasl' (Kerberos).
+    </description>
+  </property>
+
+  <property>
+    <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.kerberos.keytab</name>
+    <value>/etc/hadoop/conf/kms.keytab</value>
+    <description>
+      The absolute path for the Kerberos keytab with the credentials to
+      connect to Zookeeper.
+    </description>
+  </property>
+
+  <property>
+    <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.kerberos.principal</name>
+    <value>kms/#HOSTNAME#</value>
+    <description>
+      The Kerberos service principal used to connect to Zookeeper.
+    </description>
+  </property>
+
+</configuration>
