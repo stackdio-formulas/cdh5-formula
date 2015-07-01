@@ -2,6 +2,7 @@
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
 {% from 'krb5/settings.sls' import krb5 with context %}
 {% endif %}
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 IMPALA_CATALOG_SERVICE_HOST={{ss_host}}
 IMPALA_STATE_STORE_HOST={{ss_host}}
 IMPALA_STATE_STORE_PORT=24000
@@ -41,6 +42,9 @@ IMPALA_SERVER_ARGS=" \
     -principal=impala/{{ grains.fqdn }}@{{ krb5.realm }} \
     -keytab_file=/etc/impala/conf/impala.keytab \
     -krb5_conf=${KRB5_CONFIG} \
+{%- endif %}
+{%- if kms %}
+    -disk_spill_encryption=true \
 {%- endif %}
     -log_dir=${IMPALA_LOG_DIR} \
     -catalog_service_host=${IMPALA_CATALOG_SERVICE_HOST} \

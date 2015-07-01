@@ -3,6 +3,7 @@
 #
 include:
   - cdh5.repo
+  - cdh5.hadoop.client
   - cdh5.landing_page
   - cdh5.hue.plugins
 {% if salt['pillar.get']('cdh5:hue:start_service', True) %}
