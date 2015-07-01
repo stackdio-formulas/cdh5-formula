@@ -1,4 +1,5 @@
-# 
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
+#
 # Start the Hue service
 #
 
