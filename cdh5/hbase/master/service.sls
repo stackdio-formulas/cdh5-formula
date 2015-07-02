@@ -19,6 +19,16 @@ hdfs_kinit:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require:
       - cmd: generate_hbase_keytabs
+
+hbase_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/hbase/conf/hbase.keytab hbase/{{ grains.fqdn }}'
+    - user: hbase
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: generate_hbase_keytabs
 {% endif %}
 
 hbase-init:
@@ -38,12 +48,12 @@ hbase-init:
 create_hbase_key:
   cmd:
     - run
-    - user: root
+    - user: hbase
     - name: 'hadoop key create hbase'
     - unless: 'hadoop key list | grep hbase'
     {% if salt['pillar.get']('cdh5:security:enable', False) %}
     - require:
-      - cmd: hdfs_kinit
+      - cmd: hbase_kinit
     {% endif %}
 
 create_hbase_zone:

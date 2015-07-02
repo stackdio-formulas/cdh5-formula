@@ -69,9 +69,13 @@ create_hive_dir:
 create_hive_key:
   cmd:
     - run
-    - user: root
+    - user: hive
     - name: 'hadoop key create hive'
     - unless: 'hadoop key list | grep hive'
+    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    - require:
+      - cmd: hive_kinit
+    {% endif %}
 
 create_hive_zone:
   cmd:

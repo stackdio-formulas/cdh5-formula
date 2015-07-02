@@ -75,6 +75,17 @@ hdfs_kinit:
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_user_dir
+
+mapred_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/hadoop/conf/mapred.keytab mapred/{{ grains.fqdn }}'
+    - user: mapred
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - service: hadoop-hdfs-namenode-svc
+      - cmd: generate_hadoop_keytabs
 {% endif %}
 
 
@@ -141,13 +152,13 @@ hdfs_mapreduce_var_dir:
 create_mapred_key:
   cmd:
     - run
-    - user: root
+    - user: mapred
     - name: 'hadoop key create mapred'
     - unless: 'hadoop key list | grep mapred'
     - require:
       - file: /etc/hadoop/conf
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - cmd: hdfs_kinit
+      - cmd: mapred_kinit
       {% endif %}
 
 create_mapred_zone:

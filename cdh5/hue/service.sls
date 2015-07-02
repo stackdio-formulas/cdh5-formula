@@ -16,13 +16,22 @@
 hdfs_kinit:
   cmd:
     - run
-    - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
+    - name: 'kinit -kt /etc/hue/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
-    - group: hdfs
     - env:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require:
-      - cmd: generate_hbase_keytabs
+      - cmd: generate_hue_keytabs
+
+hue_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/hue/hue.keytab hue/{{ grains.fqdn }}'
+    - user: hue
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: generate_hue_keytabs
 {% endif %}
 
 hue_dir:
@@ -41,12 +50,12 @@ hue_dir:
 create_hue_key:
   cmd:
     - run
-    - user: root
+    - user: hue
     - name: 'hadoop key create hue'
     - unless: 'hadoop key list | grep hue'
     {% if salt['pillar.get']('cdh5:security:enable', False) %}
     - require:
-      - cmd: hdfs_kinit
+      - cmd: hue_kinit
     {% endif %}
 
 create_hue_zone:
