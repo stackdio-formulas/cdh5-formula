@@ -2,7 +2,7 @@
 {%- set realm = krb5.realm -%}
 #!/bin/bash
 export KRB5_CONFIG={{ pillar.krb5.conf_file }}
-rm -rf *.keytab
+
 (
 echo "addprinc -randkey HTTP/{{ grains.fqdn }}"
 echo "xst -k HTTP.keytab HTTP/{{ grains.fqdn }}"

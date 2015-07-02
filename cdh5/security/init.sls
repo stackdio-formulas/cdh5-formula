@@ -25,6 +25,7 @@ generate_http_keytab:
     - user: root
     - group: root
     - cwd: /root
+    - unless: test -f /root/HTTP.keytab
     - require:
       - module: load_admin_keytab
 {% endif %}
