@@ -59,6 +59,11 @@
         <name>hbase.bulk.assignment.threadpool.size</name>
         <value>60</value>
     </property>
+    <property>
+        <name>hbase.bulkload.staging.dir</name>
+        <value>/hbase/staging</value>
+    </property>
+
 {%- if salt['pillar.get']('cdh5:security:enable', False) %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
     <property>
