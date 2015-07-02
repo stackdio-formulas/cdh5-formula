@@ -16,7 +16,7 @@
 hdfs_kinit:
   cmd:
     - run
-    - name: 'kinit -kt /etc/hue/hdfs.keytab hdfs/{{ grains.fqdn }}'
+    - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
     - env:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
