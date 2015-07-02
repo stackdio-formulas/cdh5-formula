@@ -9,4 +9,5 @@ generate_hadoop_keytabs:
     - cwd: /etc/hadoop/conf
     - require:
       - module: load_admin_keytab
+      - cmd: generate_http_keytab
 {% endif %}

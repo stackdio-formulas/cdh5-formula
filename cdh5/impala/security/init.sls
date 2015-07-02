@@ -9,4 +9,5 @@ generate_impala_keytabs:
     - cwd: /etc/impala/conf
     - require:
       - module: load_admin_keytab
+      - cmd: generate_http_keytab
 {% endif %}

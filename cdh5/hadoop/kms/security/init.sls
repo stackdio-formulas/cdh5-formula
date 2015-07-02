@@ -9,4 +9,5 @@ generate_hadoop_kms_keytabs:
     - cwd: /etc/hadoop-kms/conf
     - require:
       - module: load_admin_keytab
+      - cmd: generate_http_keytab
 {% endif %}
