@@ -15,7 +15,7 @@
 # Settings for the Embedded Tomcat that runs KMS
 # Java System properties for KMS should be specified in this variable
 #
-export CATALINA_OPTS="$CATALINA_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}
+export CATALINA_OPTS="$CATALINA_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
 
 # KMS logs directory
 #
