@@ -52,7 +52,7 @@
 
   <property>
     <name>hadoop.kms.authentication.kerberos.principal</name>
-    <value>HTTP/_HOST@{{ krb5.realm }}</value>
+    <value>*</value>
   </property>
 
   <property>
