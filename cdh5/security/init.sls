@@ -16,4 +16,15 @@ load_admin_keytab:
     - mode: 600
     - require:
       - file: krb5_conf_file
+
+generate_http_keytab:
+  cmd:
+    - script
+    - source: salt://cdh5/security/generate_http_keytab.sh
+    - template: jinja
+    - user: root
+    - group: root
+    - cwd: /root
+    - require:
+      - module: load_admin_keytab
 {% endif %}
