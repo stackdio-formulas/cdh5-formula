@@ -17,6 +17,13 @@ load_admin_keytab:
     - require:
       - file: krb5_conf_file
 
+krb-pkgs:
+  pkg:
+    - installed
+    - pkgs:
+      - krb5-workstation
+      - krb5-libs
+
 generate_http_keytab:
   cmd:
     - script
@@ -28,5 +35,5 @@ generate_http_keytab:
     - unless: test -f /root/HTTP.keytab
     - require:
       - module: load_admin_keytab
-      - pkg: krb5-workstation
+      - pkg: krb-pkgs
 {% endif %}
