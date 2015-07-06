@@ -28,4 +28,5 @@ generate_http_keytab:
     - unless: test -f /root/HTTP.keytab
     - require:
       - module: load_admin_keytab
+      - pkg: krb5-workstation
 {% endif %}
