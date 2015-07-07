@@ -1,81 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-  <!-- KMS Backend KeyProvider -->
+    <!-- KMS Backend KeyProvider -->
 
-  <property>
-    <name>hadoop.kms.key.provider.uri</name>
-    <value>jceks://file@/${user.home}/kms.keystore</value>
-  </property>
+    <property>
+        <name>hadoop.kms.key.provider.uri</name>
+        <value>jceks://file@/${user.home}/kms.keystore</value>
+    </property>
 
-  <property>
-    <name>hadoop.security.keystore.JavaKeyStoreProvider.password</name>
-    <value>none</value>
-  </property>
+    <property>
+        <name>hadoop.security.keystore.JavaKeyStoreProvider.password</name>
+        <value>none</value>
+    </property>
 
-  <!-- KMS Cache -->
+    <!-- KMS Cache -->
 
-  <property>
-    <name>hadoop.kms.cache.enable</name>
-    <value>true</value>
-  </property>
+    <property>
+        <name>hadoop.kms.cache.enable</name>
+        <value>true</value>
+    </property>
 
-  <property>
-    <name>hadoop.kms.cache.timeout.ms</name>
-    <value>600000</value>
-  </property>
+    <property>
+        <name>hadoop.kms.cache.timeout.ms</name>
+        <value>600000</value>
+    </property>
 
-  <property>
-    <name>hadoop.kms.current.key.cache.timeout.ms</name>
-    <value>30000</value>
-  </property>
+    <property>
+        <name>hadoop.kms.current.key.cache.timeout.ms</name>
+        <value>30000</value>
+    </property>
 
-  <!-- KMS Audit -->
+    <!-- KMS Audit -->
 
-  <property>
-    <name>hadoop.kms.audit.aggregation.window.ms</name>
-    <value>10000</value>
-  </property>
+    <property>
+        <name>hadoop.kms.audit.aggregation.window.ms</name>
+        <value>10000</value>
+    </property>
 
-  <!-- KMS Security -->
-  {%- if salt['pillar.get']('cdh5:security:enable', False) %}
-  {%- from 'krb5/settings.sls' import krb5 with context %}
-  <property>
-    <name>hadoop.kms.authentication.type</name>
-    <value>kerberos</value>
-  </property>
+    <!-- KMS Security -->
+    {%- if salt['pillar.get']('cdh5:security:enable', False) %}
+    {%- from 'krb5/settings.sls' import krb5 with context %}
+    <property>
+        <name>hadoop.kms.authentication.type</name>
+        <value>kerberos</value>
+    </property>
 
-  <property>
-    <name>hadoop.kms.authentication.kerberos.keytab</name>
-    <value>/etc/hadoop-kms/conf/kms.keytab</value>
-  </property>
+    <property>
+        <name>hadoop.kms.authentication.kerberos.keytab</name>
+        <value>/etc/hadoop-kms/conf/kms.keytab</value>
+    </property>
 
-  <property>
-    <name>hadoop.kms.authentication.kerberos.principal</name>
-    <value>*</value>
-  </property>
+    <property>
+        <name>hadoop.kms.authentication.kerberos.principal</name>
+        <value>*</value>
+    </property>
 
-  <property>
-    <name>hadoop.kms.authentication.kerberos.name.rules</name>
-    <value>DEFAULT</value>
-  </property>
+    <property>
+        <name>hadoop.kms.authentication.kerberos.name.rules</name>
+        <value>DEFAULT</value>
+    </property>
+    {%- else -%}
+    <property>
+        <name>hadoop.kms.authentication.type</name>
+        <value>simple</value>
+    </property>
+    {%- endif %}
 
-  {%- else -%}
+    <!-- Authentication cookie signature source -->
+    <property>
+        <name>hadoop.kms.authentication.signer.secret.provider</name>
+        <value>random</value>
+    </property>
 
-  <property>
-    <name>hadoop.kms.authentication.type</name>
-    <value>simple</value>
-  </property>
+    <!-- access for oozie -->
+    <property>
+        <name>hadoop.kms.proxyuser.oozie.users</name>
+        <value>*</value>
+    </property>
 
-  {%- endif %}
+    <property>
+        <name>hadoop.kms.proxyuser.oozie.groups</name>
+        <value>*</value>
+    </property>
 
-
-
-  <!-- Authentication cookie signature source -->
-
-  <property>
-    <name>hadoop.kms.authentication.signer.secret.provider</name>
-    <value>random</value>
-  </property>
+    <property>
+        <name>hadoop.kms.proxyuser.oozie.hosts</name>
+        <value>*</value>
+    </property>
 
 </configuration>
