@@ -7,6 +7,7 @@
 include:
   - cdh5.repo
   - cdh5.landing_page
+  - cdh5.hadoop.conf
 {% if salt['pillar.get']('cdh5:oozie:start_service', True) %}
   - cdh5.oozie.service
 {% endif %}
@@ -52,6 +53,16 @@ oozie:
     - require:
       - pkg: oozie
 {% endif %}
+
+/etc/oozie/conf/hadoop-conf:
+  file:
+    - symlink
+    - target: /etc/hadoop/conf
+    - force: true
+    - user: root
+    - group: root
+    - require:
+      - file: /etc/hadoop/conf
 
 extjs:
   file:

@@ -48,6 +48,11 @@
         <value>false</value>
     </property>
 
+    <property>
+        <name>hive.exec.scratchdir</name>
+        <value>/user/hive/tmp</value>
+    </property>
+
     {% if salt['pillar.get']('cdh5:hive:auxjars', None) %}
     <property>
         <name>hive.aux.jars.path</name>

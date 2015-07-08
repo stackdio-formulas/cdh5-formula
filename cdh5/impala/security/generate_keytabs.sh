@@ -5,14 +5,12 @@ export KRB5_CONFIG={{ pillar.krb5.conf_file }}
 rm -rf impala.keytab
 (
 echo "addprinc -randkey impala/{{ grains.fqdn }}@{{ realm }}"
-echo "addprinc -randkey HTTP/{{ grains.fqdn }}@{{ realm }}"
 echo "xst -k impala-unmerged.keytab impala/{{ grains.fqdn }}@{{ realm }}"
-echo "xst -k HTTP.keytab HTTP/{{ grains.fqdn }}@{{ realm }}"
 ) | kadmin -p kadmin/admin -kt /root/admin.keytab -r {{ realm }}
 
 (
 echo "rkt impala-unmerged.keytab"
-echo "rkt HTTP.keytab"
+echo "rkt /root/HTTP.keytab"
 echo "wkt impala.keytab"
 ) | ktutil
 

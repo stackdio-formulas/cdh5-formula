@@ -9,4 +9,5 @@ generate_oozie_keytabs:
     - cwd: /etc/oozie/conf
     - require:
       - module: load_admin_keytab
+      - cmd: generate_http_keytab
 {% endif %}
