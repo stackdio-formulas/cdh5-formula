@@ -30,6 +30,14 @@ oozie:
     - require:
       - module: cdh5_refresh_db
 
+/etc/oozie/conf/oozie-log4j.properties:
+  file:
+    - replace
+    - pattern: 'RollingPolicy.MaxHistory=720'
+    - repl: 'RollingPolicy.MaxHistory={{ salt['pillar.get']('cdh5:oozie:max_log_index', 168) }}'
+    - require:
+      - pkg: oozie
+
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
 /etc/oozie/conf/oozie-site.xml:
   file:

@@ -112,6 +112,7 @@ pillar_defaults:
       start_service: true
     oozie:
       start_service: true
+      max_log_index: 168  # 1 week
     impala:
       start_service: true
       max_pool_requests: 1000
