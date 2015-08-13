@@ -74,7 +74,6 @@ hdfs_kinit:
       - cmd: hdfs_tmp_dir
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_mapreduce_var_dir
-      - cmd: hdfs_user_dir
 
 mapred_kinit:
   cmd:
@@ -111,7 +110,6 @@ activate_namenode:
       - cmd: hdfs_tmp_dir
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_mapreduce_var_dir
-      - cmd: hdfs_user_dir
 {% endif %}
 
 
@@ -186,6 +184,12 @@ hdfs_dir_{{ user }}:
     - name: 'hdfs dfs -mkdir -p /user/{{ user }} && hdfs dfs -chown {{ user }}:{{ user }} /user/{{ user }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hdfs_kinit
+      {% endif %}
+      {% if standby %}
+      - cmd: activate_namenode
+      {% endif %}
 {% endfor %}
 
 ##
