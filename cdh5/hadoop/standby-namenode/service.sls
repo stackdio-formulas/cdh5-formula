@@ -52,3 +52,13 @@ hadoop-hdfs-namenode-svc:
       - cmd: init_standby_namenode
     - watch:
       - file: /etc/hadoop/conf
+
+hadoop-yarn-resourcemanager-svc:
+  service:
+    - running
+    - name: hadoop-yarn-resourcemanager
+    - require:
+      - pkg: hadoop-yarn-resourcemanager
+      - service: hadoop-hdfs-namenode-svc
+    - watch:
+      - file: /etc/hadoop/conf
