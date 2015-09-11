@@ -1,6 +1,7 @@
 {%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') -%}
 {%- set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
 {%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set zookeepers = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').values() -%}
 {%- if kms -%}
   {%- set kms_items = kms.values()[0] -%}
   {%- set kms_fqdn = kms_items['fqdn'] -%}
