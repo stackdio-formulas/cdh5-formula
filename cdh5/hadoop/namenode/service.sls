@@ -1,4 +1,4 @@
-{% set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') %}
+{% set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') %}
 {% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 {% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
 {% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
@@ -40,6 +40,19 @@ init_hdfs:
     - require:
       - cmd: cdh5_dfs_dirs
 
+{% if standby %}
+# Start up the ZKFC
+hadoop-hdfs-zkfc-svc:
+  service:
+    - running
+    - name: hadoop-hdfs-zkfc
+    - require:
+      - pkg: hadoop-hdfs-zkfc
+      - cmd: init_hdfs
+    - watch:
+      - file: /etc/hadoop/conf
+{% endif %}
+
 hadoop-hdfs-namenode-svc:
   service:
     - running
@@ -49,7 +62,6 @@ hadoop-hdfs-namenode-svc:
       # Make sure HDFS is initialized before the namenode
       # is started
       - cmd: init_hdfs
-      - file: /etc/hadoop/conf
     - watch:
       - file: /etc/hadoop/conf
 
@@ -86,32 +98,6 @@ mapred_kinit:
     - require:
       - service: hadoop-hdfs-namenode-svc
       - cmd: generate_hadoop_keytabs
-{% endif %}
-
-
-{% if standby %}
-##
-# Sets this namenode as the "Active" namenode
-##
-# We run into a race condition sometimes where the the nn service isn't started yet on the snn,
-# so we'll sleep for 30 seconds first before continuing
-{% set activate = 'hdfs haadmin -transitionToActive nn1' %}
-activate_namenode:
-  cmd:
-    - run
-    - name: '{{ activate }} || sleep 30 && {{ activate }}'
-    - user: hdfs
-    - group: hdfs
-    - require:
-      - service: hadoop-hdfs-namenode-svc
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
-      - cmd: hdfs_kinit
-      {% endif %}
-    - require_in:
-      - cmd: hdfs_tmp_dir
-      - cmd: hdfs_mapreduce_log_dir
-      - cmd: hdfs_mapreduce_var_dir
-      - cmd: hdfs_user_dir
 {% endif %}
 
 
@@ -199,10 +185,10 @@ hadoop-yarn-resourcemanager-svc:
     - require:
       - pkg: hadoop-yarn-resourcemanager
       - service: hadoop-hdfs-namenode-svc
+      - service: hadoop-hdfs-zkfc-svc
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_tmp_dir
-      - file: /etc/hadoop/conf
     - watch:
       - file: /etc/hadoop/conf
 
@@ -218,9 +204,9 @@ hadoop-mapreduce-historyserver-svc:
     - require:
       - pkg: hadoop-mapreduce-historyserver
       - service: hadoop-hdfs-namenode-svc
+      - service: hadoop-hdfs-zkfc-svc
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_tmp_dir
-      - file: /etc/hadoop/conf
     - watch:
       - file: /etc/hadoop/conf

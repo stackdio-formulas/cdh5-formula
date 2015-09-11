@@ -1,6 +1,6 @@
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') -%}
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') -%}
 {%- set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- if kms -%}
   {%- set kms_items = kms.values()[0] -%}
   {%- set kms_fqdn = kms_items['fqdn'] -%}
@@ -25,6 +25,11 @@
     <property>
       <name>fs.defaultFS</name>
       <value>hdfs://default</value>
+    </property>
+    <!-- set up the zookeeper quorum -->
+    <property>
+      <name>ha.zookeeper.quorum</name>
+      <value>{% for zk in zookeepers %}{{ zk['fqdn'] }}{% if not loop.last %},{% endif %}{% endfor %}</value>
     </property>
     {%- else %}
     <!-- Otherwise just use the nn fqdn + port -->

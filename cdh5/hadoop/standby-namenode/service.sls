@@ -27,6 +27,17 @@ init_standby_namenode:
       - cmd: generate_hadoop_keytabs
     {% endif %}
 
+# Start up the ZKFC
+hadoop-hdfs-zkfc-svc:
+  service:
+    - running
+    - name: hadoop-hdfs-zkfc
+    - require:
+      - pkg: hadoop-hdfs-zkfc
+      - cmd: init_standby_namenode
+    - watch:
+      - file: /etc/hadoop/conf
+
 ##
 # Starts the namenode service on a standby namenode
 #
@@ -39,7 +50,5 @@ hadoop-hdfs-namenode-svc:
     - require:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode
-      - file: /etc/hadoop/conf
-      - user: mapred_user
     - watch:
       - file: /etc/hadoop/conf
