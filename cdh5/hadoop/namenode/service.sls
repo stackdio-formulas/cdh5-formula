@@ -41,6 +41,17 @@ init_hdfs:
       - cmd: cdh5_dfs_dirs
 
 {% if standby %}
+init_zkfc:
+  cmd:
+    - run
+    - name: hdfs zkfc -formatZK
+    - user: hdfs
+    - group: hdfs
+    - unless: 'zookeeper-client stat /hadoop-ha 2>&1 | grep "cZxid"'
+    - require:
+      - cmd: cdh5_dfs_dirs
+{% endif %}
+
 # Start up the ZKFC
 hadoop-hdfs-zkfc-svc:
   service:
