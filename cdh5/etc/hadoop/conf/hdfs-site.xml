@@ -148,7 +148,7 @@
 {%- else  %}
     <property>
       <name>dfs.namenode.http-address</name>
-      <value>{{ namenodes[0]['fqdn'] }}:50070</value>
+      <value>{{ namenode_fqdn }}:50070</value>
     </property>
 {%- endif %}
 

@@ -58,7 +58,10 @@ hadoop-hdfs-zkfc-svc:
     - name: hadoop-hdfs-zkfc
     - require:
       - pkg: hadoop-hdfs-zkfc
-      - cmd: init_hdfs
+      - cmd: init_zkfc
+    - require_in:
+      - service: hadoop-yarn-resourcemanager-svc
+      - service: hadoop-mapreduce-historyserver-svc
     - watch:
       - file: /etc/hadoop/conf
 {% endif %}
@@ -195,7 +198,6 @@ hadoop-yarn-resourcemanager-svc:
     - require:
       - pkg: hadoop-yarn-resourcemanager
       - service: hadoop-hdfs-namenode-svc
-      - service: hadoop-hdfs-zkfc-svc
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_tmp_dir
@@ -214,7 +216,6 @@ hadoop-mapreduce-historyserver-svc:
     - require:
       - pkg: hadoop-mapreduce-historyserver
       - service: hadoop-hdfs-namenode-svc
-      - service: hadoop-hdfs-zkfc-svc
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_tmp_dir
