@@ -155,6 +155,18 @@
       <value>true</value>
     </property>
     <property>
+      <name>yarn.resourcemanager.work-preserving-recovery.enabled</name>
+      <value>true</value>
+    </property>
+    <property>
+      <name>yarn.nodemanager.recovery.enabled</name>
+      <value>true</value>
+    </property>
+    <property>
+      <name>yarn.nodemanager.address</name>
+      <value>${yarn.nodemanager.hostname}:8050</value>
+    </property>
+    <property>
       <name>yarn.resourcemanager.store.class</name>
       <value>org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore</value>
     </property>
