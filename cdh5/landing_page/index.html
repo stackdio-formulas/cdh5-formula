@@ -1,4 +1,6 @@
-{% set fqdn = grains.get('fqdn', 'localhost') %}<!DOCTYPE html>
+{%- set fqdn = grains.get('fqdn', 'localhost') -%}
+{%- set snn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound').values() -%}
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <title>CDH5 Landing Page</title>
@@ -71,16 +73,13 @@ a:hover {
                     <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS Standby NameNode</a></li>
                     <li><a href='http://{{ fqdn }}:8088/'>Hadoop Yarn Standby ResourceManager</a></li>
                     {% endif %}
-                    {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-                    {% set snn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound').values() %}
-                    {% if snn %}
+                    {% if 'cdh5.hadoop.namenode' in grains['roles'] and snn %}
                     <li><a href='http://{{ snn[0]["fqdn"] }}:50070/'>Hadoop HDFS Standby NameNode</a></li>
-                    {% endif %}
                     {% endif %}
                     {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:8088/'>Hadoop Yarn ResourceManager</a></li>
                     {% endif %}
-                    {% if snn %}
+                    {% if 'cdh5.hadoop.namenode' in grains['roles'] and snn %}
                     <li><a href='http://{{ snn[0]["fqdn"] }}:8088/'>Hadoop Yarn Standby ResourceManager</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
