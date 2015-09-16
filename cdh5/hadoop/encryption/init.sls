@@ -18,7 +18,7 @@ convert-to-jks:
   cmd:
     - run
     - user: root
-    - name: echo 'hadoop\nhadoop' | openssl pkcs12 -export -name {{ grains.id }} -in /root/server.crt -inkey /root/server.key -out /etc/hadoop/conf/hadoop.pkcs12 -password stdin
+    - name: echo 'hadoop' | openssl pkcs12 -export -name {{ grains.id }} -in /root/server.crt -inkey /root/server.key -out /etc/hadoop/conf/hadoop.pkcs12 -password stdin
     - require:
       - file: /root/server.crt
       - file: /root/server.key
