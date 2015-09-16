@@ -120,8 +120,29 @@
         <value>true</value>
     </property>
     <property>
-        <name>hadoop.http.authentication.type</name>
-        <value>kerberos</value>
+        <name>hadoop.ssl.require.client.cert</name>
+        <value>false</value>
+        <final>true</final>
+    </property>
+    <property>
+        <name>hadoop.ssl.hostname.verifier</name>
+        <value>DEFAULT</value>
+        <final>true</final>
+    </property>
+    <property>
+        <name>hadoop.ssl.keystores.factory.class</name>
+        <value>org.apache.hadoop.security.ssl.FileBasedKeyStoresFactory</value>
+        <final>true</final>
+    </property>
+    <property>
+        <name>hadoop.ssl.server.conf</name>
+        <value>ssl-server.xml</value>
+        <final>true</final>
+    </property>
+    <property>
+        <name>hadoop.ssl.client.conf</name>
+        <value>ssl-client.xml</value>
+        <final>true</final>
     </property>
 {% endif %}
 </configuration>
