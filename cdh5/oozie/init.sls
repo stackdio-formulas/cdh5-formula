@@ -1,6 +1,7 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 
-# 
+#
 # Install the Oozie package
 #
 
@@ -92,6 +93,16 @@ extjs:
       - file: /srv/sync/cdh5/ext-2.2.zip
       - pkg: unzip
       - pkg: oozie
+
+{% if kms %}
+enable-https:
+  cmd:
+    - run
+    - user: root
+    - name: alternatives --set oozie-tomcat-deployment /etc/oozie/tomcat-conf.https
+    - require:
+      - pkg: oozie
+{% endif %}
 
 /var/log/oozie:
   file:

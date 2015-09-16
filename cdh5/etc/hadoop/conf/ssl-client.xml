@@ -2,6 +2,18 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
     <property>
+        <name>ssl.client.truststore.location</name>
+        <value>/usr/java/latest/jre/lib/security/cacerts</value>
+    </property>
+    <property>
+        <name>ssl.client.truststore.type</name>
+        <value>jks</value>
+    </property>
+    <property>
+        <name>ssl.client.truststore.reload.interval</name>
+        <value>10000</value>
+    </property>
+    <property>
         <name>ssl.client.keystore.location</name>
         <value>/etc/hadoop/conf/hadoop.keystore</value>
     </property>
