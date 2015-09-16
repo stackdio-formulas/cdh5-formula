@@ -19,7 +19,6 @@ convert-to-jks:
     - run
     - user: root
     - name: echo 'hadoop\nhadoop' | openssl pkcs12 -export -name {{ grains.id }} -in /root/server.crt -inkey /root/server.key -out /etc/hadoop/conf/hadoop.pkcs12 -password stdin
-    - unless: '$JAVA_HOME/bin/keytool -list -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop | grep {{ grains.id }}'
     - require:
       - file: /root/server.crt
       - file: /root/server.key
@@ -28,8 +27,7 @@ create-keystore:
   cmd:
     - run
     - user: root
-    - name: '$JAVA_HOME/bin/keytool -importkeystore -destkeystore /etc/hadoop/conf/hadoop.keystore -srckeystore /etc/hadoop/conf/hadoop.pkcs12 -srcstoretype pkcs12 -alias {{ grains.id }} -storepass hadoop -keypass hadoop'
-    - unless: '$JAVA_HOME/bin/keytool -list -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop | grep {{ grains.id }}'
+    - name: '$JAVA_HOME/bin/keytool -importkeystore -srckeystore /etc/hadoop/conf/hadoop.pkcs12 -destkeystore /etc/hadoop/conf/hadoop.keystore -srcstoretype pkcs12 -srcalias {{ grains.id }} -destalias {{ grains.id }} -srcstorepass hadoop -deststorepass hadoop -destkeypass hadoop -noprompt'
     - require:
       - cmd: convert-to-jks
 
