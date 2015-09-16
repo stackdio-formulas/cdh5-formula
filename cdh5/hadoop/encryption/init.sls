@@ -4,7 +4,7 @@
     - user: root
     - group: root
     - mode: 664
-    - contents: {{ pillar.cdh5.encryption.certificate }}
+    - contents: '{{ pillar.cdh5.encryption.certificate }}'
 
 /root/server.key:
   file:
@@ -12,7 +12,7 @@
     - user: root
     - group: root
     - mode: 664
-    - contents: {{ pillar.cdh5.encryption.private_key }}
+    - contents: '{{ pillar.cdh5.encryption.private_key }}'
 
 convert-to-jks:
   cmd:
