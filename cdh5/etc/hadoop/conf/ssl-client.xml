@@ -3,7 +3,7 @@
 <configuration>
     <property>
         <name>ssl.client.truststore.location</name>
-        <value>/etc/hadoop/conf/hadoop.truststore</value>
+        <value>/etc/hadoop/conf/hadoop.keystore</value>
         <description>Truststore to be used by clients like distcp. Must be
             specified.
         </description>

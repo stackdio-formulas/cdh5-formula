@@ -3,7 +3,7 @@
 <configuration>
     <property>
         <name>ssl.server.truststore.location</name>
-        <value>/etc/hadoop/conf/hadoop.truststore</value>
+        <value>/etc/hadoop/conf/hadoop.keystore</value>
         <description>Truststore to be used by NN and DN. Must be specified.
         </description>
     </property>
