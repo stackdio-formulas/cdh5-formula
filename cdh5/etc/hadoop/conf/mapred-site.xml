@@ -146,5 +146,9 @@
     <value>true</value>
     <final>true</final>
   </property>
+  <property>
+    <name>mapreduce.jobhistory.http.policy</name>
+    <value>HTTPS_ONLY</value>
+  </property>
 {% endif %}
 </configuration>

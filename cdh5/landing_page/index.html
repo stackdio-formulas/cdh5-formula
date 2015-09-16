@@ -1,5 +1,6 @@
 {%- set fqdn = grains.get('fqdn', 'localhost') -%}
 {%- set snn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound').values() -%}
+{%- set https = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,27 +68,27 @@ a:hover {
                     <li><a href='http://{{ fqdn }}:7180/'>Cloudera Manager</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS NameNode</a></li>
+                    <li><a href='{% if https %}https://{{ fqdn }}:50470/{% else %}http://{{ fqdn }}:50070/{% endif %}'>Hadoop HDFS NameNode</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.standby-namenode' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS Standby NameNode</a></li>
-                    <li><a href='http://{{ fqdn }}:8088/'>Hadoop Yarn Standby ResourceManager</a></li>
+                    <li><a href='{% if https %}https://{{ fqdn }}:50470/{% else %}http://{{ fqdn }}:50070/{% endif %}'>Hadoop HDFS Standby NameNode</a></li>
+                    <li><a href='{% if https %}https://{{ fqdn }}:8090/{% else %}http://{{ fqdn }}:8088/{% endif %}'>Hadoop Yarn Standby ResourceManager</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.namenode' in grains['roles'] and snn %}
-                    <li><a href='http://{{ snn[0]["fqdn"] }}:50070/'>Hadoop HDFS Standby NameNode</a></li>
+                    <li><a href='{% if https %}https://{{ snn[0]["fqdn"] }}:50470/{% else %}http://{{ snn[0]["fqdn"] }}:50070/{% endif %}'>Hadoop HDFS Standby NameNode</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:8088/'>Hadoop Yarn ResourceManager</a></li>
+                    <li><a href='{% if https %}https://{{ fqdn }}:8090/{% else %}http://{{ fqdn }}:8088/{% endif %}'>Hadoop Yarn ResourceManager</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.namenode' in grains['roles'] and snn %}
-                    <li><a href='http://{{ snn[0]["fqdn"] }}:8088/'>Hadoop Yarn Standby ResourceManager</a></li>
+                    <li><a href='{% if https %}https://{{ snn[0]["fqdn"] }}:8090/{% else %}http://{{ snn[0]["fqdn"] }}:8088/{% endif %}'>Hadoop Yarn Standby ResourceManager</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:19888/'>Hadoop Mapreduce HistoryServer</a></li>
+                    <li><a href='http{% if https %}s{% endif %}://{{ fqdn }}:19888/'>Hadoop Mapreduce HistoryServer</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:8042/'>Hadoop NodeManager</a></li>
-                    <li><a href='http://{{ fqdn }}:50075/'>Hadoop HDFS DataNode</a></li>
+                    <li><a href='{% if https %}https://{{ fqdn }}:50475/{% else %}http://{{ fqdn }}:50075/{% endif %}'>Hadoop HDFS DataNode</a></li>
+                    <li><a href='http{% if https %}s{% endif %}://{{ fqdn }}:8042/'>Hadoop Yarn NodeManager</a></li>
                     {% endif %}
                     {% if 'cdh5.oozie' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:11000/'>Oozie Dashboard</a></li>
