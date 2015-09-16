@@ -1,4 +1,5 @@
 {% set journal_dir = salt['pillar.get']('cdh5:dfs:journal_dir', '/mnt/hadoop/hdfs/jn') %}
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 
 
 # Make sure the journal data directory exists if necessary
@@ -25,7 +26,9 @@ hadoop-hdfs-journalnode-svc:
     - name: hadoop-hdfs-journalnode
     - require:
       - pkg: hadoop-hdfs-journalnode
-      - file: /etc/hadoop/conf
       - cmd: cdh5_journal_dir
+      {% if kms %}
+      - cmd: chown-keystore
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf

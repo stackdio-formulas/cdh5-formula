@@ -1,4 +1,5 @@
 {% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
@@ -23,9 +24,12 @@ init_standby_namenode:
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
       - cmd: cdh5_dfs_dirs
-    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if kms %}
+      - cmd: chown-keystore
+      {% endif %}
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
-    {% endif %}
+      {% endif %}
 
 # Start up the ZKFC
 hadoop-hdfs-zkfc-svc:

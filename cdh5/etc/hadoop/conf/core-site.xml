@@ -115,5 +115,13 @@
         <name>hadoop.rpc.protection</name>
         <value>privacy</value>
     </property>
+    <property>
+        <name>hadoop.ssl.enabled</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>hadoop.http.authentication.type</name>
+        <value>kerberos</value>
+    </property>
 {% endif %}
 </configuration>
