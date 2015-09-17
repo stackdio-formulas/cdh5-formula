@@ -95,6 +95,22 @@ extjs:
       - pkg: oozie
 
 {% if kms %}
+copy-keystore:
+  cmd:
+    - run
+    - user: root
+    - name: 'cp /etc/hadoop/conf/hadoop.keystore /etc/oozie/conf/oozie.keystore'
+    - require:
+      - pkg: oozie
+
+chown-keystore:
+  cmd:
+    - run
+    - user: root
+    - name: 'chown oozie:oozie /etc/oozie/conf/oozie.keystore && chmod 440 /etc/oozie/conf/oozie.keystore'
+    - require:
+      - cmd: copy-keystore
+
 enable-https:
   cmd:
     - run
@@ -102,6 +118,7 @@ enable-https:
     - name: alternatives --set oozie-tomcat-deployment /etc/oozie/tomcat-conf.https
     - require:
       - pkg: oozie
+      - cmd: chown-keystore
     - require_in:
       - cmd: ooziedb
 {% endif %}
