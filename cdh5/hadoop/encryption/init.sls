@@ -64,6 +64,7 @@ nginx:
 nginx-svc:
   service:
     - running
+    - name: nginx
     - watch:
       - file: /etc/nginx/conf.d
       - file: /etc/nginx/conf.d/hadoop.conf
