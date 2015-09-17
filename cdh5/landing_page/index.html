@@ -84,7 +84,7 @@ a:hover {
                     <li><a href='{% if https %}https://{{ snn[0]["fqdn"] }}:8090/{% else %}http://{{ snn[0]["fqdn"] }}:8088/{% endif %}'>Hadoop Yarn Standby ResourceManager</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-                    <li><a href='http{% if https %}s{% endif %}://{{ fqdn }}:19888/'>Hadoop Mapreduce HistoryServer</a></li>
+                    <li><a href='{% if https %}https://{{ fqdn }}:19890/{% else %}http://{{ fqdn }}:19888/{% endif %}'>Hadoop Mapreduce HistoryServer</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
                     <li><a href='{% if https %}https://{{ fqdn }}:50475/{% else %}http://{{ fqdn }}:50075/{% endif %}'>Hadoop HDFS DataNode</a></li>
