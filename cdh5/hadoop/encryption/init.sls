@@ -38,3 +38,32 @@ chown-keystore:
     - name: 'chown root:hadoop /etc/hadoop/conf/hadoop.keystore && chmod 440 /etc/hadoop/conf/hadoop.keystore'
     - require:
       - cmd: create-keystore
+
+nginx:
+  pkg:
+    - installed
+
+/etc/nginx/conf.d:
+  file:
+    - directory
+    - clean: true
+    - require:
+      - pkg: nginx
+
+/etc/nginx/conf.d/hadoop.conf:
+  file:
+    - managed
+    - user: root
+    - group: root
+    - mode: 644
+    - source: salt://cdh5/hadoop/encryption/hadoop.conf
+    - template: jinja
+    - require:
+      - file: /etc/nginx/conf.d
+
+nginx-svc:
+  service:
+    - running
+    - watch:
+      - file: /etc/nginx/conf.d
+      - file: /etc/nginx/conf.d/hadoop.conf
