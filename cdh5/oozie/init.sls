@@ -102,6 +102,8 @@ enable-https:
     - name: alternatives --set oozie-tomcat-deployment /etc/oozie/tomcat-conf.https
     - require:
       - pkg: oozie
+    - require_in:
+      - cmd: ooziedb
 {% endif %}
 
 /var/log/oozie:

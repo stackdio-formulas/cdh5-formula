@@ -33,8 +33,7 @@ export CATALINA_BASE=/var/lib/oozie/tomcat-deployment
 export OOZIE_HTTPS_PORT=11443
 export OOZIE_HTTPS_KEYSTORE_FILE=/etc/hadoop/conf/hadoop.keystore
 export OOZIE_HTTPS_KEYSTORE_PASS=hadoop
-export CATALINA_OPTS="$CATALINA_OPTS -Doozie.https.port=${OOZIE_HTTPS_PORT}"
-export CATALINA_OPTS="$CATALINA_OPTS -Doozie.https.keystore.pass=${OOZIE_HTTPS_KEYSTORE_PASS}"
+
 export CATALINA_OPTS="$CATALINA_OPTS -Xmx1024m"
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
 export CATALINA_OPTS="$CATALINA_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
