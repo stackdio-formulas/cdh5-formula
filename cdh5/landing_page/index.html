@@ -88,10 +88,10 @@ a:hover {
                     {% endif %}
                     {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
                     <li><a href='{% if https %}https://{{ fqdn }}:50475/{% else %}http://{{ fqdn }}:50075/{% endif %}'>Hadoop HDFS DataNode</a></li>
-                    <li><a href='http{% if https %}s{% endif %}://{{ fqdn }}:8042/'>Hadoop Yarn NodeManager</a></li>
+                    <li><a href='{% if https %}https://{{ fqdn }}:8044/{% else %}http://{{ fqdn }}:8042/{% endif %}'>Hadoop Yarn NodeManager</a></li>
                     {% endif %}
                     {% if 'cdh5.oozie' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:11000/'>Oozie Dashboard</a></li>
+                    <li><a href='{% if https %}https://{{ fqdn }}:11443/{% else %}http://{{ fqdn }}:11000/{% endif %}'>Oozie Dashboard</a></li>
                     {% endif %}
                 </ul>
                 {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
