@@ -237,5 +237,13 @@
         <name>dfs.encryption.key.provider.uri</name>
         <value>kms://http@{{ kms_fqdn }}:16000/kms</value>
     </property>
+    <property>
+        <name>dfs.encrypt.data.transfer</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>dfs.http.policy</name>
+        <value>HTTPS_ONLY</value>
+    </property>
 {% endif %}
 </configuration>

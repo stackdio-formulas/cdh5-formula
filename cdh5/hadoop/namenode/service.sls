@@ -39,6 +39,9 @@ init_hdfs:
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
       - cmd: cdh5_dfs_dirs
+      {% if kms %}
+      - cmd: chown-keystore
+      {% endif %}
 
 {% if standby %}
 init_zkfc:

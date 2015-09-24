@@ -4,6 +4,7 @@
 {% set mapred_staging_dir = '/user/history' %}
 {% set mapred_log_dir = '/var/log/hadoop-yarn' %}
 {% set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') %}
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 
 ##
 # Adding high-availability to the mix makes things a bit more complicated.
@@ -24,6 +25,9 @@ include:
   - cdh5.landing_page
 {% if salt['pillar.get']('cdh5:namenode:start_service', True) %}
   - cdh5.hadoop.namenode.service
+{% endif %}
+{% if kms %}
+  - cdh5.hadoop.encryption
 {% endif %}
 {% if salt['pillar.get']('cdh5:security:enable', False) %}
   - krb5
@@ -47,6 +51,9 @@ hadoop-hdfs-namenode:
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
+      {% if kms %}
+      - cmd: create-keystore
+      {% endif %}
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
       {% endif %}

@@ -1,29 +1,13 @@
 {%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') -%}
 {%- set zookeepers = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').values() -%}
+{%- set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
 {%- if standby -%}
   {%- set standby_items = standby.values()[0] -%}
   {%- set standby_fqdn = standby_items['fqdn'] -%}
 {%- endif -%}
 <?xml version="1.0"?>
-<!--
-  Licensed to the Apache Software Foundation (ASF) under one or more
-  contributor license agreements.  See the NOTICE file distributed with
-  this work for additional information regarding copyright ownership.
-  The ASF licenses this file to You under the Apache License, Version 2.0
-  (the "License"); you may not use this file except in compliance with
-  the License.  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-
 <configuration>
   <property>
     <name>yarn.nodemanager.aux-services</name>
@@ -216,5 +200,12 @@
     <value>HTTPS_ONLY</value>
   </property>
   -->
+{% endif %}
+
+{% if kms %}
+  <property>
+    <name>yarn.http.policy</name>
+    <value>HTTPS_ONLY</value>
+  </property>
 {% endif %}
 </configuration>

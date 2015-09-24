@@ -1,4 +1,5 @@
 {%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
 <?xml version="1.0"?>
 <configuration>
     <property>
@@ -138,4 +139,16 @@
     <value>mapred/_HOST@{{ krb5.realm }}</value>
   </property>
 {%- endif %}
+
+{% if kms %}
+  <property>
+    <name>mapreduce.shuffle.ssl.enabled</name>
+    <value>true</value>
+    <final>true</final>
+  </property>
+  <property>
+    <name>mapreduce.jobhistory.http.policy</name>
+    <value>HTTPS_ONLY</value>
+  </property>
+{% endif %}
 </configuration>
