@@ -30,6 +30,20 @@ hadoop-hdfs-namenode:
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
+hadoop-yarn-resourcemanager:
+  pkg:
+    - installed
+    - require:
+      - module: cdh5_refresh_db
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: krb5_conf_file
+      {% endif %}
+    - require_in:
+      - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
+
 # we need the mapred user on the standby namenode for job history to work;
 # It's easiest to just do this by installing mapreduce
 hadoop-mapreduce:
