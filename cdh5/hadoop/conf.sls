@@ -1,3 +1,5 @@
+{% set encrypted = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
+
 /etc/hadoop/conf:
   file:
     - recurse
@@ -6,7 +8,12 @@
     - user: root
     - group: root
     - file_mode: 644
-    - exclude_pat: '.*.swp'
+    {% if encrypted %}
+    - exclude_pat: .*.swp
+    {% else %}
+    - exclude_pat: ssl-*.xml
+    {% endif %}
+
 
 /etc/hadoop/conf/container-executor.cfg:
   file:

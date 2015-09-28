@@ -7,7 +7,7 @@ components:
     sls_path: cdh5.hadoop.namenode
   - title: Standby NameNode
     description: Standby NameNode for high-availability
-    sls_path: cdh5.hadoop.standby
+    sls_path: cdh5.hadoop.standby-namenode
   - title: JournalNode
     description: Hadoop JournalNode for high-availability
     sls_path: cdh5.hadoop.journalnode
@@ -65,6 +65,9 @@ pillar_defaults:
     version: 5
     landing_page: true
     max_log_index: 1
+    encryption:
+      certificate: CHANGE_ME
+      private_key: CHANGE_ME
     security:
       enable: false
     namenode:
@@ -106,12 +109,13 @@ pillar_defaults:
       region_max_heap_mb: 1024
       region_young_gen_mb: 256
       jute_maxbuffer: 10485750
-      manage_zk: true
+      manage_zk: false
     zookeeper:
       data_dir: /mnt/zk/data
       start_service: true
     oozie:
       start_service: true
+      max_log_index: 168  # 1 week
     impala:
       start_service: true
       max_pool_requests: 1000
