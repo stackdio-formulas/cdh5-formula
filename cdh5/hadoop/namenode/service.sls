@@ -189,9 +189,6 @@ hdfs_dir_{{ user }}:
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
-      {% if standby %}
-      - cmd: activate_namenode
-      {% endif %}
 {% endfor %}
 
 ##
