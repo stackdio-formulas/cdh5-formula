@@ -7,7 +7,7 @@ components:
     sls_path: cdh5.hadoop.namenode
   - title: Standby NameNode
     description: Standby NameNode for high-availability
-    sls_path: cdh5.hadoop.standby
+    sls_path: cdh5.hadoop.standby-namenode
   - title: JournalNode
     description: Hadoop JournalNode for high-availability
     sls_path: cdh5.hadoop.journalnode

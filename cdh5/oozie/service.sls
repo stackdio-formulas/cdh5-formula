@@ -1,5 +1,5 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
-{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] %}
+{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
 # 
 # Start the Oozie service
 #

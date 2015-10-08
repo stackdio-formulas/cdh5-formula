@@ -22,8 +22,8 @@ include:
   - cdh5.hadoop.conf
   - cdh5.landing_page
 {% if salt['pillar.get']('cdh5:namenode:start_service', True) %}
-  {% if 'cdh5.hadoop.standby' in grains.roles %}
-  - cdh5.hadoop.standby.service
+  {% if 'cdh5.hadoop.standby-namenode' in grains.roles %}
+  - cdh5.hadoop.standby-namenode.service
   {% else %}
   - cdh5.hadoop.namenode.service
   {% endif %}
@@ -54,7 +54,7 @@ hadoop-hdfs-namenode:
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
-{% if 'cdh5.hadoop.standby' in grains.roles %}
+{% if 'cdh5.hadoop.standby-namenode' in grains.roles %}
 
 # we need a mapred user on the standby namenode for job history to work; if the
 # namenode state is not included we want to add it manually
