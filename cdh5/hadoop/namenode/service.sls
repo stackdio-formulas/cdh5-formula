@@ -110,7 +110,6 @@ activate_namenode:
       - cmd: hdfs_tmp_dir
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_mapreduce_var_dir
-      - cmd: hdfs_user_dir
 {% endif %}
 
 
@@ -188,6 +187,9 @@ hdfs_dir_{{ user }}:
       - service: hadoop-hdfs-namenode-svc
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: hdfs_kinit
+      {% endif %}
+      {% if standby %}
+      - cmd: activate_namenode
       {% endif %}
 {% endfor %}
 
