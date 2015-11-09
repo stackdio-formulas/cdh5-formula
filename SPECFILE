@@ -98,6 +98,7 @@ pillar_defaults:
       memory_mb: 2048
       reduces: 3
       heap_dump_path: /mnt
+      metainfo_maxsplit: 10000000
     hbase:
       start_service: true
       tmp_dir: /mnt/hbase/tmp
