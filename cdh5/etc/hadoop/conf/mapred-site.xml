@@ -27,6 +27,12 @@
     <value>{{ pillar.cdh5.mapred.reduces }}</value>
   </property>
 
+  {% set metainfo_split = salt['pillar.get']('cdh5:mapred:metainfo_maxsplit', '10000000') %}
+  <property>
+    <name>mapreduce.job.split.metainfo.maxsize</name>
+    <value>{{ metainfo_split }}</value>
+  </property>
+
   <!-- Compression -->
   <property>
      <name>mapreduce.output.fileoutputformat.compress</name>
