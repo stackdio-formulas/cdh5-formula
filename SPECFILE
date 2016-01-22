@@ -84,6 +84,7 @@ pillar_defaults:
       num_cpus: 8
       local_dirs: /mnt/hadoop/yarn/local
       log_dirs: /mnt/hadoop/yarn/logs
+      log_retain_seconds: -1
     io:
       sort_factor: 64
       sort_mb: 256
