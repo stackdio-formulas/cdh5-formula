@@ -14,7 +14,7 @@ generate_ticket:
 grant_permissions:
   cmd:
     - run
-    - name: echo "grant '{{ pillar.__stackdio__.username }}', 'RWXCA'; grant 'oozie', 'RWXCA'" | hbase shell
+    - name: echo "{% for user in pillar.__stackdio__.users %}grant '{{ user.username }}', 'RWXCA'; {% endfor %}grant 'oozie', 'RWXCA'" | hbase shell
     - user: hbase
     - require:
       - cmd: generate_ticket

@@ -102,7 +102,6 @@ hdfs_kinit:
       - cmd: hdfs_tmp_dir
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_mapreduce_var_dir
-      - cmd: hdfs_user_dir
 
 mapred_kinit:
   cmd:
@@ -115,7 +114,6 @@ mapred_kinit:
       - service: hadoop-hdfs-namenode-svc
       - cmd: generate_hadoop_keytabs
 {% endif %}
-
 
 # HDFS tmp directory
 hdfs_tmp_dir:
@@ -177,17 +175,21 @@ create_mapred_zone:
       - service: hadoop-mapreduce-historyserver-svc
 {% endif %}
 
-# create a user directory owned by the stack user
-{% set user = pillar.__stackdio__.username %}
-hdfs_user_dir:
+# create a user directory for each user
+{% for user_obj in pillar.__stackdio__.users %}
+{% set user = user_obj.username %}
+hdfs_dir_{{ user }}:
   cmd:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hdfs dfs -mkdir /user/{{ user }} && hdfs dfs -chown {{ user }}:{{ user }} /user/{{ user }}'
-    - unless: 'hdfs dfs -test -d /user/{{ user }}'
+    - name: 'hdfs dfs -mkdir -p /user/{{ user }} && hdfs dfs -chown {{ user }}:{{ user }} /user/{{ user }}'
     - require:
-      - service: hadoop-yarn-resourcemanager-svc
+      - service: hadoop-hdfs-namenode-svc
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hdfs_kinit
+      {% endif %}
+{% endfor %}
 
 ##
 # Starts yarn resourcemanager service.
