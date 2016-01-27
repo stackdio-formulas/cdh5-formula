@@ -32,6 +32,9 @@ components:
   - title: Oozie
     description: Oozie
     sls_path: cdh5.oozie
+  - title: Spark History Server
+    description: Spark History Server
+    sls_path: cdh5.spark.historyserver
   - title: Hue
     description: Hue
     sls_path: cdh5.hue
@@ -118,6 +121,8 @@ pillar_defaults:
     oozie:
       start_service: true
       max_log_index: 168  # 1 week
+    spark:
+      start_service: true
     impala:
       start_service: true
       max_pool_requests: 1000
