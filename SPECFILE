@@ -2,6 +2,9 @@ title: CDH5 Salt Formula
 description: Salt formula for installing components of CDH5
 root_path: cdh5
 components:
+  - title: Client Node
+    description: Hadoop Client Node
+    sls_path: cdh5.hadoop.client
   - title: NameNode
     description: Hadoop NameNode component of CDH5
     sls_path: cdh5.hadoop.namenode
