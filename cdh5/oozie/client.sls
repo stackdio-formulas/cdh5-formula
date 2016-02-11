@@ -14,6 +14,9 @@ include:
 oozie-client:
   pkg:
     - installed
+    - pkgs:
+      - oozie
+      - oozie-client
     - require:
       - module: cdh5_refresh_db
 
