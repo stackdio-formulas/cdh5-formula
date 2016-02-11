@@ -2,7 +2,7 @@ title: CDH5 Salt Formula
 description: Salt formula for installing components of CDH5
 root_path: cdh5
 components:
-  - title: Client Node
+  - title: Hadoop Client Node
     description: Hadoop Client Node
     sls_path: cdh5.hadoop.client
   - title: NameNode
@@ -35,6 +35,9 @@ components:
   - title: Oozie
     description: Oozie
     sls_path: cdh5.oozie
+  - title: Oozie Client Node
+    description: Oozie Client Node
+    sls_path: cdh5.oozie.client
   - title: Spark History Server
     description: Spark History Server
     sls_path: cdh5.spark.historyserver
