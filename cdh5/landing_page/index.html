@@ -1,5 +1,13 @@
 {%- set fqdn = grains.get('fqdn', 'localhost') -%}
-{%- set snn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound').values() -%}
+{%- set namenode = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values() -%}
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound').values() -%}
+{%- set hue = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hue', 'grains.items', 'compound').values() -%}
+{%- set oozie = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.oozie', 'grains.items', 'compound').values() -%}
+{%- set spark = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.spark.historyserver', 'grains.items', 'compound').values() -%}
+{%- set hbase_master = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hbase.master', 'grains.items', 'compound').values() -%}
+{%- set impala_state_store = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.impala.state-store', 'grains.items', 'compound').values() -%}
+{%- set impala_catalog = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.impala.catalog', 'grains.items', 'compound').values() -%}
+{%- set manager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.manager.server', 'grains.items', 'compound').values() -%}
 {%- set https = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
 <!DOCTYPE html>
 <html lang="en">
@@ -61,40 +69,30 @@ a:hover {
             <div class="col-md-6">
                 <h4>Hadoop</h4>
                 <ul>
-                    {% if 'cdh5.hue' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:8888/home'>Hue</a></li>
+                    {% if hue %}
+                    <li><a href='http://{{ hue[0]["fqdn"] }}:8888/home'>Hue</a></li>
                     {% endif %}
-                    {% if 'cdh5.manager.server' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:7180/'>Cloudera Manager</a></li>
+                    {% if manager %}
+                    <li><a href='http://{{ manager[0]["fqdn"] }}:7180/'>Cloudera Manager</a></li>
                     {% endif %}
-                    {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-                    <li><a href='{% if https %}https://{{ fqdn }}:50470/{% else %}http://{{ fqdn }}:50070/{% endif %}'>Hadoop HDFS NameNode</a></li>
+                    {% if namenode %}
+                    <li><a href='{% if https %}https://{{ namenode[0]["fqdn"] }}:50470/{% else %}http://{{ namenode[0]["fqdn"] }}:50070/{% endif %}'>Hadoop HDFS NameNode</a></li>
+                    <li><a href='{% if https %}https://{{ namenode[0]["fqdn"] }}:8090/{% else %}http://{{ namenode[0]["fqdn"] }}:8088/{% endif %}'>Hadoop Yarn ResourceManager</a></li>
+                    <li><a href='{% if https %}https://{{ namenode[0]["fqdn"] }}:19890/{% else %}http://{{ namenode[0]["fqdn"] }}:19888/{% endif %}'>Hadoop Mapreduce HistoryServer</a></li>
                     {% endif %}
-                    {% if 'cdh5.hadoop.standby-namenode' in grains['roles'] %}
-                    <li><a href='{% if https %}https://{{ fqdn }}:50470/{% else %}http://{{ fqdn }}:50070/{% endif %}'>Hadoop HDFS Standby NameNode</a></li>
-                    <li><a href='{% if https %}https://{{ fqdn }}:8090/{% else %}http://{{ fqdn }}:8088/{% endif %}'>Hadoop Yarn Standby ResourceManager</a></li>
-                    {% endif %}
-                    {% if 'cdh5.hadoop.namenode' in grains['roles'] and snn %}
-                    <li><a href='{% if https %}https://{{ snn[0]["fqdn"] }}:50470/{% else %}http://{{ snn[0]["fqdn"] }}:50070/{% endif %}'>Hadoop HDFS Standby NameNode</a></li>
-                    {% endif %}
-                    {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-                    <li><a href='{% if https %}https://{{ fqdn }}:8090/{% else %}http://{{ fqdn }}:8088/{% endif %}'>Hadoop Yarn ResourceManager</a></li>
-                    {% endif %}
-                    {% if 'cdh5.hadoop.namenode' in grains['roles'] and snn %}
-                    <li><a href='{% if https %}https://{{ snn[0]["fqdn"] }}:8090/{% else %}http://{{ snn[0]["fqdn"] }}:8088/{% endif %}'>Hadoop Yarn Standby ResourceManager</a></li>
-                    {% endif %}
-                    {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-                    <li><a href='{% if https %}https://{{ fqdn }}:19890/{% else %}http://{{ fqdn }}:19888/{% endif %}'>Hadoop Mapreduce HistoryServer</a></li>
+                    {% if standby %}
+                    <li><a href='{% if https %}https://{{ standby[0]["fqdn"] }}:50470/{% else %}http://{{ standby[0]["fqdn"] }}:50070/{% endif %}'>Hadoop HDFS Standby NameNode</a></li>
+                    <li><a href='{% if https %}https://{{ standby[0]["fqdn"] }}:8090/{% else %}http://{{ standby[0]["fqdn"] }}:8088/{% endif %}'>Hadoop Yarn Standby ResourceManager</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
                     <li><a href='{% if https %}https://{{ fqdn }}:50475/{% else %}http://{{ fqdn }}:50075/{% endif %}'>Hadoop HDFS DataNode</a></li>
                     <li><a href='{% if https %}https://{{ fqdn }}:8044/{% else %}http://{{ fqdn }}:8042/{% endif %}'>Hadoop Yarn NodeManager</a></li>
                     {% endif %}
-                    {% if 'cdh5.oozie' in grains['roles'] %}
-                    <li><a href='{% if https %}https://{{ fqdn }}:11443/{% else %}http://{{ fqdn }}:11000/{% endif %}'>Oozie Dashboard</a></li>
+                    {% if oozie %}
+                    <li><a href='{% if https %}https://{{ oozie[0]["fqdn"] }}:11443/{% else %}http://{{ oozie[0]["fqdn"] }}:11000/{% endif %}'>Oozie Dashboard</a></li>
                     {% endif %}
-                    {% if 'cdh5.spark.historyserver' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:18080/'>Spark History Server</a></li>
+                    {% if spark %}
+                    <li><a href='http://{{ spark[0]["fqdn"] }}:18080/'>Spark History Server</a></li>
                     {% endif %}
                 </ul>
                 {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
@@ -109,31 +107,22 @@ a:hover {
             </div> <!-- col-md-6 -->
 
             <div class="col-md-6">
-                {% if 'cdh5.hbase.master' in grains['roles'] or 'cdh5.hbase.regionserver' in grains['roles'] %}
+                {% if hbase_master %}
                 <h4>HBase</h4>
-                {% endif %}
-                {% if 'cdh5.hbase.master' in grains['roles'] %}
                 <ul>
-                    <li><a href='http://{{ fqdn }}:60010/'>HBase Master</a></li>
-                </ul>
-                {% endif %}
-                {% if 'cdh5.hbase.regionserver' in grains['roles'] %}
-                <ul>
+                    <li><a href='http://{{ hbase_master[0]["fqdn"] }}:60010/'>HBase Master</a></li>
+                    {% if 'cdh5.hbase.regionserver' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:60030/'>HBase RegionServer</a></li>
+                    {% endif %}
                 </ul>
-                {% endif %}
-                {% if 'cdh5.impala.state-store' in grains['roles'] or 'cdh5.impala.server' in grains['roles'] %}
+                {% if impala_state_store %}
                 <h4>Impala</h4>
-                {% endif %}
-                {% if 'cdh5.impala.state-store' in grains['roles'] %}
                 <ul>
-                    <li><a href="http://{{ fqdn }}:25010">Impala State Store</a></li>
-                    <li><a href="http://{{ fqdn }}:25020">Impala Catalog</a></li>
-                  </ul>    
-                {% endif %}
-                {% if 'cdh5.impala.server' in grains['roles'] %}
-                <ul>
+                    <li><a href="http://{{ impala_state_store[0]["fqdn"] }}:25010">Impala State Store</a></li>
+                    <li><a href="http://{{ impala_catalog[0]["fqdn"] }}:25020">Impala Catalog</a></li>
+                    {% if 'cdh5.impala.server' in grains['roles'] %}
                     <li><a href="http://{{ fqdn }}:25000">Impala Server</a></li>
+                    {% endif %}
                 </ul>
                 {% endif %}
             </div> <!-- col-md-6 -->
