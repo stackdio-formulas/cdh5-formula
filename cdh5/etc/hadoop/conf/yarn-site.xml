@@ -50,7 +50,7 @@
 
   <property>
     <name>yarn.resourcemanager.max-completed-applications</name>
-    <value>5000</value>
+    <value>{{ pillar.cdh5.yarn.max_completed_applications }}</value>
   </property>
 
   <property>
