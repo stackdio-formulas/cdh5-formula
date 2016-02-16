@@ -58,6 +58,17 @@
   </property>
 
   <property>
+    <description>Log retention in seconds</description>
+    <name>yarn.log-aggregation.retain-seconds</name>
+    <value>{{ pillar.cdh5.yarn.log_retain_seconds }}</value>
+  </property>
+
+  <property>
+    <name>yarn.resourcemanager.max-completed-applications</name>
+    <value>{{ pillar.cdh5.yarn.max_completed_applications }}</value>
+  </property>
+
+  <property>
     <description>Classpath for typical applications.</description>
      <name>yarn.application.classpath</name>
      <value>
