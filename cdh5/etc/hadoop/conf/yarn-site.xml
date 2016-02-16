@@ -49,6 +49,11 @@
   </property>
 
   <property>
+    <name>yarn.resourcemanager.max-completed-applications</name>
+    <value>5000</value>
+  </property>
+
+  <property>
     <description>Classpath for typical applications.</description>
      <name>yarn.application.classpath</name>
      <value>
