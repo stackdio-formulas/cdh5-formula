@@ -1,6 +1,7 @@
 include:
   - cdh5.repo
   - cdh5.hadoop.conf
+  - cdh5.landing_page
   {% if salt['pillar.get']('cdh5:security:enable', False) %}
   - krb5
   - cdh5.security
