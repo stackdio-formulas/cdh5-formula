@@ -129,6 +129,10 @@
       <value>{{ standby_fqdn }}</value>
     </property>
     <property>
+      <name>yarn.web-proxy.address</name>
+      <value>{{ namenode_fqdn }}:8089</value>
+    </property>
+    <property>
       <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
       <value>true</value>
     </property>

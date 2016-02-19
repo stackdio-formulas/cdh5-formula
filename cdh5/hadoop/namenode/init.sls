@@ -74,6 +74,21 @@ hadoop-hdfs-zkfc:
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
+
+hadoop-yarn-proxyserver:
+  pkg:
+    - installed
+    - installed
+    - require:
+      - module: cdh5_refresh_db
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: krb5_conf_file
+      {% endif %}
+    - require_in:
+      - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
 {% endif %}
 
 

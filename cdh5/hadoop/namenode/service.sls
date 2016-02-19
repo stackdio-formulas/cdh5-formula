@@ -209,6 +209,18 @@ hadoop-yarn-resourcemanager-svc:
     - watch:
       - file: /etc/hadoop/conf
 
+{% if standby %}
+hadoop-yarn-proxyserver-svc:
+  service:
+    - running
+    - name: hadoop-yarn-proxyserver
+    - require:
+      - pkg: hadoop-yarn-proxyserver
+      - service: hadoop-yarn-resourcemanager-svc
+    - watch:
+      - file: /etc/hadoop/conf
+{% endif %}
+
 ##
 # Installs the mapreduce historyserver service and starts it.
 #
