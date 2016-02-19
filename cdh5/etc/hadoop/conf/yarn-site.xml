@@ -49,6 +49,11 @@
   </property>
 
   <property>
+    <name>yarn.resourcemanager.max-completed-applications</name>
+    <value>{{ pillar.cdh5.yarn.max_completed_applications }}</value>
+  </property>
+
+  <property>
     <description>Classpath for typical applications.</description>
      <name>yarn.application.classpath</name>
      <value>
