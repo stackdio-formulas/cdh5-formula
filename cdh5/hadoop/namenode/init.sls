@@ -78,7 +78,6 @@ hadoop-hdfs-zkfc:
 hadoop-yarn-proxyserver:
   pkg:
     - installed
-    - installed
     - require:
       - module: cdh5_refresh_db
       {% if salt['pillar.get']('cdh5:security:enable', False) %}
