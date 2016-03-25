@@ -6,8 +6,8 @@
           'html_file': '/var/www/index.html',
       },
       'RedHat': {
-          'package_name': 'thttpd',
-          'html_file': '/var/www/thttpd/index.html',
+          'package_name': 'httpd',
+          'html_file': '/var/www/index.html',
       },
 }) %}
 
