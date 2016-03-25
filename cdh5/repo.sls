@@ -1,4 +1,4 @@
-{% if grains.os_family. == 'Debian' %}
+{% if grains.os_family == 'Debian' %}
 
 # Add the appropriate CDH5 repository. See http://archive.cloudera.com/cdh5
 # for which distributions and versions are supported.
