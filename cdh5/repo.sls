@@ -1,4 +1,4 @@
-{% if grains['os_family'] == 'Debian' %}
+{% if grains.os_family. == 'Debian' %}
 
 # Add the appropriate CDH5 repository. See http://archive.cloudera.com/cdh5
 # for which distributions and versions are supported.
@@ -17,7 +17,7 @@
 cdh5_gpg:
   cmd:
     - run
-    - name: 'curl -s http://archive.cloudera.com/cdh5/ubuntu/{{ grains["lsb_distrib_codename"] }}/amd64/cdh/archive.key | apt-key add -'
+    - name: 'curl -s http://archive.cloudera.com/cdh5/ubuntu/{{ grains.lsb_distrib_codename. }}/amd64/cdh/archive.key | apt-key add -'
     - unless: 'apt-key list | grep "Cloudera Apt Repository"'
     - require:
       - file: /etc/apt/sources.list.d/cloudera.list
@@ -48,21 +48,23 @@ remove_policy_file:
     - require:
       - file: add_policy_file
 
-{% elif grains['os_family'] == 'RedHat' %}
+{% elif grains.os_family == 'RedHat' %}
+
+{% set releasever = grains.osmajorrelease %}
 
 # Set up the CDH5 yum repository
 cloudera_cdh5:
   pkgrepo:
     - managed
     - humanname: "Cloudera's Distribution for Hadoop, Version 5"
-    - baseurl: "http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/{{ pillar.cdh5.version }}/"
-    - gpgkey: http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
+    - baseurl: "http://archive.cloudera.com/cdh5/redhat/{{ releasever }}/x86_64/cdh/{{ pillar.cdh5.version }}/"
+    - gpgkey: http://archive.cloudera.com/cdh5/redhat/{{ releasever }}/x86_64/cdh/RPM-GPG-KEY-cloudera
     - gpgcheck: 1
 
 cdh5_gpg:
   cmd:
     - run
-    - name: 'rpm --import http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera'
+    - name: 'rpm --import http://archive.cloudera.com/cdh5/redhat/{{ releasever }}/x86_64/cdh/RPM-GPG-KEY-cloudera'
     - unless: 'rpm -qi gpg-pubkey-e8f86acd'
     - require:
       - pkgrepo: cloudera_cdh5
