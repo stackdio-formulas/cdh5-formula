@@ -23,7 +23,13 @@ webserver:
     - require:
       - pkg: webserver
       - file: landing_html
+      - file: /etc/httpd/conf.d/welcome.conf
 
+/etc/httpd/conf.d/welcome.conf:
+  file:
+    - absent
+    - require:
+      - pkg: webserver
 
 # Setup the landing page
 landing_html:
