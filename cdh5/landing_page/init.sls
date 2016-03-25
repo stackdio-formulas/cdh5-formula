@@ -7,7 +7,7 @@
       },
       'RedHat': {
           'package_name': 'httpd',
-          'html_file': '/var/www/index.html',
+          'html_file': '/var/www/html/index.html',
       },
 }) %}
 
@@ -23,13 +23,6 @@ webserver:
     - require:
       - pkg: webserver
       - file: landing_html
-      - file: /etc/httpd/conf.d/welcome.conf
-
-/etc/httpd/conf.d/welcome.conf:
-  file:
-    - absent
-    - require:
-      - pkg: webserver
 
 # Setup the landing page
 landing_html:
