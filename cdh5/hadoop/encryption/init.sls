@@ -39,12 +39,16 @@ chown-keystore:
     - require:
       - cmd: create-keystore
 
+nginx:
+  pkg:
+    - installed
+
 /etc/nginx/conf.d:
   file:
     - directory
     - clean: true
     - require:
-      - pkg: webserver
+      - pkg: nginx
 
 /etc/nginx/conf.d/hadoop.conf:
   file:
