@@ -1,7 +1,12 @@
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
+
 include:
   - cdh5.repo
   - cdh5.hadoop.conf
   - cdh5.landing_page
+  {% if kms %}
+  - cdh5.hadoop.encryption
+  {% endif %}
   {% if salt['pillar.get']('cdh5:security:enable', False) %}
   - krb5
   - cdh5.security

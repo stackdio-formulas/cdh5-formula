@@ -35,7 +35,7 @@ chown-keystore:
   cmd:
     - run
     - user: root
-    - name: 'chown root:hadoop /etc/hadoop/conf/hadoop.keystore && chmod 440 /etc/hadoop/conf/hadoop.keystore'
+    - name: 'chown root:hadoop /etc/hadoop/conf/hadoop.keystore && chmod 444 /etc/hadoop/conf/hadoop.keystore'
     - require:
       - cmd: create-keystore
 
