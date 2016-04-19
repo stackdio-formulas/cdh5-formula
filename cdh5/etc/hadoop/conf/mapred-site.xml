@@ -81,9 +81,13 @@
       <name>yarn.app.mapreduce.am.resource.mb</name>
       <value>1024</value>
   </property>
+  {% set am_opts = '-Xmx768m' %}
+  {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    {% set am_opts = am_opts ~ ' -Djava.security.krb5.conf=' ~ pillar.krb5.conf_file %}
+  {% endif %}
   <property>
       <name>yarn.app.mapreduce.am.command-opts</name>
-      <value>-Xmx768m</value>
+      <value>{{ am_opts }}</value>
   </property>
   <property>
       <name>yarn.app.mapreduce.am.resource.cpu-vcores</name>
