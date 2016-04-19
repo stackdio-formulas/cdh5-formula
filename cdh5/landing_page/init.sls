@@ -1,25 +1,13 @@
 {% if salt['pillar.get']('cdh5:landing_page', True) %}
 
-{% set settings = salt['grains.filter_by']({
-      'Debian': {
-          'package_name': 'apache2',
-          'html_file': '/var/www/index.html',
-      },
-      'RedHat': {
-          'package_name': 'httpd',
-          'html_file': '/var/www/html/index.html',
-      },
-}) %}
-
-
-# Install thttpd or apache
+# Install nginx
 webserver:
   pkg:
     - installed
-    - name: {{ settings.package_name }}
+    - name: nginx
   service:
     - running
-    - name: {{ settings.package_name }}
+    - name: nginx
     - require:
       - pkg: webserver
       - file: landing_html
@@ -28,7 +16,7 @@ webserver:
 landing_html:
   file:
     - managed
-    - name: {{ settings.html_file }}
+    - name: /usr/share/nginx/html/index.html
     - source: salt://cdh5/landing_page/index.html
     - user: root
     - group: root
