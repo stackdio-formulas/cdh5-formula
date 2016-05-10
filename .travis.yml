@@ -1,0 +1,19 @@
+language: python
+
+python:
+  - "2.7"
+
+# So that we get a docker container
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+## Customize dependencies
+install:
+  - pip install -U https://github.com/stackdio/stackdio-formula-validator/archive/master.tar.gz
+
+# Validate our formula
+script:
+  - validate-formula .

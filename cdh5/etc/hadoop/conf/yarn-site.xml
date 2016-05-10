@@ -192,6 +192,16 @@
     <value>yarn/_HOST@{{ krb5.realm }}</value>
   </property>
 
+  <!-- ProxyServer security configs -->
+  <property>
+    <name>yarn.web-proxy.keytab</name>
+    <value>/etc/hadoop/conf/yarn.keytab</value>    <!-- path to the YARN keytab -->
+  </property>
+  <property>
+    <name>yarn.web-proxy.principal</name>
+    <value>yarn/_HOST@{{ krb5.realm }}</value>
+  </property>
+
   <!-- NodeManager security configs -->
   <property>
     <name>yarn.nodemanager.keytab</name>
