@@ -50,7 +50,7 @@
       <value>{{ pillar.cdh5.dfs.replication }}</value>
     </property>
     <property>
-      <name>dfs.block.size</name>
+      <name>dfs.blocksize</name>
       <value>{{ pillar.cdh5.dfs.block_size }}</value>
     </property>
     <property>
