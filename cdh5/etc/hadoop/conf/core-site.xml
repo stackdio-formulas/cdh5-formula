@@ -25,7 +25,7 @@
     <!-- Use the uri with the nameservice if we're in HA mode-->
     <property>
       <name>fs.defaultFS</name>
-      <value>hdfs://default</value>
+      <value>hdfs://{{ grains.namespace }}</value>
     </property>
     <!-- set up the zookeeper quorum -->
     <property>

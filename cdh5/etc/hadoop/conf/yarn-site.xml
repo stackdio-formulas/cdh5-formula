@@ -147,7 +147,7 @@
     </property>
     <property>
       <name>yarn.resourcemanager.cluster-id</name>
-      <value>default</value>
+      <value>{{ grains.namespace }}</value>
     </property>
     <property>
       <name>yarn.resourcemanager.recovery.enabled</name>
