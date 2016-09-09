@@ -10,7 +10,7 @@
     <property>
         <name>hbase.rootdir</name>
         {% if standby %}
-        <value>hdfs://default/hbase</value>
+        <value>hdfs://{{ grains.namespace }}/hbase</value>
         {% else %}
         <value>hdfs://{{ nn_host }}:8020/hbase</value>
         {% endif %}
