@@ -14,6 +14,7 @@ generate_keytab_{{ user.username }}:
     - env:
       - STACKDIO_USER: {{ user.username }}
     - cwd: /home/{{ user.username }}
+    - unless: test -f /home/{{ user.username }}/{{ user.username }}.keytab
     - require:
       - module: load_admin_keytab
 {% endfor %}

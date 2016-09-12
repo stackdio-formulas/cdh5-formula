@@ -7,6 +7,7 @@ generate_hadoop_keytabs:
     - user: root
     - group: root
     - cwd: /etc/hadoop/conf
+    - unless: test -f /etc/hadoop/conf/yarn.keytab
     - require:
       - module: load_admin_keytab
       - cmd: generate_http_keytab
