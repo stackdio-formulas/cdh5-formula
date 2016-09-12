@@ -38,3 +38,5 @@ id -u hdfs &> /dev/null && chown hdfs:hadoop hdfs.keytab
 id -u mapred &> /dev/null && chown mapred:hadoop mapred.keytab
 id -u yarn &> /dev/null && chown yarn:hadoop yarn.keytab
 chmod 400 *.keytab
+
+cp hdfs.keytab hdfs.keytab.bak
