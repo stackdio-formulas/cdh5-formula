@@ -2,6 +2,10 @@
 {%- set realm = krb5.realm -%}
 #!/bin/bash
 
+if [ -f kms.keytab ]; then
+   exit 0
+fi
+
 rm -rf *.keytab
 
 cp /root/HTTP.keytab kms.keytab

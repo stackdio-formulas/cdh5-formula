@@ -7,6 +7,7 @@ generate_hadoop_kms_keytabs:
     - user: root
     - group: root
     - cwd: /etc/hadoop-kms/conf
+    - unless: test -f /etc/hadoop-kms/conf/kms.keytab
     - require:
       - module: load_admin_keytab
       - cmd: generate_http_keytab
