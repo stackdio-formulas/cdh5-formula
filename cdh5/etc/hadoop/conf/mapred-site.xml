@@ -145,8 +145,7 @@
     {% from 'krb5/settings.sls' import krb5 with context %}
     <property>
         <name>mapreduce.jobhistory.keytab</name>
-        <value>/etc/hadoop/conf/mapred.keytab
-        </value>    <!-- path to the MAPRED keytab for the Job History Server -->
+        <value>/etc/hadoop/conf/mapred.keytab</value>    <!-- path to the MAPRED keytab for the Job History Server -->
     </property>
     <property>
         <name>mapreduce.jobhistory.principal</name>
