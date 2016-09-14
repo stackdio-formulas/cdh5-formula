@@ -7,7 +7,7 @@ hadoop-kms-server-svc:
     - require:
       - pkg: hadoop-kms-server
       - file: /etc/hadoop-kms/conf
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
     - watch:

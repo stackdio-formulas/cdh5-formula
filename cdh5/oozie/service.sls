@@ -13,7 +13,7 @@ ooziedb:
     - require:
       - pkg: oozie
       - cmd: extjs
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
       - file: /etc/oozie/conf/oozie-site.xml
       - file: /etc/oozie/conf/oozie-env.sh
       - cmd: generate_oozie_keytabs
@@ -28,7 +28,7 @@ create-oozie-sharelibs:
     - require:
       - cmd: ooziedb
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
 create_sharelib_script:
   file:
     - managed
@@ -51,7 +51,7 @@ create_sharelib_script:
 populate-oozie-sharelibs:
   cmd:
     - run
-    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    {% if pillar.cdh5.security.enable %}
     - name: '/usr/lib/oozie/bin/oozie-sharelib-kerberos.sh create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/{{ share }}'
     - user: oozie
     {% else %}
@@ -76,7 +76,7 @@ oozie-svc:
     - watch:
       - cmd: ooziedb
       - cmd: populate-oozie-sharelibs
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
 {% endif %}

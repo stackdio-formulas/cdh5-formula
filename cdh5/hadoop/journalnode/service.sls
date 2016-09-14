@@ -1,5 +1,4 @@
 {% set journal_dir = salt['pillar.get']('cdh5:dfs:journal_dir', '/mnt/hadoop/hdfs/jn') %}
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 
 
 # Make sure the journal data directory exists if necessary
@@ -11,7 +10,7 @@ cdh5_journal_dir:
     - require:
       - pkg: hadoop-hdfs-journalnode
       - file: /etc/hadoop/conf
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
@@ -27,7 +26,7 @@ hadoop-hdfs-journalnode-svc:
     - require:
       - pkg: hadoop-hdfs-journalnode
       - cmd: cdh5_journal_dir
-      {% if kms %}
+      {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
     - watch:

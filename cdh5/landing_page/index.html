@@ -8,7 +8,7 @@
 {%- set impala_state_store = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.impala.state-store', 'grains.items', 'compound').values() -%}
 {%- set impala_catalog = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.impala.catalog', 'grains.items', 'compound').values() -%}
 {%- set manager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.manager.server', 'grains.items', 'compound').values() -%}
-{%- set https = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
+{%- set https = pillar.cdh5.encryption.enable -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>

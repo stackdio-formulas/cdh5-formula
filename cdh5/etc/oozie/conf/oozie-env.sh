@@ -35,7 +35,7 @@ export OOZIE_HTTPS_KEYSTORE_FILE=/etc/oozie/conf/oozie.keystore
 export OOZIE_HTTPS_KEYSTORE_PASS=hadoop
 
 export CATALINA_OPTS="$CATALINA_OPTS -Xmx1024m"
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
 export CATALINA_OPTS="$CATALINA_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
 {% endif %}
 

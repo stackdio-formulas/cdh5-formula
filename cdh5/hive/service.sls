@@ -15,7 +15,7 @@ mysql-svc:
     - require:
       - pkg: mysql
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
 hdfs_kinit:
   cmd:
     - run
@@ -40,7 +40,7 @@ create_anonymous_user:
     - run
     - name: 'hdfs dfs -mkdir -p /user/anonymous && hdfs dfs -chown anonymous:anonymous /user/anonymous'
     - user: hdfs
-    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    {% if pillar.cdh5.security.enable %}
     - require:
       - cmd: hdfs_kinit
     {% endif %}
@@ -60,7 +60,7 @@ create_hive_dir:
     - run
     - user: hdfs
     - name: 'hdfs dfs -mkdir -p /user/{{ pillar.cdh5.hive.user }} && hdfs dfs -chown -R {{pillar.cdh5.hive.user}}:{{pillar.cdh5.hive.user}} /user/{{pillar.cdh5.hive.user}}'
-    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    {% if pillar.cdh5.security.enable %}
     - require:
       - cmd: hdfs_kinit
     {% endif %}
@@ -72,7 +72,7 @@ create_hive_key:
     - user: hive
     - name: 'hadoop key create hive'
     - unless: 'hadoop key list | grep hive'
-    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    {% if pillar.cdh5.security.enable %}
     - require:
       - cmd: hive_kinit
     {% endif %}
@@ -99,7 +99,7 @@ create_warehouse_dir:
     - user: hive
     - require:
       - pkg: hive
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: hive_kinit
       {% endif %}
 
@@ -110,7 +110,7 @@ create_scratch_dir:
     - user: hive
     - require:
       - pkg: hive
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: hive_kinit
       {% endif %}
 
@@ -151,9 +151,9 @@ hive-server2:
     - running
     - require: 
       - service: hive-metastore
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: generate_hive_keytabs 
-{% endif %}
+      {% endif %}
     - watch:
       - file: /etc/hive/conf/hive-site.xml
 

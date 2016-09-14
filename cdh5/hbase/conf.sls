@@ -41,7 +41,7 @@
       - file: {{ pillar.cdh5.hbase.tmp_dir }}
       - file: {{ pillar.cdh5.hbase.log_dir }}
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
 /etc/hbase/conf/zk-jaas.conf:
   file:
     - managed

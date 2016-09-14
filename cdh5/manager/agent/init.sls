@@ -3,7 +3,7 @@ include:
   {% if salt['pillar.get']('cdh5:manager:agent:start_service', True) %}
   - cdh5.manager.agent.service
   {% endif %}
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
+  {% if pillar.cdh5.security.enable %}
   - krb5
   - cdh5.security
   - cdh5.security.stackdio_user

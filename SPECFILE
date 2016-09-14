@@ -75,6 +75,7 @@ pillar_defaults:
     landing_page: true
     max_log_index: 1
     encryption:
+      enable: false
       certificate: CHANGE_ME
       private_key: CHANGE_ME
     security:

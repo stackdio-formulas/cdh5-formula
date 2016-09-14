@@ -1,7 +1,6 @@
 {% set yarn_local_dir = salt['pillar.get']('cdh5:yarn:local_dirs', '/mnt/hadoop/yarn/local') %}
 {% set yarn_log_dir = salt['pillar.get']('cdh5:yarn:log_dirs', '/mnt/hadoop/yarn/logs') %}
 {% set dfs_data_dir = salt['pillar.get']('cdh5:dfs:data_dir', '/mnt/hadoop/hdfs/data') %}
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 
 
 # make the local storage directories
@@ -44,10 +43,10 @@ hadoop-hdfs-datanode-svc:
     - require: 
       - pkg: hadoop-hdfs-datanode
       - cmd: dfs_data_dir
-      {% if kms %}
+      {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - file: /etc/default/hadoop-hdfs-datanode
       - cmd: generate_hadoop_keytabs
       {% endif %}
@@ -67,10 +66,10 @@ hadoop-yarn-nodemanager-svc:
       - pkg: hadoop-yarn-nodemanager
       - cmd: datanode_yarn_local_dirs
       - cmd: datanode_yarn_log_dirs
-      {% if kms %}
+      {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - file: /etc/default/hadoop-hdfs-datanode
       - cmd: generate_hadoop_keytabs
       {% endif %}

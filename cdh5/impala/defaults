@@ -1,5 +1,5 @@
 {% set ss_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.impala.state-store', 'grains.items', 'compound').values()[0]['fqdn'] %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
 {% from 'krb5/settings.sls' import krb5 with context %}
 {% endif %}
 {% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
@@ -10,12 +10,12 @@ IMPALA_BACKEND_PORT=22000
 IMPALA_LOG_DIR=/var/log/impala
 DEFAULT_POOL_MAX_REQUESTS={{ salt['pillar.get']('cdh5:impala:max_pool_requests', 20) }}
 DEFAULT_MEM_LIMIT={{ salt['pillar.get']('cdh5:impala:server_max_memory', '12GB') }}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
 KRB5_CONFIG={{ pillar.krb5.conf_file }}
 {% endif %}
 
 IMPALA_CATALOG_ARGS=" \
-{%- if salt['pillar.get']('cdh5:security:enable', False) %}
+{%- if pillar.cdh5.security.enable %}
     -kerberos_reinit_interval=60 \
     -principal=impala/{{ grains.fqdn }}@{{ krb5.realm }} \
     -keytab_file=/etc/impala/conf/impala.keytab \
@@ -27,7 +27,7 @@ IMPALA_CATALOG_ARGS=" \
     -log_dir=${IMPALA_LOG_DIR}"
 
 IMPALA_STATE_STORE_ARGS=" \
-{%- if salt['pillar.get']('cdh5:security:enable', False) %}
+{%- if pillar.cdh5.security.enable %}
     -kerberos_reinit_interval=60 \
     -principal=impala/{{ grains.fqdn }}@{{ krb5.realm }} \
     -keytab_file=/etc/impala/conf/impala.keytab \
@@ -37,7 +37,7 @@ IMPALA_STATE_STORE_ARGS=" \
     -state_store_port=${IMPALA_STATE_STORE_PORT}"
 
 IMPALA_SERVER_ARGS=" \
-{%- if salt['pillar.get']('cdh5:security:enable', False) %}
+{%- if pillar.cdh5.security.enable %}
     -kerberos_reinit_interval=60 \
     -principal=impala/{{ grains.fqdn }}@{{ krb5.realm }} \
     -keytab_file=/etc/impala/conf/impala.keytab \
