@@ -8,7 +8,7 @@ include:
 {% if salt['pillar.get']('cdh5:hbase:start_service', True) %}
   - cdh5.hbase.regionserver.service
 {% endif %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
   - krb5
   - cdh5.security
   - cdh5.hbase.security
@@ -20,7 +20,7 @@ hbase-regionserver:
     - installed 
     - require:
       - module: cdh5_refresh_db
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
       - file: krb5_conf_file
 {% endif %}
     - require_in:

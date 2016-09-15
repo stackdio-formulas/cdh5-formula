@@ -26,7 +26,7 @@ export HADOOP_PRIVILEGED_NFS_USER=hdfs
 export HADOOP_PRIVILEGED_NFS_PID_DIR=/var/run/hadoop-hdfs
 export HADOOP_PRIVILEGED_NFS_LOG_DIR=/var/log/hadoop-hdfs
 
-{%- if salt['pillar.get']('cdh5:security:enable', False) %}
+{%- if pillar.cdh5.security.enable %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
 export HADOOP_SECURE_DN_USER=hdfs
 export HADOOP_SECURE_DN_PID_DIR=/var/run/hadoop-hdfs

@@ -1,5 +1,4 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 
 #
 # Install the Oozie package
@@ -9,14 +8,14 @@ include:
   - cdh5.repo
   - cdh5.landing_page
   - cdh5.hadoop.conf
-{% if salt['pillar.get']('cdh5:oozie:start_service', True) %}
+  {% if salt['pillar.get']('cdh5:oozie:start_service', True) %}
   - cdh5.oozie.service
-{% endif %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+  {% endif %}
+  {% if pillar.cdh5.security.enable %}
   - krb5
   - cdh5.security
   - cdh5.oozie.security
-{% endif %}
+  {% endif %}
 
 unzip:
   pkg:
@@ -39,7 +38,7 @@ oozie:
     - require:
       - pkg: oozie
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
 /etc/oozie/conf/oozie-site.xml:
   file:
     - managed
@@ -94,7 +93,7 @@ extjs:
       - pkg: unzip
       - pkg: oozie
 
-{% if kms %}
+{% if pillar.cdh5.encryption.enable %}
 copy-keystore:
   cmd:
     - run

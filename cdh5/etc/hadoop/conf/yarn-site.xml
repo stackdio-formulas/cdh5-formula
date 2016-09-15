@@ -1,236 +1,228 @@
 {%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') -%}
 {%- set zookeepers = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').values() -%}
-{%- set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
 {%- if standby -%}
-  {%- set standby_items = standby.values()[0] -%}
-  {%- set standby_fqdn = standby_items['fqdn'] -%}
+    {%- set standby_items = standby.values()[0] -%}
+    {%- set standby_fqdn = standby_items['fqdn'] -%}
 {%- endif -%}
 <?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
-  <property>
-    <name>yarn.nodemanager.aux-services</name>
-    <value>mapreduce_shuffle</value>
-  </property>
-
-  <property>
-    <name>yarn.nodemanager.aux-services.mapreduce_shuffle.class</name>
-    <value>org.apache.hadoop.mapred.ShuffleHandler</value>
-  </property>
-
-  <property>
-    <name>yarn.log-aggregation-enable</name>
-    <value>true</value>
-  </property>
-
-  <property>
-    <description>List of directories to store localized files in.</description>
-    <name>yarn.nodemanager.local-dirs</name>
-    <value>{{ pillar.cdh5.yarn.local_dirs }}</value>
-  </property>
-
-  <property>
-    <description>Where to store container logs.</description>
-    <name>yarn.nodemanager.log-dirs</name>
-    <value>{{ pillar.cdh5.yarn.log_dirs }}</value>
-  </property>
-
-  <property>
-    <description>Where to aggregate logs to.</description>
-    <name>yarn.nodemanager.remote-app-log-dir</name>
-    <value>/var/log/hadoop-yarn/apps</value>
-  </property>
-
-  <property>
-    <description>Log retention in seconds</description>
-    <name>yarn.log-aggregation.retain-seconds</name>
-    <value>{{ pillar.cdh5.yarn.log_retain_seconds }}</value>
-  </property>
-
-  <property>
-    <name>yarn.resourcemanager.max-completed-applications</name>
-    <value>{{ pillar.cdh5.yarn.max_completed_applications }}</value>
-  </property>
-
-  <property>
-    <description>Classpath for typical applications.</description>
-     <name>yarn.application.classpath</name>
-     <value>
-        $HADOOP_CONF_DIR,
-        $HADOOP_COMMON_HOME/*,$HADOOP_COMMON_HOME/lib/*,
-        $HADOOP_HDFS_HOME/*,$HADOOP_HDFS_HOME/lib/*,
-        $HADOOP_MAPRED_HOME/*,$HADOOP_MAPRED_HOME/lib/*,
-        $HADOOP_YARN_HOME/*,$HADOOP_YARN_HOME/lib/*
-     </value>
-  </property>
-  <property>
-     <name>yarn.nodemanager.vmem-pmem-ratio</name>
-     <value>1.0</value>
-  </property>
-
-  <!-- memory allocation -->
-  <property>
-     <name>yarn.scheduler.minimum-allocation-mb</name>
-     <value>512</value>
-  </property>
-  <property>
-     <name>yarn.scheduler.maximum-allocation-mb</name>
-     <value>{{ pillar.cdh5.yarn.max_container_size_mb }}</value>
-  </property>
-  <property>
-      <name>yarn.scheduler.increment-allocation-mb</name>
-      <value>512</value>
-  </property>
-  <property>
-     <name>yarn.nodemanager.resource.memory-mb</name>
-     <value>{{ pillar.cdh5.yarn.max_container_size_mb }}</value>
-  </property>
-
-  <!-- vcore allocation -->
-  <property>
-      <name>yarn.scheduler.minimum-allocation-vcores</name>
-      <value>1</value>
-  </property>
-  <property>
-      <name>yarn.scheduler.maximum-allocation-vcores</name>
-      <value>{{ pillar.cdh5.yarn.num_cpus }}</value>
-  </property>
-  <property>
-      <name>yarn.scheduler.increment-allocation-vcores</name>
-      <value>1</value>
-  </property>
-  <property>
-      <name>yarn.nodemanager.resource.cpu-vcores</name>
-      <value>{{ pillar.cdh5.yarn.num_cpus }}</value>
-  </property>
-
-{%- if standby %}
     <property>
-      <name>yarn.resourcemanager.ha.enabled</name>
-      <value>true</value>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services.mapreduce_shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+
+    <property>
+        <name>yarn.log-aggregation-enable</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <description>List of directories to store localized files in.</description>
+        <name>yarn.nodemanager.local-dirs</name>
+        <value>{{ pillar.cdh5.yarn.local_dirs }}</value>
+    </property>
+
+    <property>
+        <description>Where to store container logs.</description>
+        <name>yarn.nodemanager.log-dirs</name>
+        <value>{{ pillar.cdh5.yarn.log_dirs }}</value>
+    </property>
+
+    <property>
+        <description>Where to aggregate logs to.</description>
+        <name>yarn.nodemanager.remote-app-log-dir</name>
+        <value>/var/log/hadoop-yarn/apps</value>
+    </property>
+
+    <property>
+        <description>Log retention in seconds</description>
+        <name>yarn.log-aggregation.retain-seconds</name>
+        <value>{{ pillar.cdh5.yarn.log_retain_seconds }}</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.max-completed-applications</name>
+        <value>{{ pillar.cdh5.yarn.max_completed_applications }}</value>
+    </property>
+
+    <property>
+        <description>Classpath for typical applications.</description>
+        <name>yarn.application.classpath</name>
+        <value>
+            $HADOOP_CONF_DIR,
+            $HADOOP_COMMON_HOME/*,$HADOOP_COMMON_HOME/lib/*,
+            $HADOOP_HDFS_HOME/*,$HADOOP_HDFS_HOME/lib/*,
+            $HADOOP_MAPRED_HOME/*,$HADOOP_MAPRED_HOME/lib/*,
+            $HADOOP_YARN_HOME/*,$HADOOP_YARN_HOME/lib/*
+        </value>
     </property>
     <property>
-      <name>yarn.resourcemanager.ha.rm-ids</name>
-      <value>rm1,rm2</value>
+        <name>yarn.nodemanager.vmem-pmem-ratio</name>
+        <value>1.0</value>
+    </property>
+
+    <!-- memory allocation -->
+    <property>
+        <name>yarn.scheduler.minimum-allocation-mb</name>
+        <value>512</value>
+    </property>
+    <property>
+        <name>yarn.scheduler.maximum-allocation-mb</name>
+        <value>{{ pillar.cdh5.yarn.max_container_size_mb }}</value>
+    </property>
+    <property>
+        <name>yarn.scheduler.increment-allocation-mb</name>
+        <value>512</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.resource.memory-mb</name>
+        <value>{{ pillar.cdh5.yarn.max_container_size_mb }}</value>
+    </property>
+
+    <!-- vcore allocation -->
+    <property>
+        <name>yarn.scheduler.minimum-allocation-vcores</name>
+        <value>1</value>
+    </property>
+    <property>
+        <name>yarn.scheduler.maximum-allocation-vcores</name>
+        <value>{{ pillar.cdh5.yarn.num_cpus }}</value>
+    </property>
+    <property>
+        <name>yarn.scheduler.increment-allocation-vcores</name>
+        <value>1</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.resource.cpu-vcores</name>
+        <value>{{ pillar.cdh5.yarn.num_cpus }}</value>
+    </property>
+
+    {% if standby %}
+    <property>
+        <name>yarn.resourcemanager.ha.enabled</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.ha.rm-ids</name>
+        <value>rm1,rm2</value>
     </property>
     {% if 'cdh5.hadoop.namenode' in grains.roles %}
     <property>
-      <name>yarn.resourcemanager.ha.id</name>
-      <value>rm1</value>
+        <name>yarn.resourcemanager.ha.id</name>
+        <value>rm1</value>
     </property>
     {% elif 'cdh5.hadoop.standby-namenode' in grains.roles %}
     <property>
-      <name>yarn.resourcemanager.ha.id</name>
-      <value>rm2</value>
+        <name>yarn.resourcemanager.ha.id</name>
+        <value>rm2</value>
     </property>
     {% endif %}
     <property>
-      <name>yarn.resourcemanager.hostname.rm1</name>
-      <value>{{ namenode_fqdn }}</value>
+        <name>yarn.resourcemanager.hostname.rm1</name>
+        <value>{{ namenode_fqdn }}</value>
     </property>
     <property>
-      <name>yarn.resourcemanager.hostname.rm2</name>
-      <value>{{ standby_fqdn }}</value>
+        <name>yarn.resourcemanager.hostname.rm2</name>
+        <value>{{ standby_fqdn }}</value>
     </property>
     <property>
-      <name>yarn.web-proxy.address</name>
-      <value>{{ namenode_fqdn }}:8089</value>
+        <name>yarn.web-proxy.address</name>
+        <value>{{ namenode_fqdn }}:8089</value>
     </property>
     <property>
-      <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
-      <value>true</value>
+        <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
+        <value>true</value>
     </property>
     <property>
-      <name>yarn.resourcemanager.ha.automatic-failover.embedded</name>
-      <value>true</value>
+        <name>yarn.resourcemanager.ha.automatic-failover.embedded</name>
+        <value>true</value>
     </property>
     <property>
-      <name>yarn.resourcemanager.cluster-id</name>
-      <value>{{ grains.namespace }}</value>
+        <name>yarn.resourcemanager.cluster-id</name>
+        <value>{{ grains.namespace }}</value>
     </property>
     <property>
-      <name>yarn.resourcemanager.recovery.enabled</name>
-      <value>true</value>
+        <name>yarn.resourcemanager.recovery.enabled</name>
+        <value>true</value>
     </property>
     <property>
-      <name>yarn.resourcemanager.work-preserving-recovery.enabled</name>
-      <value>true</value>
+        <name>yarn.resourcemanager.work-preserving-recovery.enabled</name>
+        <value>true</value>
     </property>
     <property>
-      <name>yarn.nodemanager.recovery.enabled</name>
-      <value>true</value>
+        <name>yarn.nodemanager.recovery.enabled</name>
+        <value>true</value>
     </property>
     <property>
-      <name>yarn.nodemanager.address</name>
-      <value>${yarn.nodemanager.hostname}:8050</value>
+        <name>yarn.nodemanager.address</name>
+        <value>${yarn.nodemanager.hostname}:8050</value>
     </property>
     <property>
-      <name>yarn.resourcemanager.store.class</name>
-      <value>org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore</value>
+        <name>yarn.resourcemanager.store.class</name>
+        <value>org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore</value>
     </property>
     <property>
-      <name>yarn.resourcemanager.zk-address</name>
-      <value>{% for zk in zookeepers %}{{ zk['fqdn'] }}{% if not loop.last %},{% endif %}{% endfor %}</value>
+        <name>yarn.resourcemanager.zk-address</name>
+        <value>{% for zk in zookeepers %}{{ zk['fqdn'] }}{% if not loop.last %},{% endif %}{% endfor %}</value>
     </property>
-{%- else  %}
+    {% else %}
     <property>
-      <name>yarn.resourcemanager.hostname</name>
-      <value>{{ namenode_fqdn }}</value>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>{{ namenode_fqdn }}</value>
     </property>
-{%- endif %}
+    {% endif %}
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
-{% from 'krb5/settings.sls' import krb5 with context %}
-  <!-- ResourceManager security configs -->
-  <property>
-    <name>yarn.resourcemanager.keytab</name>
-    <value>/etc/hadoop/conf/yarn.keytab</value>    <!-- path to the YARN keytab -->
-  </property>
-  <property>
-    <name>yarn.resourcemanager.principal</name>   
-    <value>yarn/_HOST@{{ krb5.realm }}</value>
-  </property>
+    {% if pillar.cdh5.security.enable %}
+    {% from 'krb5/settings.sls' import krb5 with context %}
+    <!-- ResourceManager security configs -->
+    <property>
+        <name>yarn.resourcemanager.keytab</name>
+        <value>/etc/hadoop/conf/yarn.keytab</value>    <!-- path to the YARN keytab -->
+    </property>
+    <property>
+        <name>yarn.resourcemanager.principal</name>
+        <value>yarn/_HOST@{{ krb5.realm }}</value>
+    </property>
 
-  <!-- ProxyServer security configs -->
-  <property>
-    <name>yarn.web-proxy.keytab</name>
-    <value>/etc/hadoop/conf/yarn.keytab</value>    <!-- path to the YARN keytab -->
-  </property>
-  <property>
-    <name>yarn.web-proxy.principal</name>
-    <value>yarn/_HOST@{{ krb5.realm }}</value>
-  </property>
+    <!-- ProxyServer security configs -->
+    <property>
+        <name>yarn.web-proxy.keytab</name>
+        <value>/etc/hadoop/conf/yarn.keytab</value>    <!-- path to the YARN keytab -->
+    </property>
+    <property>
+        <name>yarn.web-proxy.principal</name>
+        <value>yarn/_HOST@{{ krb5.realm }}</value>
+    </property>
 
-  <!-- NodeManager security configs -->
-  <property>
-    <name>yarn.nodemanager.keytab</name>
-    <value>/etc/hadoop/conf/yarn.keytab</value>    <!-- path to the YARN keytab -->
-  </property>
-  <property>
-    <name>yarn.nodemanager.principal</name>   
-    <value>yarn/_HOST@{{ krb5.realm }}</value>
-  </property>
-  <property>
-    <name>yarn.nodemanager.container-executor.class</name>    
-    <value>org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor</value>
-  </property> 
-  <property>
-    <name>yarn.nodemanager.linux-container-executor.group</name>
-    <value>yarn</value>
-  </property>
-  <!-- To enable SSL
-  <property>
-    <name>yarn.http.policy</name>
-    <value>HTTPS_ONLY</value>
-  </property>
-  -->
-{% endif %}
+    <!-- NodeManager security configs -->
+    <property>
+        <name>yarn.nodemanager.keytab</name>
+        <value>/etc/hadoop/conf/yarn.keytab</value>    <!-- path to the YARN keytab -->
+    </property>
+    <property>
+        <name>yarn.nodemanager.principal</name>
+        <value>yarn/_HOST@{{ krb5.realm }}</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.container-executor.class</name>
+        <value>org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.linux-container-executor.group</name>
+        <value>yarn</value>
+    </property>
+    {% endif %}
 
-{% if kms %}
-  <property>
-    <name>yarn.http.policy</name>
-    <value>HTTPS_ONLY</value>
-  </property>
-{% endif %}
+    {% if pillar.cdh5.encryption.enable %}
+    <property>
+        <name>yarn.http.policy</name>
+        <value>HTTPS_ONLY</value>
+    </property>
+    {% endif %}
 </configuration>

@@ -16,6 +16,6 @@ impala-server:
       {% if 'cdh5.hbase.master' in grains['roles'] or 'cdh5.hbase.regionserver' in grains['roles'] %}
       - file: /etc/impala/conf/hbase-site.xml
       {% endif %}
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: generate_impala_keytabs
       {% endif %}

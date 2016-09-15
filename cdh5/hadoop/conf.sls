@@ -1,4 +1,3 @@
-{% set encrypted = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 
 /etc/hadoop/conf:
   file:
@@ -8,7 +7,7 @@
     - user: root
     - group: root
     - file_mode: 644
-    {% if encrypted %}
+    {% if pillar.cdh5.encryption.enable %}
     - exclude_pat: .*.swp
     {% else %}
     - exclude_pat: ssl-*.xml

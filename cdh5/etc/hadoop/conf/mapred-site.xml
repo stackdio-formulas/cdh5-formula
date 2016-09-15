@@ -1,168 +1,167 @@
 {%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
-{%- set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
 <?xml version="1.0"?>
 <configuration>
-  <property>
-    <name>mapreduce.framework.name</name>
-    <value>yarn</value>
-  </property>
-  <property>
-    <name>mapreduce.cluster.temp.dir</name>
-    <value>/tmp/mapred/temp</value>
-  </property>
-  <property>
-     <name>mapreduce.jobhistory.webapp.address</name>
-     <value>{{ namenode_fqdn }}:19888</value>
-  </property>
-  <property>
-     <name>mapreduce.jobhistory.address</name>
-     <value>{{ namenode_fqdn }}:10020</value>
-  </property>
-  <property>
-     <name>yarn.app.mapreduce.am.staging-dir</name>
-     <value>/user</value>
-  </property>
-  <property>
-     <name>mapreduce.job.counters.max</name>
-     <value>240</value>
-  </property>
-  <property>
-    <name>mapreduce.job.reduces</name>
-    <value>{{ pillar.cdh5.mapred.reduces }}</value>
-  </property>
-  
-  {% set metainfo_split = pillar.cdh5.mapred.metainfo_maxsplit %}
-  <property>
-    <name>mapreduce.job.split.metainfo.maxsize</name>
-    <value>{{ metainfo_split }}</value>
-  </property>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+    <property>
+        <name>mapreduce.cluster.temp.dir</name>
+        <value>/tmp/mapred/temp</value>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.webapp.address</name>
+        <value>{{ namenode_fqdn }}:19888</value>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.address</name>
+        <value>{{ namenode_fqdn }}:10020</value>
+    </property>
+    <property>
+        <name>yarn.app.mapreduce.am.staging-dir</name>
+        <value>/user</value>
+    </property>
+    <property>
+        <name>mapreduce.job.counters.max</name>
+        <value>240</value>
+    </property>
+    <property>
+        <name>mapreduce.job.reduces</name>
+        <value>{{ pillar.cdh5.mapred.reduces }}</value>
+    </property>
 
-  <!-- Compression -->
-  <property>
-     <name>mapreduce.output.fileoutputformat.compress</name>
-     <value>true</value>
-  </property>
-  <property>
-     <name>mapreduce.output.fileoutputformat.compress.type</name>
-     <value>BLOCK</value>
-  </property>
-  <property>
-     <name>mapreduce.map.output.compress</name>
-     <value>true</value>
-  </property>
-  <property>
-    <name>mapreduce.map.output.compress.codec</name>
-    <value>org.apache.hadoop.io.compress.SnappyCodec</value>
-  </property>
+    {% set metainfo_split = pillar.cdh5.mapred.metainfo_maxsplit %}
+    <property>
+        <name>mapreduce.job.split.metainfo.maxsize</name>
+        <value>{{ metainfo_split }}</value>
+    </property>
 
-  <property>
-      <name>mapreduce.job.reduce.slowstart.completedmaps</name>
-      <value>0.8</value>
-  </property>
-  <property>
-      <name>mapreduce.reduce.shuffle.parallelcopies</name>
-      <value>10</value>
-  </property>
-  <property>
-     <name>mapreduce.map.speculative</name>
-     <value>true</value>
-   </property>
-  <property>
-     <name>mapreduce.reduce.speculative</name>
-     <value>false</value>
-   </property>
-  <property>
-     <name>mapreduce.reduce.shuffle.input.buffer.percent</name>
-     <value>0.4</value>
-  </property>
+    <!-- Compression -->
+    <property>
+        <name>mapreduce.output.fileoutputformat.compress</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>mapreduce.output.fileoutputformat.compress.type</name>
+        <value>BLOCK</value>
+    </property>
+    <property>
+        <name>mapreduce.map.output.compress</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>mapreduce.map.output.compress.codec</name>
+        <value>org.apache.hadoop.io.compress.SnappyCodec</value>
+    </property>
 
-  <!-- Resources for App Masters -->
-  <property>
-      <name>yarn.app.mapreduce.am.resource.mb</name>
-      <value>1024</value>
-  </property>
-  {% set am_opts = '-Xmx768m' %}
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
-    {% set am_opts = am_opts ~ ' -Djava.security.krb5.conf=' ~ pillar.krb5.conf_file %}
-  {% endif %}
-  <property>
-      <name>yarn.app.mapreduce.am.command-opts</name>
-      <value>{{ am_opts }}</value>
-  </property>
-  <property>
-      <name>yarn.app.mapreduce.am.resource.cpu-vcores</name>
-      <value>1</value>
-  </property>
+    <property>
+        <name>mapreduce.job.reduce.slowstart.completedmaps</name>
+        <value>0.8</value>
+    </property>
+    <property>
+        <name>mapreduce.reduce.shuffle.parallelcopies</name>
+        <value>10</value>
+    </property>
+    <property>
+        <name>mapreduce.map.speculative</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>mapreduce.reduce.speculative</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>mapreduce.reduce.shuffle.input.buffer.percent</name>
+        <value>0.4</value>
+    </property>
 
-  {% set memory_mb = pillar.cdh5.mapred.memory_mb %}
-  {% set heap_size = (memory_mb * 0.6666) | int %}
-  {% set java_opts = salt['pillar.get']('cdh5:mapred:child_java_opts', '-Xmx' ~ heap_size ~ 'm') %}
+    <!-- Resources for App Masters -->
+    <property>
+        <name>yarn.app.mapreduce.am.resource.mb</name>
+        <value>1024</value>
+    </property>
+    {% set am_opts = '-Xmx768m' %}
+    {% if pillar.cdh5.security.enable %}
+        {% set am_opts = am_opts ~ ' -Djava.security.krb5.conf=' ~ pillar.krb5.conf_file %}
+    {% endif %}
+    <property>
+        <name>yarn.app.mapreduce.am.command-opts</name>
+        <value>{{ am_opts }}</value>
+    </property>
+    <property>
+        <name>yarn.app.mapreduce.am.resource.cpu-vcores</name>
+        <value>1</value>
+    </property>
 
-  {% set java_opts = java_opts ~ ' -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=' ~ salt['pillar.get']('cdh5:mapred:heap_dump_path', '/mnt') %}
+    {% set memory_mb = pillar.cdh5.mapred.memory_mb %}
+    {% set heap_size = (memory_mb * 0.6666) | int %}
+    {% set java_opts = salt['pillar.get']('cdh5:mapred:child_java_opts', '-Xmx' ~ heap_size ~ 'm') %}
 
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
-  {% set java_opts = java_opts ~ ' -Djava.security.krb5.conf=' ~ pillar.krb5.conf_file %}
-  {% endif %}
-  <!-- Resources for mappers -->
-  <property>
-      <name>mapreduce.map.memory.mb</name>
-      <value>{{ memory_mb }}</value>
-  </property>
-  <property>
-      <name>mapreduce.map.java.opts</name>
-      <value>{{ java_opts }}</value>
-  </property>
-  <property>
-      <name>mapreduce.map.cpu.vcores</name>
-      <value>1</value>
-  </property>
+    {% set java_opts = java_opts ~ ' -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=' ~ salt['pillar.get']('cdh5:mapred:heap_dump_path', '/mnt') %}
 
-  <!-- Resources for reducers -->
-  <property>
-      <name>mapreduce.reduce.memory.mb</name>
-      <value>{{ memory_mb }}</value>
-  </property>
-  <property>
-      <name>mapreduce.reduce.java.opts</name>
-      <value>{{ java_opts }}</value>
-  </property>
-  <property>
-      <name>mapreduce.reduce.cpu.vcores</name>
-      <value>1</value>
-  </property>
+    {% if pillar.cdh5.security.enable %}
+        {% set java_opts = java_opts ~ ' -Djava.security.krb5.conf=' ~ pillar.krb5.conf_file %}
+    {% endif %}
+    <!-- Resources for mappers -->
+    <property>
+        <name>mapreduce.map.memory.mb</name>
+        <value>{{ memory_mb }}</value>
+    </property>
+    <property>
+        <name>mapreduce.map.java.opts</name>
+        <value>{{ java_opts }}</value>
+    </property>
+    <property>
+        <name>mapreduce.map.cpu.vcores</name>
+        <value>1</value>
+    </property>
 
-  <!-- Sorting -->
-  <property>
-    <name>mapreduce.task.io.sort.factor</name>
-    <value>{{ pillar.cdh5.io.sort_factor }}</value>
-  </property>
-  <property>
-    <name>mapreduce.task.io.sort.mb</name>
-    <value>{{ pillar.cdh5.io.sort_mb }}</value>
-  </property>
+    <!-- Resources for reducers -->
+    <property>
+        <name>mapreduce.reduce.memory.mb</name>
+        <value>{{ memory_mb }}</value>
+    </property>
+    <property>
+        <name>mapreduce.reduce.java.opts</name>
+        <value>{{ java_opts }}</value>
+    </property>
+    <property>
+        <name>mapreduce.reduce.cpu.vcores</name>
+        <value>1</value>
+    </property>
+
+    <!-- Sorting -->
+    <property>
+        <name>mapreduce.task.io.sort.factor</name>
+        <value>{{ pillar.cdh5.io.sort_factor }}</value>
+    </property>
+    <property>
+        <name>mapreduce.task.io.sort.mb</name>
+        <value>{{ pillar.cdh5.io.sort_mb }}</value>
+    </property>
 
 
-{%- if salt['pillar.get']('cdh5:security:enable', False) %}
-{%- from 'krb5/settings.sls' import krb5 with context %}
-  <property>
-    <name>mapreduce.jobhistory.keytab</name>
-    <value>/etc/hadoop/conf/mapred.keytab</value>    <!-- path to the MAPRED keytab for the Job History Server -->
-  </property>
-  <property>
-    <name>mapreduce.jobhistory.principal</name>   
-    <value>mapred/_HOST@{{ krb5.realm }}</value>
-  </property>
-{%- endif %}
+    {% if pillar.cdh5.security.enable %}
+    {% from 'krb5/settings.sls' import krb5 with context %}
+    <property>
+        <name>mapreduce.jobhistory.keytab</name>
+        <value>/etc/hadoop/conf/mapred.keytab</value>    <!-- path to the MAPRED keytab for the Job History Server -->
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.principal</name>
+        <value>mapred/_HOST@{{ krb5.realm }}</value>
+    </property>
+    {% endif %}
 
-{% if kms %}
-  <property>
-    <name>mapreduce.shuffle.ssl.enabled</name>
-    <value>true</value>
-    <final>true</final>
-  </property>
-  <property>
-    <name>mapreduce.jobhistory.http.policy</name>
-    <value>HTTPS_ONLY</value>
-  </property>
-{% endif %}
+    {% if pillar.cdh5.encryption.enable %}
+    <property>
+        <name>mapreduce.shuffle.ssl.enabled</name>
+        <value>true</value>
+        <final>true</final>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.http.policy</name>
+        <value>HTTPS_ONLY</value>
+    </property>
+    {% endif %}
 </configuration>

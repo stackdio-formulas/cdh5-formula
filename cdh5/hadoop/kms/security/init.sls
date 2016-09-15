@@ -1,4 +1,4 @@
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
 generate_hadoop_kms_keytabs:
   cmd:
     - script

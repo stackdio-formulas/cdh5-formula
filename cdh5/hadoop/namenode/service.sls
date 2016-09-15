@@ -24,9 +24,9 @@ cdh5_dfs_dirs:
     - require:
       - pkg: hadoop-hdfs-namenode
       - file: /etc/hadoop/conf
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
-{% endif %}
+      {% endif %}
 
 # Initialize HDFS. This should only run once, immediately
 # following an install of hadoop.
@@ -39,7 +39,7 @@ init_hdfs:
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
       - cmd: cdh5_dfs_dirs
-      {% if kms %}
+      {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
 
@@ -86,7 +86,7 @@ hadoop-hdfs-namenode-svc:
 # through the hadoop client may authorize successfully.
 # NOTE this means that any 'hdfs dfs' commands will need
 # to require this state to be sure we have a krb ticket
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
 hdfs_kinit:
   cmd:
     - run
@@ -157,7 +157,7 @@ create_mapred_key:
     - unless: 'hadoop key list | grep mapred'
     - require:
       - file: /etc/hadoop/conf
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: mapred_kinit
       {% endif %}
 
@@ -186,7 +186,7 @@ hdfs_dir_{{ user }}:
     - name: 'hdfs dfs -mkdir -p /user/{{ user }} && hdfs dfs -chown {{ user }}:{{ user }} /user/{{ user }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: hdfs_kinit
       {% endif %}
 {% endfor %}

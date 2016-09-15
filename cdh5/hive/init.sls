@@ -7,7 +7,7 @@ include:
 {% if salt['pillar.get']('cdh5:hive:start_service', True) %}
   - cdh5.hive.service
 {% endif %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
   - krb5
   - cdh5.security
   - cdh5.hive.security

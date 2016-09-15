@@ -12,7 +12,7 @@ hbase-regionserver-svc:
       - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.cdh5.hbase.tmp_dir }}
       - file: {{ pillar.cdh5.hbase.log_dir }}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
       - cmd: generate_hbase_keytabs
 {% endif %}
     - watch:

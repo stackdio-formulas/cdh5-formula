@@ -4,7 +4,7 @@ include:
 {% if salt['pillar.get']('cdh5:impala:start_service', True) %}
   - cdh5.impala.server.service
 {% endif %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if pillar.cdh5.security.enable %}
   - krb5
   - cdh5.security
   - cdh5.impala.security

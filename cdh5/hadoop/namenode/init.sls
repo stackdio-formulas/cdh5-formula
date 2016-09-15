@@ -4,7 +4,6 @@
 {% set mapred_staging_dir = '/user/history' %}
 {% set mapred_log_dir = '/var/log/hadoop-yarn' %}
 {% set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') %}
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 
 ##
 # Adding high-availability to the mix makes things a bit more complicated.
@@ -23,18 +22,18 @@ include:
   - cdh5.repo
   - cdh5.hadoop.conf
   - cdh5.landing_page
-{% if salt['pillar.get']('cdh5:namenode:start_service', True) %}
+  {% if salt['pillar.get']('cdh5:namenode:start_service', True) %}
   - cdh5.hadoop.namenode.service
-{% endif %}
-{% if kms %}
+  {% endif %}
+  {% if pillar.cdh5.encryption.enable %}
   - cdh5.hadoop.encryption
-{% endif %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+  {% endif %}
+  {% if pillar.cdh5.security.enable %}
   - krb5
   - cdh5.security
   - cdh5.security.stackdio_user
   - cdh5.hadoop.security
-{% endif %}
+  {% endif %}
 
 ##
 # Installs the namenode package.  This happens on both regular and standy namenodes.
@@ -46,15 +45,15 @@ hadoop-hdfs-namenode:
     - installed
     - require:
       - module: cdh5_refresh_db
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
-      {% if kms %}
+      {% if pillar.cdh5.encryption.enable %}
       - cmd: create-keystore
       {% endif %}
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
@@ -66,12 +65,12 @@ hadoop-hdfs-zkfc:
     - installed
     - require:
       - module: cdh5_refresh_db
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
@@ -80,12 +79,12 @@ hadoop-yarn-proxyserver:
     - installed
     - require:
       - module: cdh5_refresh_db
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 {% endif %}
@@ -101,12 +100,12 @@ hadoop-yarn-resourcemanager:
     - installed
     - require:
       - module: cdh5_refresh_db
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
@@ -120,12 +119,12 @@ hadoop-mapreduce-historyserver:
     - installed
     - require:
       - module: cdh5_refresh_db
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
