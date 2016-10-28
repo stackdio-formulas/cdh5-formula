@@ -1,43 +1,112 @@
-/root/server.crt:
+/etc/hadoop/conf/ca:
+  file:
+    - recurse
+    - source: salt://cdh5/ca
+    - template: jinja
+    - user: root
+    - group: root
+    - file_mode: 644
+
+/etc/hadoop/conf/ca/private/cakey.pem:
   file:
     - managed
     - user: root
     - group: root
-    - mode: 664
-    - contents_pillar: cdh5:encryption:certificate
+    - mode: 400
+    - makedirs: true
+    - contents_pillar: cdh5:encryption:ca_key
+    - require:
+      - file: /etc/hadoop/conf/ca
 
-/root/server.key:
+/etc/hadoop/conf/ca/certs/cacert.pem:
   file:
     - managed
     - user: root
     - group: root
-    - mode: 664
-    - contents_pillar: cdh5:encryption:private_key
+    - mode: 400
+    - makedirs: true
+    - contents_pillar: cdh5:encryption:ca_cert
+    - require:
+      - file: /etc/hadoop/conf/ca
 
-convert-to-jks:
+# Delete before re-creating to ensure idempotency
+delete-truststore:
   cmd:
     - run
     - user: root
-    - name: echo 'hadoop' | openssl pkcs12 -export -name {{ grains.id }} -in /root/server.crt -inkey /root/server.key -out /etc/hadoop/conf/hadoop.pkcs12 -password stdin
+    - name: rm -f /etc/hadoop/conf/hadoop.truststore
+
+create-truststore:
+  cmd:
+    - run
+    - user: root
+    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/hadoop/conf/hadoop.truststore -storepass hadoop -file /etc/hadoop/conf/ca/certs/cacert.pem -alias cdh5-ca -noprompt
     - require:
-      - file: /root/server.crt
-      - file: /root/server.key
+      - cmd: delete-truststore
+      - file: /etc/hadoop/conf/ca
+      - file: /etc/hadoop/conf/ca/private/cakey.pem
+      - file: /etc/hadoop/conf/ca/certs/cacert.pem
 
 create-keystore:
+  file:
+    - copy
+    - name: /etc/hadoop/conf/hadoop.keystore
+    - source: /etc/hadoop/conf/hadoop.truststore
+    - user: root
+    - group: root
+    - force: true
+    - mode: 640
+    - require:
+      - cmd: create-truststore
+
+create-key:
   cmd:
     - run
     - user: root
-    - name: '$JAVA_HOME/bin/keytool -importkeystore -srckeystore /etc/hadoop/conf/hadoop.pkcs12 -destkeystore /etc/hadoop/conf/hadoop.keystore -srcstoretype pkcs12 -srcalias {{ grains.id }} -destalias {{ grains.id }} -srcstorepass hadoop -deststorepass hadoop -destkeypass hadoop -noprompt'
+    - name: 'printf "CDH5 {{ grains.id }}\n\nCDH5\nUS\nUS\nUS\nyes\n" | /usr/java/latest/bin/keytool -genkey -alias {{ grains.id }} -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop -keyalg RSA -keysize 2048 -validity 8000 -ext san=dns:{{ grains.fqdn }}'
     - require:
-      - cmd: convert-to-jks
+      - file: create-keystore
+
+create-csr:
+  cmd:
+    - run
+    - user: root
+    - name: '/usr/java/latest/bin/keytool -certreq -alias {{ grains.id }} -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop -file /etc/hadoop/conf/hadoop.csr -keyalg rsa -ext san=dns:{{ grains.fqdn }}'
+    - require:
+      - cmd: create-key
+
+sign-csr:
+  cmd:
+    - run
+    - user: root
+    - name: 'printf "{{ pillar.cdh5.encryption.ca_key_pass }}\ny\ny\n" | openssl ca -in /etc/hadoop/conf/hadoop.csr -notext -out /etc/hadoop/conf/hadoop-signed.crt -config /etc/hadoop/conf/ca/conf/caconfig.cnf -extensions v3_req'
+    - require:
+      - cmd: create-csr
+
+import-signed-crt:
+  cmd:
+    - run
+    - user: root
+    - name: '/usr/java/latest/bin/keytool -importcert -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop -file /etc/hadoop/conf/hadoop-signed.crt -alias {{ grains.id }}'
+    - require:
+      - cmd: sign-csr
 
 chown-keystore:
   cmd:
     - run
     - user: root
-    - name: 'chown root:hadoop /etc/hadoop/conf/hadoop.keystore && chmod 444 /etc/hadoop/conf/hadoop.keystore'
+    - name: chown root:hadoop /etc/hadoop/conf/hadoop.keystore
     - require:
-      - cmd: create-keystore
+      - cmd: import-signed-crt
+
+# Don't leave the CA lying around.  Must be a cmd instead of file.absent, as it causes a name collision otherwise.
+remove-ca:
+  cmd:
+    - run
+    - name: rm -rf /etc/hadoop/conf/ca
+    - require:
+      - cmd: create-truststore
+      - cmd: import-signed-crt
 
 nginx:
   pkg:

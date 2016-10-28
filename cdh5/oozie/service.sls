@@ -13,11 +13,11 @@ ooziedb:
     - require:
       - pkg: oozie
       - cmd: extjs
-{% if pillar.cdh5.security.enable %}
+      {% if pillar.cdh5.security.enable %}
       - file: /etc/oozie/conf/oozie-site.xml
       - file: /etc/oozie/conf/oozie-env.sh
       - cmd: generate_oozie_keytabs
-{% endif %}
+      {% endif %}
 
 create-oozie-sharelibs:        
   cmd:
@@ -76,7 +76,7 @@ oozie-svc:
     - watch:
       - cmd: ooziedb
       - cmd: populate-oozie-sharelibs
-{% if pillar.cdh5.security.enable %}
+      {% if pillar.cdh5.security.enable %}
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
-{% endif %}
+      {% endif %}

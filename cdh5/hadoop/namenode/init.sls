@@ -51,7 +51,7 @@ hadoop-hdfs-namenode:
     - require_in:
       - file: /etc/hadoop/conf
       {% if pillar.cdh5.encryption.enable %}
-      - cmd: create-keystore
+      - file: /etc/hadoop/conf/ca
       {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs

@@ -11,6 +11,9 @@ include:
   {% if salt['pillar.get']('cdh5:oozie:start_service', True) %}
   - cdh5.oozie.service
   {% endif %}
+  {% if pillar.cdh5.encryption.enable %}
+  - cdh5.oozie.encryption
+  {% endif %}
   {% if pillar.cdh5.security.enable %}
   - krb5
   - cdh5.security
@@ -29,6 +32,10 @@ oozie:
       - oozie-client
     - require:
       - module: cdh5_refresh_db
+    {% if pillar.cdh5.encryption.enable %}
+    - require_in:
+      - file: /etc/oozie/conf/ca
+    {% endif %}
 
 /etc/oozie/conf/oozie-log4j.properties:
   file:
@@ -94,22 +101,6 @@ extjs:
       - pkg: oozie
 
 {% if pillar.cdh5.encryption.enable %}
-copy-keystore:
-  cmd:
-    - run
-    - user: root
-    - name: 'cp /etc/hadoop/conf/hadoop.keystore /etc/oozie/conf/oozie.keystore'
-    - require:
-      - pkg: oozie
-
-chown-keystore:
-  cmd:
-    - run
-    - user: root
-    - name: 'chown oozie:oozie /etc/oozie/conf/oozie.keystore && chmod 440 /etc/oozie/conf/oozie.keystore'
-    - require:
-      - cmd: copy-keystore
-
 enable-https:
   cmd:
     - run
