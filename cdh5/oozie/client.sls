@@ -38,5 +38,5 @@ oozie-client:
       - export OOZIE_CLIENT_OPTS="-Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
       {% endif %}
       {% if pillar.cdh5.encryption.enable %}
-      - export OOZIE_CLIENT_OPTS="${OOZIE_CLIENT_OPTS} -Djavax.net.ssl.trustStore=/etc/oozie/conf/oozie.truststore -Djavax.net.ssl.trustStorePassword=oozie"
+      - export OOZIE_CLIENT_OPTS="${OOZIE_CLIENT_OPTS} -Djavax.net.ssl.trustStore=/etc/oozie/conf/oozie.truststore -Djavax.net.ssl.trustStorePassword=oozie123"
       {% endif %}

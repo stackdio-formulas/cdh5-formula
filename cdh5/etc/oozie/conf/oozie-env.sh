@@ -32,9 +32,9 @@ export CATALINA_BASE=/var/lib/oozie/tomcat-deployment
 #
 export OOZIE_HTTPS_PORT=11443
 export OOZIE_HTTPS_TRUSTSTORE_FILE=/etc/oozie/conf/oozie.truststore
-export OOZIE_HTTPS_TRUSTSTORE_PASS=oozie
+export OOZIE_HTTPS_TRUSTSTORE_PASS=oozie123
 export OOZIE_HTTPS_KEYSTORE_FILE=/etc/oozie/conf/oozie.keystore
-export OOZIE_HTTPS_KEYSTORE_PASS=oozie
+export OOZIE_HTTPS_KEYSTORE_PASS=oozie123
 
 export CATALINA_OPTS="$CATALINA_OPTS -Xmx1024m"
 {% if pillar.cdh5.security.enable %}

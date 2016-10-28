@@ -40,7 +40,7 @@ create-truststore:
   cmd:
     - run
     - user: root
-    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.truststore -storepass oozie -file /etc/oozie/conf/ca/certs/cacert.pem -alias cdh5-ca -noprompt
+    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 -file /etc/oozie/conf/ca/certs/cacert.pem -alias cdh5-ca -noprompt
     - require:
       - cmd: delete-truststore
       - file: /etc/oozie/conf/ca
@@ -63,7 +63,7 @@ create-key:
   cmd:
     - run
     - user: root
-    - name: 'printf "CDH5 {{ grains.id }}\n\nCDH5\nUS\nUS\nUS\nyes\n" | /usr/java/latest/bin/keytool -genkey -alias {{ grains.id }} -keystore /etc/oozie/conf/oozie.keystore -storepass oozie -keyalg RSA -keysize 2048 -validity 8000 -ext san=dns:{{ grains.fqdn }}'
+    - name: 'printf "CDH5 {{ grains.id }}\n\nCDH5\nUS\nUS\nUS\nyes\n" | /usr/java/latest/bin/keytool -genkey -alias {{ grains.id }} -keystore /etc/oozie/conf/oozie.keystore -storepass oozie123 -keyalg RSA -keysize 2048 -validity 8000 -ext san=dns:{{ grains.fqdn }}'
     - require:
       - file: create-keystore
 
@@ -71,7 +71,7 @@ create-csr:
   cmd:
     - run
     - user: root
-    - name: '/usr/java/latest/bin/keytool -certreq -alias {{ grains.id }} -keystore /etc/oozie/conf/oozie.keystore -storepass oozie -file /etc/oozie/conf/oozie.csr -keyalg rsa -ext san=dns:{{ grains.fqdn }}'
+    - name: '/usr/java/latest/bin/keytool -certreq -alias {{ grains.id }} -keystore /etc/oozie/conf/oozie.keystore -storepass oozie123 -file /etc/oozie/conf/oozie.csr -keyalg rsa -ext san=dns:{{ grains.fqdn }}'
     - require:
       - cmd: create-key
 
@@ -87,7 +87,7 @@ import-signed-crt:
   cmd:
     - run
     - user: root
-    - name: '/usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.keystore -storepass oozie -file /etc/oozie/conf/oozie-signed.crt -alias {{ grains.id }}'
+    - name: '/usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.keystore -storepass oozie123 -file /etc/oozie/conf/oozie-signed.crt -alias {{ grains.id }}'
     - require:
       - cmd: sign-csr
 
