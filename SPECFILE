@@ -76,8 +76,9 @@ pillar_defaults:
     max_log_index: 1
     encryption:
       enable: false
-      certificate: CHANGE_ME
-      private_key: CHANGE_ME
+      ca_cert: CHANGE_ME
+      ca_key: CHANGE_ME
+      ca_key_pass: CHANGE_ME
     security:
       enable: false
     namenode:
