@@ -6,6 +6,8 @@
     - user: root
     - group: root
     - file_mode: 644
+    - context:
+      conf_dir: /etc/oozie/conf
 
 /etc/oozie/conf/ca/private/cakey.pem:
   file:
