@@ -49,6 +49,8 @@ create-truststore:
       - file: /etc/hadoop/conf/ca/private/cakey.pem
       - file: /etc/hadoop/conf/ca/certs/cacert.pem
 
+{% if 'cdh5.hadoop.client' not in grains.roles %}
+
 create-keystore:
   file:
     - copy
@@ -92,6 +94,8 @@ import-signed-crt:
     - name: '/usr/java/latest/bin/keytool -importcert -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop -file /etc/hadoop/conf/hadoop-signed.crt -alias {{ grains.id }}'
     - require:
       - cmd: sign-csr
+    - require_in:
+      - cmd: remove-ca
 
 chown-keystore:
   cmd:
@@ -101,6 +105,8 @@ chown-keystore:
     - require:
       - cmd: import-signed-crt
 
+{% endif %}
+
 # Don't leave the CA lying around.  Must be a cmd instead of file.absent, as it causes a name collision otherwise.
 remove-ca:
   cmd:
@@ -108,7 +114,6 @@ remove-ca:
     - name: rm -rf /etc/hadoop/conf/ca
     - require:
       - cmd: create-truststore
-      - cmd: import-signed-crt
 
 nginx:
   pkg:
