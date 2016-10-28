@@ -57,7 +57,7 @@ create-keystore:
     - user: root
     - group: root
     - force: true
-    - mode: 640
+    - mode: 600
     - require:
       - cmd: create-truststore
 
@@ -97,7 +97,7 @@ chown-keystore:
   cmd:
     - run
     - user: root
-    - name: chown root:oozie /etc/oozie/conf/oozie.keystore
+    - name: chown oozie:hadoop /etc/oozie/conf/oozie.keystore
     - require:
       - cmd: import-signed-crt
 
