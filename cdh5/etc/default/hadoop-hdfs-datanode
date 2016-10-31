@@ -28,8 +28,8 @@ export HADOOP_PRIVILEGED_NFS_LOG_DIR=/var/log/hadoop-hdfs
 
 {%- if pillar.cdh5.security.enable %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
-export HADOOP_SECURE_DN_USER=hdfs
-export HADOOP_SECURE_DN_PID_DIR=/var/run/hadoop-hdfs
-export HADOOP_SECURE_DN_LOG_DIR=/var/log/hadoop-hdfs
-export JSVC_HOME=/usr/lib/bigtop-utils/
+#export HADOOP_SECURE_DN_USER=hdfs
+#export HADOOP_SECURE_DN_PID_DIR=/var/run/hadoop-hdfs
+#export HADOOP_SECURE_DN_LOG_DIR=/var/log/hadoop-hdfs
+#export JSVC_HOME=/usr/lib/bigtop-utils/
 {%- endif %}
