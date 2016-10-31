@@ -187,14 +187,14 @@
     </property>
 
     <!-- DataNode security config -->
-{#    <property>#}
-{#        <name>dfs.datanode.address</name>#}
-{#        <value>0.0.0.0:1004</value>#}
-{#    </property>#}
-{#    <property>#}
-{#        <name>dfs.datanode.http.address</name>#}
-{#        <value>0.0.0.0:1006</value>#}
-{#    </property>#}
+    <property>
+        <name>dfs.datanode.address</name>
+        <value>0.0.0.0:1004</value>
+    </property>
+    <property>
+        <name>dfs.datanode.http.address</name>
+        <value>0.0.0.0:1006</value>
+    </property>
     <property>
         <name>dfs.datanode.keytab.file</name>
         <value>/etc/hadoop/conf/hdfs.keytab</value> <!-- path to the HDFS keytab -->
@@ -233,21 +233,17 @@
     {% endif %}
 
     {% if pillar.cdh5.encryption.enable %}
-{#    <property>#}
-{#        <name>dfs.encrypt.data.transfer</name>#}
-{#        <value>true</value>#}
-{#    </property>#}
-{#    <property>#}
-{#        <name>dfs.encrypt.data.transfer.algorithm</name>#}
-{#        <value>rc4</value>#}
-{#    </property>#}
-{#    <property>#}
-{#        <name>dfs.encrypt.data.transfer.cipher.suites</name>#}
-{#        <value>AES/CTR/NoPadding</value>#}
-{#    </property>#}
     <property>
-        <name>dfs.data.transfer.protection</name>
-        <value>privacy</value>
+        <name>dfs.encrypt.data.transfer</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>dfs.encrypt.data.transfer.algorithm</name>
+        <value>3des</value>
+    </property>
+    <property>
+        <name>dfs.encrypt.data.transfer.cipher.suites</name>
+        <value>AES/CTR/NoPadding</value>
     </property>
     <property>
         <name>dfs.http.policy</name>
