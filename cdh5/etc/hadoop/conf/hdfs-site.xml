@@ -239,7 +239,11 @@
     </property>
     <property>
         <name>dfs.encrypt.data.transfer.algorithm</name>
-        <value>rc4</value>
+        <value>3des</value>
+    </property>
+    <property>
+        <name>dfs.encrypt.data.transfer.cipher.suites</name>
+        <value>AES/CTR/NoPadding</value>
     </property>
     <property>
         <name>dfs.http.policy</name>
