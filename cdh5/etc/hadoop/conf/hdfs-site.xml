@@ -237,10 +237,10 @@
         <name>dfs.encrypt.data.transfer</name>
         <value>true</value>
     </property>
-    <property>
-        <name>dfs.encrypt.data.transfer.algorithm</name>
-        <value>rc4</value>
-    </property>
+{#    <property>#}
+{#        <name>dfs.encrypt.data.transfer.algorithm</name>#}
+{#        <value>rc4</value>#}
+{#    </property>#}
     <property>
         <name>dfs.encrypt.data.transfer.cipher.suites</name>
         <value>AES/CTR/NoPadding</value>
