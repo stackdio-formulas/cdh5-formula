@@ -238,6 +238,10 @@
         <value>true</value>
     </property>
     <property>
+        <name>dfs.encrypt.data.transfer.algorithm</name>
+        <value>rc4</value>
+    </property>
+    <property>
         <name>dfs.http.policy</name>
         <value>HTTPS_ONLY</value>
     </property>
