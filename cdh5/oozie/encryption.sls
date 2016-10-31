@@ -42,7 +42,7 @@ create-truststore:
   cmd:
     - run
     - user: root
-    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 -file /etc/oozie/conf/ca/certs/cacert.pem -alias cdh5-ca -noprompt
+    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 -file /etc/oozie/conf/ca/certs/cacert.pem -alias oozie-ca -noprompt
     - require:
       - cmd: delete-truststore
       - file: /etc/oozie/conf/ca

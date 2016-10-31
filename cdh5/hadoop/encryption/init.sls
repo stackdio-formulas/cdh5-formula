@@ -42,7 +42,7 @@ create-truststore:
   cmd:
     - run
     - user: root
-    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/hadoop/conf/hadoop.truststore -storepass hadoop -file /etc/hadoop/conf/ca/certs/cacert.pem -alias cdh5-ca -noprompt
+    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/hadoop/conf/hadoop.truststore -storepass hadoop -file /etc/hadoop/conf/ca/certs/cacert.pem -alias hadoop-ca -noprompt
     - require:
       - cmd: delete-truststore
       - file: /etc/hadoop/conf/ca
