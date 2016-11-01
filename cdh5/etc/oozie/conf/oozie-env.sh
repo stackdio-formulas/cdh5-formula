@@ -31,8 +31,10 @@ export CATALINA_BASE=/var/lib/oozie/tomcat-deployment
 # Java System properties for Oozie should be specified in this variable
 #
 export OOZIE_HTTPS_PORT=11443
+export OOZIE_HTTPS_TRUSTSTORE_FILE=/etc/oozie/conf/oozie.truststore
+export OOZIE_HTTPS_TRUSTSTORE_PASS=oozie123
 export OOZIE_HTTPS_KEYSTORE_FILE=/etc/oozie/conf/oozie.keystore
-export OOZIE_HTTPS_KEYSTORE_PASS=hadoop
+export OOZIE_HTTPS_KEYSTORE_PASS=oozie123
 
 export CATALINA_OPTS="$CATALINA_OPTS -Xmx1024m"
 {% if pillar.cdh5.security.enable %}

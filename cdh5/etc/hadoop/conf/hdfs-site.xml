@@ -209,12 +209,6 @@
         <name>dfs.web.authentication.kerberos.principal</name>
         <value>HTTP/_HOST@{{ krb5.realm }}</value>
     </property>
-    <!--
-    <property>
-    <name>dfs.http.policy</name>
-    <value>HTTPS_ONLY</value>
-    </property>
-    -->
 
     <!-- High-availability security config -->
     <property>
@@ -244,8 +238,20 @@
         <value>true</value>
     </property>
     <property>
+        <name>dfs.encrypt.data.transfer.algorithm</name>
+        <value>3des</value>
+    </property>
+    <property>
+        <name>dfs.encrypt.data.transfer.cipher.suites</name>
+        <value>AES/CTR/NoPadding</value>
+    </property>
+    <property>
         <name>dfs.http.policy</name>
         <value>HTTPS_ONLY</value>
+    </property>
+    <property>
+        <name>dfs.https.enable</name>
+        <value>true</value>
     </property>
     {% endif %}
 </configuration>

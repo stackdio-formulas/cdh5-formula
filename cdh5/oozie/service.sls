@@ -13,11 +13,11 @@ ooziedb:
     - require:
       - pkg: oozie
       - cmd: extjs
-{% if pillar.cdh5.security.enable %}
+      {% if pillar.cdh5.security.enable %}
       - file: /etc/oozie/conf/oozie-site.xml
       - file: /etc/oozie/conf/oozie-env.sh
       - cmd: generate_oozie_keytabs
-{% endif %}
+      {% endif %}
 
 create-oozie-sharelibs:        
   cmd:
@@ -40,6 +40,34 @@ create_sharelib_script:
     - template: jinja
     - require_in:
       - cmd: populate-oozie-sharelibs
+
+oozie_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/oozie/conf/oozie.keytab oozie/{{ grains.fqdn }}'
+    - user: oozie
+    - group: oozie
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - pkg: oozie
+    - require_in:
+      - cmd: populate-oozie-sharelibs
+
+oozie_kdestroy:
+  cmd:
+    - run
+    - name: kdestroy
+    - user: oozie
+    - group: oozie
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - pkg: oozie
+      - cmd: oozie_kinit
+    - require_in:
+      - service: oozie-svc
+
 {% endif %}
 
 {% if pillar.cdh5.version >= '5.4.0' %}
@@ -76,7 +104,7 @@ oozie-svc:
     - watch:
       - cmd: ooziedb
       - cmd: populate-oozie-sharelibs
-{% if pillar.cdh5.security.enable %}
+      {% if pillar.cdh5.security.enable %}
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
-{% endif %}
+      {% endif %}
