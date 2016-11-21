@@ -57,24 +57,16 @@ cloudera_cdh5:
   pkgrepo:
     - managed
     - humanname: "Cloudera's Distribution for Hadoop, Version 5"
-    - baseurl: "http://archive.cloudera.com/cdh5/redhat/{{ releasever }}/x86_64/cdh/{{ pillar.cdh5.version }}/"
-    - gpgkey: http://archive.cloudera.com/cdh5/redhat/{{ releasever }}/x86_64/cdh/RPM-GPG-KEY-cloudera
+    - baseurl: "http://archive.cloudera.com/cdh5/redhat/$releasever/$basearch/cdh/{{ pillar.cdh5.version }}/"
+    - gpgkey: http://archive.cloudera.com/cdh5/redhat/$releasever/$basearch/cdh/RPM-GPG-KEY-cloudera
     - gpgcheck: 1
-
-cdh5_gpg:
-  cmd:
-    - run
-    - name: 'rpm --import http://archive.cloudera.com/cdh5/redhat/{{ releasever }}/x86_64/cdh/RPM-GPG-KEY-cloudera'
-    - unless: 'rpm -qi gpg-pubkey-e8f86acd'
-    - require:
-      - pkgrepo: cloudera_cdh5
 
 cdh5_refresh_db:
   module:
     - run
     - name: pkg.refresh_db
     - require:
-      - cmd: cdh5_gpg
+      - pkgrepo: cloudera_cdh5
 
 {% endif %}
 
