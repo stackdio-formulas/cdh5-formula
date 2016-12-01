@@ -1,19 +1,16 @@
 {% set packages = salt['grains.filter_by']({
    'Debian': {
       'mysql': 'mysql-server',
-      'connector': 'libmysql-java',
-      'service': 'mysql'
+      'connector': 'libmysql-java'
    },
    'RedHat': salt['grains.filter_by']({
       '6': {
          'mysql': 'mysql-server',
-         'connector': 'mysql-connector-java',
-         'service': 'mysqld'
+         'connector': 'mysql-connector-java'
       },
       '7': {
          'mysql': 'mariadb-server',
-         'connector': 'mysql-connector-java',
-         'service': 'mariadb'
+         'connector': 'mysql-connector-java'
       }
    }, 'osmajorrelease')
 }) %}

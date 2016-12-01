@@ -1,5 +1,19 @@
 {% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
-# 
+{% set packages = salt['grains.filter_by']({
+   'Debian': {
+      'service': 'mysql'
+   },
+   'RedHat': salt['grains.filter_by']({
+      '6': {
+         'service': 'mysqld'
+      },
+      '7': {
+         'service': 'mariadb'
+      }
+   }, 'osmajorrelease')
+}) %}
+
+#
 # Start the Hive service
 #
 
@@ -7,11 +21,7 @@
 mysql-svc:
   service:
     - running
-    {% if grains['os_family'] == 'Debian' %}
-    - name: mysql
-    {% elif grains['os_family'] == 'RedHat' %}
-    - name: mysqld
-    {% endif %}
+    - name: {{ packages.service }}
     - require:
       - pkg: mysql
 
