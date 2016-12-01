@@ -1,4 +1,24 @@
-# 
+{% set packages = salt['grains.filter_by']({
+   'Debian': {
+      'mysql': 'mysql-server',
+      'connector': 'libmysql-java',
+      'service': 'mysql'
+   },
+   'RedHat': salt['grains.filter_by']({
+      '6': {
+         'mysql': 'mysql-server',
+         'connector': 'mysql-connector-java',
+         'service': 'mysqld'
+      },
+      '7': {
+         'mysql': 'mariadb-server',
+         'connector': 'mysql-connector-java',
+         'service': 'mariadb'
+      }
+   }, 'osmajorrelease')
+}) %}
+
+#
 # Install the Hive package
 #
 include:
@@ -31,12 +51,8 @@ mysql:
   pkg:
     - installed
     - pkgs:
-      - mysql-server
-      {% if grains['os_family'] == 'Debian' %}
-      - libmysql-java
-      {% elif grains['os_family'] == 'RedHat' %}
-      - mysql-connector-java
-      {% endif %}
+      - {{ packages.mysql }}
+      - {{ packages.connector }}
 
 /usr/lib/hive/lib/mysql-connector-java.jar:
   file:
