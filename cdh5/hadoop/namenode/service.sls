@@ -50,7 +50,7 @@ init_zkfc:
     - name: hdfs zkfc -formatZK
     - user: hdfs
     - group: hdfs
-    - unless: 'zookeeper-client stat /hadoop-ha 2>&1 | grep "cZxid"'
+    - unless: 'zookeeper-client stat /hadoop-ha/{{ grains.namespace }} 2>&1 | grep "cZxid"'
     - require:
       - cmd: cdh5_dfs_dirs
 
