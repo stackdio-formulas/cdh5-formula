@@ -225,4 +225,12 @@
         <value>HTTPS_ONLY</value>
     </property>
     {% endif %}
+
+    <!-- Additional formula properties -->
+    {% for k, v in pillar.cdh5.extra_properties.yarn.items() %}
+    <property>
+        <name>{{ k }}</name>
+        <value>{{ v }}</value>
+    </property>
+    {% endfor %}
 </configuration>

@@ -254,4 +254,12 @@
         <value>true</value>
     </property>
     {% endif %}
+
+    <!-- Additional formula properties -->
+    {% for k, v in pillar.cdh5.extra_properties.hdfs.items() %}
+    <property>
+        <name>{{ k }}</name>
+        <value>{{ v }}</value>
+    </property>
+    {% endfor %}
 </configuration>

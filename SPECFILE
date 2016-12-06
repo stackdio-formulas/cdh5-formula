@@ -158,3 +158,8 @@ pillar_defaults:
         log_file: /mnt/log/cloudera-scm-agent/cloudera-scm-agent.log
     sentry:
       start_service: true
+    extra_properties:
+      core: {}
+      hdfs: {}
+      mapred: {}
+      yarn: {}
