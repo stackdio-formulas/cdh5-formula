@@ -39,9 +39,12 @@ oozie:
 
 /etc/oozie/conf/oozie-log4j.properties:
   file:
-    - replace
-    - pattern: 'RollingPolicy.MaxHistory=720'
-    - repl: 'RollingPolicy.MaxHistory={{ salt['pillar.get']('cdh5:oozie:max_log_index', 168) }}'
+    - managed
+    - source: salt://cdh5/etc/oozie/conf/oozie-log4j.properties
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
     - require:
       - pkg: oozie
 
