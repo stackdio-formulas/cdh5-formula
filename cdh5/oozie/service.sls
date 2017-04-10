@@ -41,6 +41,29 @@ create_sharelib_script:
     - require_in:
       - cmd: populate-oozie-sharelibs
 
+hdfs_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
+    - user: hdfs
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require_in:
+      - cmd: create-oozie-sharelibs
+
+hdfs_kdestroy:
+  cmd:
+    - run
+    - name: kdestroy
+    - user: hdfs
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: hdfs_kinit
+      - cmd: create-oozie-sharelibs
+    - require_in:
+      - service: oozie-svc
+
 oozie_kinit:
   cmd:
     - run
@@ -53,7 +76,6 @@ oozie_kinit:
       - pkg: oozie
     - require_in:
       - cmd: populate-oozie-sharelibs
-      - cmd: create-oozie-sharelibs
 
 oozie_kdestroy:
   cmd:
@@ -66,7 +88,6 @@ oozie_kdestroy:
     - require:
       - pkg: oozie
       - cmd: oozie_kinit
-      - cmd: create-oozie-sharelibs
       - cmd: populate-oozie-sharelibs
     - require_in:
       - service: oozie-svc
