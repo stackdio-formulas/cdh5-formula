@@ -66,7 +66,7 @@ oozie_kdestroy:
     - require:
       - pkg: oozie
       - cmd: oozie_kinit
-      - cmd: create-oozie-sharelibs:
+      - cmd: create-oozie-sharelibs
       - cmd: populate-oozie-sharelibs
     - require_in:
       - service: oozie-svc
