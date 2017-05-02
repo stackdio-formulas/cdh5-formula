@@ -23,6 +23,7 @@ hadoop-hdfs-journalnode-svc:
   service:
     - running
     - name: hadoop-hdfs-journalnode
+    - enable: true
     - require:
       - pkg: hadoop-hdfs-journalnode
       - cmd: cdh5_journal_dir

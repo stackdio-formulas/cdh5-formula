@@ -118,6 +118,7 @@ oozie-svc:
   service:
     - running
     - name: oozie
+    - enable: true
     - require:
       - pkg: oozie
       - cmd: extjs

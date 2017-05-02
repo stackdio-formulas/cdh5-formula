@@ -82,7 +82,7 @@ zookeeper-server-svc:
   service:
     - running
     - name: zookeeper-server
-    - unless: service zookeeper-server status
+    - enable: true
     - require:
         - cmd: zookeeper-init
         - file: /etc/zookeeper/conf/zoo.cfg

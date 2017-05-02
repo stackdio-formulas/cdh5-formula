@@ -40,6 +40,7 @@ hadoop-hdfs-datanode-svc:
   service:
     - running
     - name: hadoop-hdfs-datanode
+    - enable: true
     - require: 
       - pkg: hadoop-hdfs-datanode
       - cmd: dfs_data_dir
@@ -62,6 +63,7 @@ hadoop-yarn-nodemanager-svc:
   service:
     - running
     - name: hadoop-yarn-nodemanager
+    - enable: true
     - require: 
       - pkg: hadoop-yarn-nodemanager
       - cmd: datanode_yarn_local_dirs

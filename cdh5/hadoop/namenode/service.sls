@@ -59,6 +59,7 @@ hadoop-hdfs-zkfc-svc:
   service:
     - running
     - name: hadoop-hdfs-zkfc
+    - enable: true
     - require:
       - pkg: hadoop-hdfs-zkfc
       - cmd: init_zkfc
@@ -73,6 +74,7 @@ hadoop-hdfs-namenode-svc:
   service:
     - running
     - name: hadoop-hdfs-namenode
+    - enable: true
     - require:
       - pkg: hadoop-hdfs-namenode
       # Make sure HDFS is initialized before the namenode
@@ -200,6 +202,7 @@ hadoop-yarn-resourcemanager-svc:
   service:
     - running
     - name: hadoop-yarn-resourcemanager
+    - enable: true
     - require:
       - pkg: hadoop-yarn-resourcemanager
       - service: hadoop-hdfs-namenode-svc
@@ -214,6 +217,7 @@ hadoop-yarn-proxyserver-svc:
   service:
     - running
     - name: hadoop-yarn-proxyserver
+    - enable: true
     - require:
       - pkg: hadoop-yarn-proxyserver
       - service: hadoop-yarn-resourcemanager-svc
@@ -230,6 +234,7 @@ hadoop-mapreduce-historyserver-svc:
   service:
     - running
     - name: hadoop-mapreduce-historyserver
+    - enable: true
     - require:
       - pkg: hadoop-mapreduce-historyserver
       - service: hadoop-hdfs-namenode-svc

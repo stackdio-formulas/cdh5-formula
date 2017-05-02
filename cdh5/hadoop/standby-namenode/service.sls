@@ -34,6 +34,7 @@ hadoop-hdfs-zkfc-svc:
   service:
     - running
     - name: hadoop-hdfs-zkfc
+    - enable: true
     - require:
       - pkg: hadoop-hdfs-zkfc
       - cmd: init_standby_namenode
@@ -49,6 +50,7 @@ hadoop-hdfs-namenode-svc:
   service:
     - running
     - name: hadoop-hdfs-namenode
+    - enable: true
     - require:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode
@@ -59,6 +61,7 @@ hadoop-yarn-resourcemanager-svc:
   service:
     - running
     - name: hadoop-yarn-resourcemanager
+    - enable: true
     - require:
       - pkg: hadoop-yarn-resourcemanager
       - service: hadoop-hdfs-namenode-svc

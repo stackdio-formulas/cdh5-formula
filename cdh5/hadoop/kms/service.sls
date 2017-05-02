@@ -4,6 +4,7 @@ hadoop-kms-server-svc:
   service:
     - running
     - name: hadoop-kms-server
+    - enable: true
     - require:
       - pkg: hadoop-kms-server
       - file: /etc/hadoop-kms/conf
