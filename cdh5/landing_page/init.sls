@@ -8,6 +8,7 @@ webserver:
   service:
     - running
     - name: nginx
+    - enable: true
     - require:
       - pkg: webserver
       - file: landing_html
