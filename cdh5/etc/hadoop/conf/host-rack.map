@@ -1,4 +1,4 @@
 {%- set datanodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.datanode', 'grains.items', 'compound').values() -%}
-{% for datanode in datanodes -%}
+{% for datanode in datanodes %}
 {{ datanode['fqdn'] }} /{{ datanode.get('host_definition', 'default-rack') }}
 {%- endfor %}
