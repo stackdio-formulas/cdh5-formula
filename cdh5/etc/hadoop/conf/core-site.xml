@@ -91,6 +91,17 @@
         <name>dfs.client.read.shortcircuit</name>
         <value>true</value>
     </property>
+
+    <!-- Rack-awareness properties -->
+    <property>
+        <name>net.topology.node.switch.mapping.impl</name>
+        <value>org.apache.hadoop.net.TableMapping</value>
+    </property>
+    <property>
+        <name>net.topology.table.file.name</name>
+        <value>/etc/hadoop/conf/host-rack.map</value>
+    </property>
+
     {%- if pillar.cdh5.security.enable %}
     {%- from 'krb5/settings.sls' import krb5 with context %}
     <property>
