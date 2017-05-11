@@ -2,5 +2,5 @@
 {%- for datanode in datanodes -%}
 {{ datanode['fqdn'] }} /{{ datanode.get('host_definition', 'default-rack') }}
 {{ datanode['host'] }} /{{ datanode.get('host_definition', 'default-rack') }}
-{{ datanode['ip4'][0] /{{ datanode.get('host_definition', 'default-rack') }}
+{{ datanode['ip4'][0] }} /{{ datanode.get('host_definition', 'default-rack') }}
 {% endfor %}
