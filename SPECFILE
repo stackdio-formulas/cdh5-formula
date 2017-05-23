@@ -22,6 +22,7 @@ components:
     sls_path: cdh5.hadoop.nodemanager
   - title: HDFSNode
     description: Hadoop HDFSNode component of CDH5
+    sls_path: cdh5.hadoop.hdfsnode
   - title: Key Management Server
     description: Key Management Server for HDFS encryption-at-rest
     sls_path: cdh5.hadoop.kms
