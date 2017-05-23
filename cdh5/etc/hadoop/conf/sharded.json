@@ -1,0 +1,622 @@
+{
+    "title": "1:2 On-demand vs Spot Datanodes",
+    "description": "CDH 5.8.0 / 17 on-demand m4.xlarge w/ 1TB EBS / 33 spot i3.xlarge",
+    "create_users": false,
+    "properties": {
+        "cdh5": {
+            "dfs": {
+                "block_size": 268435456,
+                "data_dir": "/mnt/hadoop/hdfs/dn",
+                "permissions": true,
+                "replication": 3
+            },
+            "hue": {
+                "secret_key": "zIPW_2_6U7rqp_y1jc01Acsr30s0TlU2J13O7e5poH0xVrjVMQF6kA"
+            },
+            "io": {
+                "sort_factor": 64,
+                "sort_mb": 256
+            },
+            "landing_page": true,
+            "mapred": {
+                "child_java_opts": "-Xmx2048m",
+                "memory_mb": 3328,
+                "reduces": 750,
+                "system_dir": "/hadoop/system/mapred"
+            },
+            "max_log_index": 1,
+            "security": {
+                "enable": false
+            },
+            "version": "5.8.0",
+            "yarn": {
+                "local_dirs": "/mnt/hadoop/yarn/local",
+                "log_dirs": "/mnt/hadoop/yarn/logs",
+                "max_container_size_mb": 28672,
+                "num_cpus": 4
+            },
+            "zookeeper": {
+                "data_dir": "/mnt/zk/data"
+            }
+        },
+        "dr": {
+            "ad": {
+                "idmap_domain": "digitalreasoning.com",
+                "krb5_realm": "DR.AD",
+                "ldap_access_filter": "memberOf=cn=linuxusers,ou=groups,dc=dr,dc=ad",
+                "ldap_base_dn": "dc=dr,dc=ad",
+                "ldap_bind_dn": "cn=binduser,ou=admins,ou=people,dc=dr,dc=ad",
+                "ldap_bind_password": "mzyaNAnarozT3k9jgZtxyFh",
+                "server_fqdn": "ad-1d.dr.ad"
+            },
+            "aws_access_key": "",
+            "aws_secret_key": ""
+        },
+        "elasticsearch": {
+            "aws": {
+                "access_key": "AKIAIKINWIIIDOPR6OWQ",
+                "install": true,
+                "region": "us-east-1",
+                "secret_key": "CsstFnRhqdrw4MfbfEuHITI7bslUJaEBns7idOyA"
+            },
+            "heap_size": "15g",
+            "kibana": {
+                "version": "4.6.1"
+            },
+            "marvel": {
+                "install": true
+            },
+            "master_heap_size": "3g",
+            "replicas": 2,
+            "version": "2.4.0"
+        },
+        "java": {
+            "enable_jce": true,
+            "oracle": {
+                "jce8": {
+                    "uri": "http://code.digitalreasoning.com/java/oracle/jce8/jce_policy-8.zip"
+                },
+                "jdk8": {
+                    "rpm": "jdk1.8.0_66-1.8.0_66-fcs",
+                    "uri": "http://code.digitalreasoning.com/java/oracle/jdk8/jdk-8u66-linux-x64.rpm"
+                }
+            }
+        },
+        "synthesys": {
+            "data_dir": "/data",
+            "hdfs_root": "/Synthesys",
+            "security": {
+                "generate_user_keytabs": false
+            }
+        }
+    },
+    "labels": [
+        {
+            "key": "4.2.x",
+            "value": null
+        },
+        {
+            "key": "OFFICIAL",
+            "value": null
+        }
+    ],
+    "host_definitions":[
+        {
+            "title": "Edge Node",
+            "description": "Edge Node",
+            "cloud_image": "centos-7-hvm-qatp",
+            "count": 1,
+            "hostname_template": "{namespace}",
+            "size": "m4.xlarge",
+            "zone": null,
+            "subnet_id": "subnet-425c4d6a",
+            "spot_price": null,
+            "formula_components": [
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Base",
+                    "description": "base formula",
+                    "sls_path": "dr.base",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "AD",
+                    "description": "Enable Active Directory authentication",
+                    "sls_path": "dr.ad",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Yourkit",
+                    "description": "Install yourkit binaries",
+                    "sls_path": "dr.yourkit",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/java-formula.git",
+                    "title": "Oracle Java 8 JDK",
+                    "description": "Oracle Java 8 JDK",
+                    "sls_path": "java.oracle.jdk8",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "Hadoop Client Node",
+                    "description": "Hadoop Client Node",
+                    "sls_path": "cdh5.hadoop.client",
+                    "order": 2
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "Oozie Client Node",
+                    "description": "Oozie Client Node",
+                    "sls_path": "cdh5.oozie.client",
+                    "order": 3
+                },
+                {
+                    "formula": "ssh://ssh-stash.corp.digitalreasoning.com:7999/pi/synthesys-formula.git",
+                    "title": "Synthesys HDFS Permissions",
+                    "description": "Create all the appropriate directories needed by Synthesys",
+                    "sls_path": "synthesys.permissions",
+                    "order": 7
+                },
+                {
+                    "formula": "ssh://ssh-stash.corp.digitalreasoning.com:7999/pi/synthesys-formula.git",
+                    "title": "MySQL Client",
+                    "description": "Configure MySQL to point at the server configured with this formula",
+                    "sls_path": "synthesys.mysql_client",
+                    "order": 7
+                }
+            ],
+            "access_rules": [],
+            "volumes": [
+                {
+                    "device": "/dev/sdb",
+                    "mount_point": "/mnt",
+                    "size_in_gb": 400,
+                    "encrypted": false,
+                    "extra_options": {}
+                }
+            ],
+            "extra_options": {}
+        },
+        {
+            "title": "NameNode",
+            "description": "NameNode",
+            "cloud_image": "centos-7-hvm-qatp",
+            "count": 1,
+            "hostname_template": "{namespace}-nn",
+            "size": "m4.2xlarge",
+            "zone": null,
+            "subnet_id": "subnet-425c4d6a",
+            "spot_price": null,
+            "formula_components": [
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Base",
+                    "description": "base formula",
+                    "sls_path": "dr.base",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "AD",
+                    "description": "Enable Active Directory authentication",
+                    "sls_path": "dr.ad",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Yourkit",
+                    "description": "Install yourkit binaries",
+                    "sls_path": "dr.yourkit",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/java-formula.git",
+                    "title": "Oracle Java 8 JDK",
+                    "description": "Oracle Java 8 JDK",
+                    "sls_path": "java.oracle.jdk8",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "ZooKeeper",
+                    "description": "ZooKeeper component of CDH5",
+                    "sls_path": "cdh5.zookeeper",
+                    "order": 1
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "JournalNode",
+                    "description": "Hadoop JournalNode for high-availability",
+                    "sls_path": "cdh5.hadoop.journalnode",
+                    "order": 2
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "NameNode",
+                    "description": "Hadoop NameNode component of CDH5",
+                    "sls_path": "cdh5.hadoop.namenode",
+                    "order": 3
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "Oozie",
+                    "description": "Oozie",
+                    "sls_path": "cdh5.oozie",
+                    "order": 6
+                },
+                {
+                    "formula": "ssh://ssh-stash.corp.digitalreasoning.com:7999/pi/synthesys-formula.git",
+                    "title": "Synthesys HDFS Permissions",
+                    "description": "Create all the appropriate directories needed by Synthesys",
+                    "sls_path": "synthesys.permissions",
+                    "order": 7
+                },
+                {
+                    "formula": "ssh://ssh-stash.corp.digitalreasoning.com:7999/pi/synthesys-formula.git",
+                    "title": "MySQL Server",
+                    "description": "MySQL server to use with Synthesys *DEVELOPMENT ONLY, UNSECURE*",
+                    "sls_path": "synthesys.mysql",
+                    "order": 7
+                }
+            ],
+            "access_rules": [],
+            "volumes": [
+                {
+                    "device": "/dev/sdb",
+                    "mount_point": "/mnt",
+                    "size_in_gb": 50,
+                    "encrypted": false,
+                    "extra_options": {}
+                }
+            ],
+            "extra_options": {}
+        },
+        {
+            "title": "HA Standby NameNode",
+            "description": "HA Standby NameNode",
+            "cloud_image": "centos-7-hvm-qatp",
+            "count": 1,
+            "hostname_template": "{namespace}-snn",
+            "size": "m4.2xlarge",
+            "zone": null,
+            "subnet_id": "subnet-425c4d6a",
+            "spot_price": null,
+            "formula_components": [
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Base",
+                    "description": "base formula",
+                    "sls_path": "dr.base",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "AD",
+                    "description": "Enable Active Directory authentication",
+                    "sls_path": "dr.ad",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Yourkit",
+                    "description": "Install yourkit binaries",
+                    "sls_path": "dr.yourkit",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/java-formula.git",
+                    "title": "Oracle Java 8 JDK",
+                    "description": "Oracle Java 8 JDK",
+                    "sls_path": "java.oracle.jdk8",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "ZooKeeper",
+                    "description": "ZooKeeper component of CDH5",
+                    "sls_path": "cdh5.zookeeper",
+                    "order": 1
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "JournalNode",
+                    "description": "Hadoop JournalNode for high-availability",
+                    "sls_path": "cdh5.hadoop.journalnode",
+                    "order": 2
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "Standby NameNode",
+                    "description": "Standby NameNode for high-availability",
+                    "sls_path": "cdh5.hadoop.standby-namenode",
+                    "order": 4
+                }
+            ],
+            "access_rules": [],
+            "volumes": [
+                {
+                    "device": "/dev/sdb",
+                    "mount_point": "/mnt",
+                    "size_in_gb": 50,
+                    "encrypted": false,
+                    "extra_options": {}
+                }
+            ],
+            "extra_options": {}
+        },
+        {
+            "title": "JournalNodes",
+            "description": "HA JournalNodes (>=1)",
+            "cloud_image": "centos-7-hvm-qatp",
+            "count": 1,
+            "hostname_template": "{namespace}-jn-{index}",
+            "size": "m4.xlarge",
+            "zone": null,
+            "subnet_id": "subnet-425c4d6a",
+            "spot_price": null,
+            "formula_components": [
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Base",
+                    "description": "base formula",
+                    "sls_path": "dr.base",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "AD",
+                    "description": "Enable Active Directory authentication",
+                    "sls_path": "dr.ad",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Yourkit",
+                    "description": "Install yourkit binaries",
+                    "sls_path": "dr.yourkit",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/java-formula.git",
+                    "title": "Oracle Java 8 JDK",
+                    "description": "Oracle Java 8 JDK",
+                    "sls_path": "java.oracle.jdk8",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "ZooKeeper",
+                    "description": "ZooKeeper component of CDH5",
+                    "sls_path": "cdh5.zookeeper",
+                    "order": 1
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "JournalNode",
+                    "description": "Hadoop JournalNode for high-availability",
+                    "sls_path": "cdh5.hadoop.journalnode",
+                    "order": 2
+                }
+            ],
+            "access_rules": [],
+            "volumes": [
+                {
+                    "device": "/dev/sdb",
+                    "mount_point": "/mnt",
+                    "size_in_gb": 50,
+                    "encrypted": false,
+                    "extra_options": {}
+                }
+            ],
+            "extra_options": {}
+        },
+        {
+            "title": "Datanodes On-demand",
+            "description": "DataNodes-1a",
+            "cloud_image": "centos-7-hvm-qatp",
+            "count": 17,
+            "hostname_template": "{namespace}-dn-od-{index}",
+            "size": "m4.2xlarge",
+            "zone": null,
+            "subnet_id": "subnet-6b1f841c",
+            "spot_price": null,
+            "formula_components": [
+                {
+                    "formula": "https://github.com/stackdio-formulas/java-formula.git",
+                    "title": "Oracle Java 8 JDK",
+                    "description": "Oracle Java 8 JDK",
+                    "sls_path": "java.oracle.jdk8",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Base",
+                    "description": "base formula",
+                    "sls_path": "dr.base",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "AD",
+                    "description": "Enable Active Directory authentication",
+                    "sls_path": "dr.ad",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Yourkit",
+                    "description": "Install yourkit binaries",
+                    "sls_path": "dr.yourkit",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "DataNode",
+                    "description": "Hadoop DataNode component of CDH5",
+                    "sls_path": "cdh5.hadoop.datanode",
+                    "order": 5
+                },
+                {
+                    "formula": "ssh://ssh-stash.corp.digitalreasoning.com:7999/pi/synthesys-formula.git",
+                    "title": "Synthesys HDFS Permissions",
+                    "description": "Create all the appropriate directories needed by Synthesys",
+                    "sls_path": "synthesys.permissions",
+                    "order": 7
+                }
+            ],
+            "access_rules": [],
+            "volumes": [
+                {
+                    "device": "/dev/sdb",
+                    "mount_point": "/mnt",
+                    "size_in_gb": 1000,
+                    "encrypted": false,
+                    "extra_options": {}
+                }
+            ],
+            "extra_options": {}
+        },
+        {
+            "title": "DataNodes-spot-1b",
+            "description": "DataNodes-spot-1b",
+            "cloud_image": "centos-7-hvm-qatp-ephemerals-i3",
+            "count": 16,
+            "hostname_template": "{namespace}-dn-1b-{index}",
+            "size": "i3.2xlarge",
+            "zone": null,
+            "subnet_id": "subnet-0400b85d",
+            "spot_price": "0.50",
+            "formula_components": [
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Base",
+                    "description": "base formula",
+                    "sls_path": "dr.base",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "AD",
+                    "description": "Enable Active Directory authentication",
+                    "sls_path": "dr.ad",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Yourkit",
+                    "description": "Install yourkit binaries",
+                    "sls_path": "dr.yourkit",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/java-formula.git",
+                    "title": "Oracle Java 8 JDK",
+                    "description": "Oracle Java 8 JDK",
+                    "sls_path": "java.oracle.jdk8",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "DataNode",
+                    "description": "Hadoop DataNode component of CDH5",
+                    "sls_path": "cdh5.hadoop.datanode",
+                    "order": 5
+                },
+                {
+                    "formula": "ssh://ssh-stash.corp.digitalreasoning.com:7999/pi/synthesys-formula.git",
+                    "title": "Synthesys HDFS Permissions",
+                    "description": "Create all the appropriate directories needed by Synthesys",
+                    "sls_path": "synthesys.permissions",
+                    "order": 7
+                }
+            ],
+            "access_rules": [],
+            "volumes": [],
+            "extra_options": {}
+        },
+        {
+            "title": "DataNodes-spot-1d",
+            "description": "DataNodes-spot-1d",
+            "cloud_image": "centos-7-hvm-qatp-ephemerals-i3",
+            "count": 17,
+            "hostname_template": "{namespace}-dn-1d-{index}",
+            "size": "i3.2xlarge",
+            "zone": null,
+            "subnet_id": "subnet-425c4d6a",
+            "spot_price": "0.50",
+            "formula_components": [
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Base",
+                    "description": "base formula",
+                    "sls_path": "dr.base",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "AD",
+                    "description": "Enable Active Directory authentication",
+                    "sls_path": "dr.ad",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+                    "title": "Yourkit",
+                    "description": "Install yourkit binaries",
+                    "sls_path": "dr.yourkit",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/java-formula.git",
+                    "title": "Oracle Java 8 JDK",
+                    "description": "Oracle Java 8 JDK",
+                    "sls_path": "java.oracle.jdk8",
+                    "order": 0
+                },
+                {
+                    "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+                    "title": "DataNode",
+                    "description": "Hadoop DataNode component of CDH5",
+                    "sls_path": "cdh5.hadoop.datanode",
+                    "order": 5
+                },
+                {
+                    "formula": "ssh://ssh-stash.corp.digitalreasoning.com:7999/pi/synthesys-formula.git",
+                    "title": "Synthesys HDFS Permissions",
+                    "description": "Create all the appropriate directories needed by Synthesys",
+                    "sls_path": "synthesys.permissions",
+                    "order": 7
+                }
+            ],
+            "access_rules": [],
+            "volumes": [],
+            "extra_options": {}
+        }
+    ],
+    "formula_versions": [
+        {
+            "formula": "https://github.com/stackdio-formulas/cdh5-formula.git",
+            "version": "base"
+        },
+        {
+            "formula": "https://github.com/stackdio-formulas/java-formula.git",
+            "version": "base"
+        },
+        {
+            "formula": "https://github.com/stackdio-formulas/elasticsearch-formula.git",
+            "version": "base"
+        },
+        {
+            "formula": "https://github.com/digitalreasoning/base-stackdio-formula.git",
+            "version": "base"
+        },
+        {
+            "formula": "ssh://ssh-stash.corp.digitalreasoning.com:7999/pi/synthesys-formula.git",
+            "version": "base"
+        }
+    ]
+}
