@@ -10,17 +10,17 @@ for ip in sys.argv:
 	response = client.describe_instances(
 	DryRun=True,
 		Filters=[
-			{
-				'Name': 'private-ip-address',
-				'Values': [
-					ip,
-				]
-			},
-		])
+		{
+			'Name': 'private-ip-address',
+			'Values': [
+				ip,
+			]
+		},
+	])
 
 	is_spot = False
 
-	if response
+	if response:
 		lifecycle = response["Reservations"][0]["Instances"][0]["InstanceLifecycle"]
 		if lifecycle == "spot":
 			is_spot = True

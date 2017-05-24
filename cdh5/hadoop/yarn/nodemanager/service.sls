@@ -3,7 +3,7 @@
 
 
 # make the local storage directories
-datanode_yarn_local_dirs:
+yarn_local_dirs:
   cmd:
     - run
     - name: 'for dd in `echo {{ yarn_local_dir}} | sed "s/,/\n/g"`; do mkdir -p $dd && chmod -R 755 $dd && chown -R yarn:yarn `dirname $dd`; done'
@@ -12,7 +12,7 @@ datanode_yarn_local_dirs:
       - pkg: hadoop-yarn-nodemanager
 
 # make the log storage directories
-datanode_yarn_log_dirs:
+yarn_log_dirs:
   cmd:
     - run
     - name: 'for dd in `echo {{ yarn_log_dir}} | sed "s/,/\n/g"`; do mkdir -p $dd && chmod -R 755 $dd && chown -R yarn:yarn `dirname $dd`; done'
@@ -32,13 +32,12 @@ hadoop-yarn-nodemanager-svc:
     - enable: true
     - require: 
       - pkg: hadoop-yarn-nodemanager
-      - cmd: datanode_yarn_local_dirs
-      - cmd: datanode_yarn_log_dirs
+      - cmd: yarn_local_dirs
+      - cmd: yarn_log_dirs
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
       {% if pillar.cdh5.security.enable %}
-      - file: /etc/default/hadoop-hdfs-datanode
       - cmd: generate_hadoop_keytabs
       {% endif %}
     - watch:

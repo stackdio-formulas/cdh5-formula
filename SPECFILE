@@ -15,14 +15,14 @@ components:
     description: Hadoop JournalNode for high-availability
     sls_path: cdh5.hadoop.journalnode
   - title: DataNode
-    description: NodeManager and HDFSNode combined
+    description: NodeManager and HDFSDataNode combined
     sls_path: cdh5.hadoop.datanode
   - title: NodeManager
-    description: Hadoop NodeManager component of CDH5
-    sls_path: cdh5.hadoop.nodemanager
-  - title: HDFSNode
-    description: Hadoop HDFSNode component of CDH5
-    sls_path: cdh5.hadoop.hdfsnode
+    description: Yarn NodeManager component of CDH5
+    sls_path: cdh5.hadoop.yarn.nodemanager
+  - title: HDFSDataNode
+    description: Hadoop HDFSDataNode component of CDH5
+    sls_path: cdh5.hadoop.hdfs.datanode
   - title: Key Management Server
     description: Key Management Server for HDFS encryption-at-rest
     sls_path: cdh5.hadoop.kms
@@ -91,10 +91,8 @@ pillar_defaults:
     namenode:
       start_service: true
     datanode:
-      start_service: false
-    nodemanager:
       start_service: true
-    hdfsnode:
+    nodemanager:
       start_service: true
     journalnode:
       start_service: true

@@ -8,7 +8,7 @@ include:
   - cdh5.landing_page
   - cdh5.hadoop.client
   {% if salt['pillar.get']('cdh5:nodemanager:start_service', True) %}
-  - cdh5.hadoop.nodemanager.service
+  - cdh5.hadoop.yarn.nodemanager.service
   {% endif %}
   {% if pillar.cdh5.encryption.enable %}
   - cdh5.hadoop.encryption
