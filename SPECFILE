@@ -80,6 +80,7 @@ pillar_defaults:
     version: 5
     landing_page: true
     max_log_index: 1
+    spot_or_not_rack: false
     encryption:
       enable: false
       ca_cert: CHANGE_ME

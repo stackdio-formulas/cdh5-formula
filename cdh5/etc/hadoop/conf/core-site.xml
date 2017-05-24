@@ -93,6 +93,16 @@
     </property>
 
     <!-- Rack-awareness properties -->
+    {% if pillar.cdh5.spot_or_not_rack %}
+    <property>
+        <name>net.topology.node.switch.mapping.impl</name>
+        <value>org.apache.hadoop.net.ScriptBasedMapping</value>
+    </property>
+    <property>
+        <name>net.topology.script.file.name</name>
+        <value>/etc/hadoop/conf/set_rack.py</value>
+    </property>
+    {% else %}
     <property>
         <name>net.topology.node.switch.mapping.impl</name>
         <value>org.apache.hadoop.net.TableMapping</value>
@@ -101,6 +111,7 @@
         <name>net.topology.table.file.name</name>
         <value>/etc/hadoop/conf/host-rack.map</value>
     </property>
+    {% endif %}
 
     {%- if pillar.cdh5.security.enable %}
     {%- from 'krb5/settings.sls' import krb5 with context %}
