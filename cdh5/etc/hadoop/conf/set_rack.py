@@ -9,7 +9,7 @@ client = boto3.client("ec2")
 for ip in sys.argv:
 	response = client.describe_instances(
 	DryRun=True,
-		Filters=[
+	Filters=[
 		{
 			'Name': 'private-ip-address',
 			'Values': [
