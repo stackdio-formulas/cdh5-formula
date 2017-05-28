@@ -6,7 +6,7 @@
     - source: salt://cdh5/etc/hadoop/conf/set_rack.py
     - user: root
     - group: root
-    - file_mode: 755
+    - mode: 755
     - require:
       - file: /etc/hadoop/conf
 
