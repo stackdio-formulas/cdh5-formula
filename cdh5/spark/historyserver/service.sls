@@ -20,4 +20,3 @@ spark-history-server-svc:
       - cmd: hdfs_log_dir
     - watch:
       - file: /etc/spark/conf/spark-defaults.conf
-      - file: /etc/spark/conf/spark-env.sh
