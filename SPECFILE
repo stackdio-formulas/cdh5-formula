@@ -81,6 +81,7 @@ pillar_defaults:
     landing_page: true
     max_log_index: 1
     spot_or_not_rack: false
+    rack_by_component: false
     encryption:
       enable: false
       ca_cert: CHANGE_ME

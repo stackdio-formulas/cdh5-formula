@@ -109,7 +109,11 @@
     </property>
     <property>
         <name>net.topology.table.file.name</name>
+        {% if pillar.cdh5.rack_by_component %}
+        <value>/etc/hadoop/conf/rack-by-comp.map</value>
+        {% else %}
         <value>/etc/hadoop/conf/host-rack.map</value>
+        {% endif %}
     </property>
     {% endif %}
 
