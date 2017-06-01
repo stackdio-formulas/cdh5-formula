@@ -3,13 +3,12 @@
 {%- set rack2nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.rack.rack2', 'grains.items', 'compound').values() -%}
 
 {%- for datanode in rack1nodes -%}
-{{ datanode['fqdn'] }} /{{ datanode.get('host_definition', 'rack-1') }}
-{{ datanode['host'] }} /{{ datanode.get('host_definition', 'rack-1') }}
-{{ datanode['ipv4'][0] }} /{{ datanode.get('host_definition', 'rack-1') }}
+{{ datanode['fqdn'] }} /rack-1
+{{ datanode['host'] }} /rack-1
+{{ datanode['ipv4'][0] }} /rack-1
 {% endfor %}
-
-{%- for datanode in rack2nodes -%}
-{{ datanode['fqdn'] }} /{{ datanode.get('host_definition', 'rack-2') }}
-{{ datanode['host'] }} /{{ datanode.get('host_definition', 'rack-2') }}
-{{ datanode['ipv4'][0] }} /{{ datanode.get('host_definition', 'rack-2') }}
+{% for datanode in rack2nodes -%}
+{{ datanode['fqdn'] }} /rack-2
+{{ datanode['host'] }} /rack-2
+{{ datanode['ipv4'][0] }} /rack-2
 {% endfor %}

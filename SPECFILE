@@ -23,6 +23,12 @@ components:
   - title: HDFSDataNode
     description: Hadoop HDFSDataNode component of CDH5
     sls_path: cdh5.hadoop.hdfs.datanode
+  - title: Rack1
+    description: rack1 component
+    sls_path: cdh5.hadoop.rack.rack1
+  - title: Rack2
+    description: rack2 component
+    sls_path: cdh5.hadoop.rack.rack2
   - title: Key Management Server
     description: Key Management Server for HDFS encryption-at-rest
     sls_path: cdh5.hadoop.kms
