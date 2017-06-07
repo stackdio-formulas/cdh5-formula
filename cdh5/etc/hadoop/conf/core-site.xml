@@ -11,7 +11,6 @@
     <property>
         <name>hadoop.tmp.dir</name>
         <value>/mnt/tmp/hadoop</value>
-        <final>true</final>
     </property>
     <property>
         <name>io.file.buffer.size</name>
