@@ -121,7 +121,7 @@
     </property>
     <property>
         <name>spark.yarn.historyServer.address</name>
-        <value>{{ spark_historyserver[0]['fqdn'] }}:18080</value>
+        <value>http://{{ spark_historyserver[0]['fqdn'] }}:18080</value>
     </property>
     {% endif %}
 
