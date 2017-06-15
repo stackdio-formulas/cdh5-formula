@@ -52,6 +52,17 @@ history-dir:
     - require:
       - pkg: spark-history-server
 
+/etc/spark/conf/spark-env.sh:
+  file:
+    - managed
+    - user: root
+    - group: root
+    - mode: 644
+    - source: salt://cdh5/etc/spark/spark-env.sh
+    - template: jinja
+    - require:
+      - pkg: spark-history-server
+
 
 spark-history-server-svc:
   service:
@@ -62,3 +73,4 @@ spark-history-server-svc:
       - cmd: history-dir
     - watch:
       - file: /etc/spark/conf/spark-defaults.conf
+      - file: /etc/spark/conf/spark-env.sh
