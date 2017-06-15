@@ -71,6 +71,9 @@ spark-history-server-svc:
     - require:
       - pkg: spark-history-server
       - cmd: history-dir
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_spark_keytabs
+      {% endif %}
     - watch:
       - file: /etc/spark/conf/spark-defaults.conf
       - file: /etc/spark/conf/spark-env.sh
