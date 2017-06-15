@@ -5,24 +5,30 @@ components:
   - title: Hadoop Client Node
     description: Hadoop Client Node
     sls_path: cdh5.hadoop.client
-  - title: NameNode
-    description: Hadoop NameNode component of CDH5
-    sls_path: cdh5.hadoop.namenode
-  - title: Standby NameNode
-    description: Standby NameNode for high-availability
-    sls_path: cdh5.hadoop.standby-namenode
-  - title: JournalNode
-    description: Hadoop JournalNode for high-availability
-    sls_path: cdh5.hadoop.journalnode
-  - title: DataNode
-    description: NodeManager and HDFSDataNode combined
-    sls_path: cdh5.hadoop.datanode
-  - title: NodeManager
-    description: Yarn NodeManager component of CDH5
-    sls_path: cdh5.hadoop.yarn.nodemanager
-  - title: HDFSDataNode
-    description: Hadoop HDFSDataNode component of CDH5
+  - title: HDFS JournalNode
+    description: Hadoop HDFS JournalNode component of CDH5
+    sls_path: cdh5.hadoop.hdfs.journalnode
+  - title: HDFS NameNode
+    description: Hadoop HDFS NameNode component of CDH5
+    sls_path: cdh5.hadoop.hdfs.namenode
+  - title: HDFS Standby NameNode
+    description: Hadoop HDFS NameNode component of CDH5
+    sls_path: cdh5.hadoop.hdfs.standby-namenode
+  - title: HDFS DataNode
+    description: Hadoop HDFS DataNode component of CDH5
     sls_path: cdh5.hadoop.hdfs.datanode
+  - title: YARN ResourceManager
+    description: YARN ResourceManager component of CDH5
+    sls_path: cdh5.hadoop.yarn.resourcemanager
+  - title: YARN Standby ResourceManager
+    description: YARN Standby ResourceManager component of CDH5
+    sls_path: cdh5.hadoop.yarn.standby-resourcemanager
+  - title: YARN NodeManager
+    description: YARN NodeManager component of CDH5
+    sls_path: cdh5.hadoop.yarn.nodemanager
+  - title: MapReduce History Server
+    description: MapReduce History Server component of CDH5
+    sls_path: cdh5.hadoop.mapreduce.historyserver
   - title: Rack1
     description: rack1 component
     sls_path: cdh5.hadoop.rack.rack1

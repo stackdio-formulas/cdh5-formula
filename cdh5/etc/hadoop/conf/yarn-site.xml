@@ -1,8 +1,9 @@
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set resourcemanager_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.resourcemanager', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set standby_resourcemanager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.standby-resourcemaanger', 'grains.items', 'compound') -%}
 {%- set zookeepers = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').values() -%}
-{%- if standby -%}
-    {%- set standby_items = standby.values()[0] -%}
+{%- if standby_resourcemanager -%}
+    {%- set standby_items = standby_resourcemanager.values()[0] -%}
     {%- set standby_fqdn = standby_items['fqdn'] -%}
 {%- endif -%}
 {%- set spark_historyserver = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.spark.historyserver', 'grains.items', 'compound').values() -%}
@@ -134,12 +135,12 @@
         <name>yarn.resourcemanager.ha.rm-ids</name>
         <value>rm1,rm2</value>
     </property>
-    {% if 'cdh5.hadoop.namenode' in grains.roles %}
+    {% if 'cdh5.hadoop.yarn.resourcemanager' in grains.roles %}
     <property>
         <name>yarn.resourcemanager.ha.id</name>
         <value>rm1</value>
     </property>
-    {% elif 'cdh5.hadoop.standby-namenode' in grains.roles %}
+    {% elif 'cdh5.hadoop.yarn.standby-resourcemanager' in grains.roles %}
     <property>
         <name>yarn.resourcemanager.ha.id</name>
         <value>rm2</value>
@@ -147,7 +148,7 @@
     {% endif %}
     <property>
         <name>yarn.resourcemanager.hostname.rm1</name>
-        <value>{{ namenode_fqdn }}</value>
+        <value>{{ resourcemanager_fqdn }}</value>
     </property>
     <property>
         <name>yarn.resourcemanager.hostname.rm2</name>
@@ -155,7 +156,7 @@
     </property>
     <property>
         <name>yarn.web-proxy.address</name>
-        <value>{{ namenode_fqdn }}:8089</value>
+        <value>{{ resourcemanager_fqdn }}:8089</value>
     </property>
     <property>
         <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
@@ -196,7 +197,7 @@
     {% else %}
     <property>
         <name>yarn.resourcemanager.hostname</name>
-        <value>{{ namenode_fqdn }}</value>
+        <value>{{ resourcemanager_fqdn }}</value>
     </property>
     {% endif %}
 

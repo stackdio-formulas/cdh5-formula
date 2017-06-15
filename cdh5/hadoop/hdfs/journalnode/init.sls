@@ -6,7 +6,7 @@ include:
   - cdh5.hadoop.conf
   - cdh5.landing_page
   {% if salt['pillar.get']('cdh5:journalnode:start_service', True) %}
-  - cdh5.hadoop.journalnode.service
+  - cdh5.hadoop.hdfs.journalnode.service
   {% endif %}
   {% if pillar.cdh5.encryption.enable %}
   - cdh5.hadoop.encryption

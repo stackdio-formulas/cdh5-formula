@@ -1,6 +1,9 @@
 {%- set fqdn = grains.get('fqdn', 'localhost') -%}
-{%- set namenode = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values() -%}
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound').values() -%}
+{%- set namenode = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.namenode', 'grains.items', 'compound').values() -%}
+{%- set standby_namenode = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.standby-namenode', 'grains.items', 'compound').values() -%}
+{%- set resourcemanager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.resourcemanager', 'grains.items', 'compound').values() -%}
+{%- set standby_resourcemanager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.standby-resourcemanager', 'grains.items', 'compound').values() -%}
+{%- set historyserver = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.mapreduce.historyserver', 'grains.items', 'compound').values() -%}
 {%- set hue = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hue', 'grains.items', 'compound').values() -%}
 {%- set oozie = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.oozie', 'grains.items', 'compound').values() -%}
 {%- set spark = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.spark.historyserver', 'grains.items', 'compound').values() -%}
@@ -77,15 +80,23 @@ a:hover {
                     {% endif %}
                     {% if namenode %}
                     <li><a href='{% if https %}https://{{ namenode[0]["fqdn"] }}:50470/{% else %}http://{{ namenode[0]["fqdn"] }}:50070/{% endif %}'>Hadoop HDFS NameNode</a></li>
-                    <li><a href='{% if https %}https://{{ namenode[0]["fqdn"] }}:8090/{% else %}http://{{ namenode[0]["fqdn"] }}:8088/{% endif %}'>Hadoop Yarn ResourceManager</a></li>
-                    <li><a href='{% if https %}https://{{ namenode[0]["fqdn"] }}:19890/{% else %}http://{{ namenode[0]["fqdn"] }}:19888/{% endif %}'>Hadoop Mapreduce HistoryServer</a></li>
                     {% endif %}
-                    {% if standby %}
-                    <li><a href='{% if https %}https://{{ standby[0]["fqdn"] }}:50470/{% else %}http://{{ standby[0]["fqdn"] }}:50070/{% endif %}'>Hadoop HDFS Standby NameNode</a></li>
-                    <li><a href='{% if https %}https://{{ standby[0]["fqdn"] }}:8090/{% else %}http://{{ standby[0]["fqdn"] }}:8088/{% endif %}'>Hadoop Yarn Standby ResourceManager</a></li>
+                    {% if standby_namenode %}
+                    <li><a href='{% if https %}https://{{ standby_namenode[0]["fqdn"] }}:50470/{% else %}http://{{ standby_namenode[0]["fqdn"] }}:50070/{% endif %}'>Hadoop HDFS Standby NameNode</a></li>
                     {% endif %}
-                    {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
+                    {% if resourcemanager %}
+                    <li><a href='{% if https %}https://{{ resourcemanager[0]["fqdn"] }}:8090/{% else %}http://{{ resourcemanager[0]["fqdn"] }}:8088/{% endif %}'>Hadoop Yarn ResourceManager</a></li>
+                    {% endif %}
+                    {% if standby_resourcemanager %}
+                    <li><a href='{% if https %}https://{{ standby_resourcemanager[0]["fqdn"] }}:8090/{% else %}http://{{ standby_resourcemanager[0]["fqdn"] }}:8088/{% endif %}'>Hadoop Yarn Standby ResourceManager</a></li>
+                    {% endif %}
+                    {% if historyserver %}
+                    <li><a href='{% if https %}https://{{ historyserver[0]["fqdn"] }}:19890/{% else %}http://{{ historyserver[0]["fqdn"] }}:19888/{% endif %}'>Hadoop Mapreduce HistoryServer</a></li>
+                    {% endif %}
+                    {% if 'cdh5.hadoop.hdfs.datanode' in grains['roles'] %}
                     <li><a href='{% if https %}https://{{ fqdn }}:50475/{% else %}http://{{ fqdn }}:50075/{% endif %}'>Hadoop HDFS DataNode</a></li>
+                    {% endif %}
+                    {% if 'cdh5.hadoop.yarn.nodemanager' in grains['roles'] %}
                     <li><a href='{% if https %}https://{{ fqdn }}:8044/{% else %}http://{{ fqdn }}:8042/{% endif %}'>Hadoop Yarn NodeManager</a></li>
                     {% endif %}
                     {% if oozie %}
@@ -95,8 +106,8 @@ a:hover {
                     <li><a href='http://{{ spark[0]["fqdn"] }}:18080/'>Spark History Server</a></li>
                     {% endif %}
                 </ul>
-                {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-                {% set datanodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and (G@roles:cdh5.hadoop.datanode or G@roles:cdh5.hadoop.hdfs.datanode)', 'grains.items', 'compound').values() %}
+                {% if 'cdh5.hadoop.hdfs.namenode' in grains['roles'] or 'cdh5.hadoop.yarn.resourcemanager' in grains['roles'] or 'cdh5.hadoop.mapreduce.historyserver' in grains['roles']%}
+                {% set datanodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.datanode', 'grains.items', 'compound').values() %}
                 <h4>Datanodes</h4>
                 <ul>
                     {% for datanode in datanodes %}
