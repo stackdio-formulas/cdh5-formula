@@ -4,7 +4,7 @@
 
 export KRB5_CONFIG={{ pillar.krb5.conf_file }}
 
-cd /etc/hadoop/conf
+cd /etc/spark/conf
 rm -rf *.keytab
 (
 echo "addprinc -randkey spark/{{ grains.fqdn }}"
