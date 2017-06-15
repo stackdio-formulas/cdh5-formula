@@ -1,6 +1,6 @@
 
 
-hdfs_log_dir:
+history-dir:
   cmd:
     - run
     - user: hdfs
@@ -10,6 +10,17 @@ hdfs_log_dir:
       - pkg: spark-history-server
 
 
+/etc/spark/conf/spark-defaults.conf:
+  file:
+    - managed
+    - user: root
+    - group: root
+    - mode: 644
+    - source: salt://cdh5/etc/spark/spark-defaults.conf
+    - template: jinja
+    - require:
+      - pkg: spark-history-server
+
 
 spark-history-server-svc:
   service:
@@ -17,7 +28,6 @@ spark-history-server-svc:
     - name: spark-history-server
     - require:
       - pkg: spark-history-server
-      - cmd: hdfs_log_dir
+      - cmd: history-dir
     - watch:
       - file: /etc/spark/conf/spark-defaults.conf
-      - file: /etc/spark/conf/spark-env.sh
