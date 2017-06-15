@@ -57,7 +57,7 @@ history-dir:
     - managed
     - user: root
     - group: root
-    - mode: 644
+    - mode: 755
     - source: salt://cdh5/etc/spark/spark-env.sh
     - template: jinja
     - require:
