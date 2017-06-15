@@ -5,7 +5,7 @@
     {%- set standby_items = standby.values()[0] -%}
     {%- set standby_fqdn = standby_items['fqdn'] -%}
 {%- endif -%}
-{%- set historyserver = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.spark.historyserver', 'grains.items', 'compound') -%}
+{%- set spark_historyserver = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.spark.historyserver', 'grains.items', 'compound').values() -%}
 <?xml version="1.0"?>
 <configuration>
     <property>
@@ -104,18 +104,24 @@
         <value>{{ pillar.cdh5.yarn.num_cpus }}</value>
     </property>
 
-    {% if historyserver %}
+    {% if spark_historyserver %}
+    {% if standby %}
+        {% set hdfs_host = grains.namespace %}
+    {% else %}
+        {% set hdfs_host = namenode_fqdn ~ ':8020' %}
+    {% endif %}
+    <!-- Add these spark properties here so they get picked up by synthesys jobs -->
     <property>
         <name>spark.eventLog.enabled</name>
         <value>true</value>
     </property>
     <property>
         <name>spark.eventLog.dir</name>
-        {% if standby %}
-        <value>hdfs://{{ grains.namespace }}/user/spark/applicationHistory</value>
-        {% else %}
-        <value>hdfs://{{ namenode_fqdn }}:8020/user/spark/applicationHistory</value>
-        {% endif %}
+        <value>hdfs://{{ hdfs_host }}/user/spark/applicationHistory</value>
+    </property>
+    <property>
+        <name>spark.yarn.historyServer.address</name>
+        <value>{{ spark_historyserver[0]['fqdn'] }}:18080</value>
     </property>
     {% endif %}
 
