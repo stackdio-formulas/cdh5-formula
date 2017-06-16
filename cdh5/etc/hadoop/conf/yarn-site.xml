@@ -25,6 +25,11 @@
     </property>
 
     <property>
+        <name>yarn.log.server.url</name>
+        <value>http{% if pillar.cdh5.encryption.enable %}s{% endif %}://{{ namenode_fqdn }}:{% if pillar.cdh5.encryption.enable %}19890{% else %}19888{% endif %}/jobhistory/logs</value>
+    </property>
+
+    <property>
         <description>List of directories to store localized files in.</description>
         <name>yarn.nodemanager.local-dirs</name>
         <value>{{ pillar.cdh5.yarn.local_dirs }}</value>
@@ -122,7 +127,7 @@
     </property>
     <property>
         <name>spark.yarn.historyServer.address</name>
-        <value>{{ spark_historyserver[0]['fqdn'] }}:18080</value>
+        <value>http://{{ spark_historyserver[0]['fqdn'] }}:18080</value>
     </property>
     {% endif %}
 
