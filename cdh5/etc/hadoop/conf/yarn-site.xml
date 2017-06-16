@@ -1,5 +1,6 @@
 {%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- set resourcemanager_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.resourcemanager', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set historyserver_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.mapreduce.historyserver', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- set standby_resourcemanager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.standby-resourcemaanger', 'grains.items', 'compound') -%}
 {%- set zookeepers = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').values() -%}
 {%- if standby_resourcemanager -%}
@@ -26,7 +27,7 @@
 
     <property>
         <name>yarn.log.server.url</name>
-        <value>http{% if pillar.cdh5.encryption.enable %}s{% endif %}://{{ namenode_fqdn }}:{% if pillar.cdh5.encryption.enable %}19890{% else %}19888{% endif %}/jobhistory/logs</value>
+        <value>http{% if pillar.cdh5.encryption.enable %}s{% endif %}://{{ historyserver_fqdn }}:{% if pillar.cdh5.encryption.enable %}19890{% else %}19888{% endif %}/jobhistory/logs</value>
     </property>
 
     <property>
