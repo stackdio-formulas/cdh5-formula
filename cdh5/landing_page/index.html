@@ -85,19 +85,19 @@ a:hover {
                     <li><a href='{% if https %}https://{{ standby_namenode[0]["fqdn"] }}:50470/{% else %}http://{{ standby_namenode[0]["fqdn"] }}:50070/{% endif %}'>Hadoop HDFS Standby NameNode</a></li>
                     {% endif %}
                     {% if resourcemanager %}
-                    <li><a href='{% if https %}https://{{ resourcemanager[0]["fqdn"] }}:8090/{% else %}http://{{ resourcemanager[0]["fqdn"] }}:8088/{% endif %}'>Hadoop Yarn ResourceManager</a></li>
+                    <li><a href='{% if https %}https://{{ resourcemanager[0]["fqdn"] }}:8090/{% else %}http://{{ resourcemanager[0]["fqdn"] }}:8088/{% endif %}'>Hadoop YARN ResourceManager</a></li>
                     {% endif %}
                     {% if standby_resourcemanager %}
-                    <li><a href='{% if https %}https://{{ standby_resourcemanager[0]["fqdn"] }}:8090/{% else %}http://{{ standby_resourcemanager[0]["fqdn"] }}:8088/{% endif %}'>Hadoop Yarn Standby ResourceManager</a></li>
+                    <li><a href='{% if https %}https://{{ standby_resourcemanager[0]["fqdn"] }}:8090/{% else %}http://{{ standby_resourcemanager[0]["fqdn"] }}:8088/{% endif %}'>Hadoop YARN Standby ResourceManager</a></li>
                     {% endif %}
                     {% if historyserver %}
-                    <li><a href='{% if https %}https://{{ historyserver[0]["fqdn"] }}:19890/{% else %}http://{{ historyserver[0]["fqdn"] }}:19888/{% endif %}'>Hadoop Mapreduce HistoryServer</a></li>
+                    <li><a href='{% if https %}https://{{ historyserver[0]["fqdn"] }}:19890/{% else %}http://{{ historyserver[0]["fqdn"] }}:19888/{% endif %}'>Hadoop MapReduce History Server</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.hdfs.datanode' in grains['roles'] %}
                     <li><a href='{% if https %}https://{{ fqdn }}:50475/{% else %}http://{{ fqdn }}:50075/{% endif %}'>Hadoop HDFS DataNode</a></li>
                     {% endif %}
                     {% if 'cdh5.hadoop.yarn.nodemanager' in grains['roles'] %}
-                    <li><a href='{% if https %}https://{{ fqdn }}:8044/{% else %}http://{{ fqdn }}:8042/{% endif %}'>Hadoop Yarn NodeManager</a></li>
+                    <li><a href='{% if https %}https://{{ fqdn }}:8044/{% else %}http://{{ fqdn }}:8042/{% endif %}'>Hadoop YARN NodeManager</a></li>
                     {% endif %}
                     {% if oozie %}
                     <li><a href='{% if https %}https://{{ oozie[0]["fqdn"] }}:11443/{% else %}http://{{ oozie[0]["fqdn"] }}:11000/{% endif %}'>Oozie Dashboard</a></li>
