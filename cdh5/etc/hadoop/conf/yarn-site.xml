@@ -1,11 +1,12 @@
 {%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- set resourcemanager_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.resourcemanager', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- set historyserver_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.mapreduce.historyserver', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set standby_namenode = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.standby-namenode', 'grains.items', 'compound') -%}
 {%- set standby_resourcemanager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.standby-resourcemaanger', 'grains.items', 'compound') -%}
 {%- set zookeepers = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').values() -%}
 {%- if standby_resourcemanager -%}
-    {%- set standby_items = standby_resourcemanager.values()[0] -%}
-    {%- set standby_fqdn = standby_items['fqdn'] -%}
+    {%- set standby_rm_items = standby_resourcemanager.values()[0] -%}
+    {%- set standby_rm_fqdn = standby_rm_items['fqdn'] -%}
 {%- endif -%}
 {%- set spark_historyserver = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.spark.historyserver', 'grains.items', 'compound').values() -%}
 <?xml version="1.0"?>
@@ -112,7 +113,7 @@
     </property>
 
     {% if spark_historyserver %}
-    {% if standby %}
+    {% if standby_namenode %}
         {% set hdfs_host = grains.namespace %}
     {% else %}
         {% set hdfs_host = namenode_fqdn ~ ':8020' %}
@@ -132,7 +133,7 @@
     </property>
     {% endif %}
 
-    {% if standby %}
+    {% if standby_resourcemanager %}
     <property>
         <name>yarn.resourcemanager.ha.enabled</name>
         <value>true</value>
@@ -158,7 +159,7 @@
     </property>
     <property>
         <name>yarn.resourcemanager.hostname.rm2</name>
-        <value>{{ standby_fqdn }}</value>
+        <value>{{ standby_rm_fqdn }}</value>
     </property>
     <property>
         <name>yarn.web-proxy.address</name>
