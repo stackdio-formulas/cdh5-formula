@@ -2,7 +2,7 @@
 {%- set resourcemanager_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.resourcemanager', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- set historyserver_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.mapreduce.historyserver', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- set standby_namenode = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.standby-namenode', 'grains.items', 'compound') -%}
-{%- set standby_resourcemanager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.standby-resourcemaanger', 'grains.items', 'compound') -%}
+{%- set standby_resourcemanager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.standby-resourcemanager', 'grains.items', 'compound') -%}
 {%- set zookeepers = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').values() -%}
 {%- if standby_resourcemanager -%}
     {%- set standby_rm_items = standby_resourcemanager.values()[0] -%}
