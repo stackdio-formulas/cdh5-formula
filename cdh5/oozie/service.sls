@@ -94,7 +94,7 @@ oozie_kdestroy:
 
 {% endif %}
 
-{% if pillar.cdh5.version >= '5.4.0' %}
+{% if (pillar.cdh5.version.split('.')[1] | int) >= 4 %}
 {% set share = 'oozie-sharelib-yarn' %}
 {% else %}
 {% set share = 'oozie-sharelib-yarn.tar.gz' %}
