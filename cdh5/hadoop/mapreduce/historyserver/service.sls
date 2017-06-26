@@ -37,7 +37,7 @@ hdfs_kdestroy_for_mapred:
     - env:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require:
-      - cmd: hdfs_kinit
+      - cmd: hdfs_kinit_for_mapred
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_mapreduce_var_dir
 
