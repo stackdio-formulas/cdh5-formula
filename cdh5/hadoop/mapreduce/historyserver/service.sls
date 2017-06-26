@@ -41,26 +41,6 @@ hdfs_kdestroy_for_mapred:
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_mapreduce_var_dir
 
-
-mapred_kinit:
-  cmd:
-    - run
-    - name: 'kinit -kt /etc/hadoop/conf/mapred.keytab mapred/{{ grains.fqdn }}'
-    - user: mapred
-    - env:
-      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
-    - require:
-      - cmd: generate_hadoop_keytabs
-
-mapred_kdestroy:
-  cmd:
-    - run
-    - name: 'kdestroy'
-    - user: mapred
-    - env:
-      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
-    - require:
-      - cmd: mapred_kdestroy
 {% endif %}
 
 # HDFS MapReduce log directories
@@ -82,6 +62,34 @@ hdfs_mapreduce_var_dir:
     - unless: 'hdfs dfs -test -d {{ mapred_staging_dir }}'
 
 {% if kms %}
+
+{% if pillar.cdh5.security.enable %}
+mapred_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/hadoop/conf/mapred.keytab mapred/{{ grains.fqdn }}'
+    - user: mapred
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: generate_hadoop_keytabs
+    - require_in:
+      - cmd: create_mapred_key
+      - cmd: create_mapred_zone
+
+mapred_kdestroy:
+  cmd:
+    - run
+    - name: 'kdestroy'
+    - user: mapred
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: mapred_kinit
+      - cmd: create_mapred_key
+      - cmd: create_mapred_zone
+{% endif %}
+
 create_mapred_key:
   cmd:
     - run
@@ -90,13 +98,6 @@ create_mapred_key:
     - unless: 'hadoop key list | grep mapred'
     - require:
       - file: /etc/hadoop/conf
-      {% if pillar.cdh5.security.enable %}
-      - cmd: mapred_kinit
-      {% endif %}
-    {% if pillar.cdh5.security.enable %}
-    - require_in:
-      - cmd: mapred_kdestroy
-    {% endif %}
 
 create_mapred_zone:
   cmd:
