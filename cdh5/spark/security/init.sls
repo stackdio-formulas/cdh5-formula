@@ -1,4 +1,9 @@
 
+include:
+  - krb5
+  - cdh5.security
+  - cdh5.security.stackdio_user
+
 generate_spark_keytabs:
   cmd:
     - script 
