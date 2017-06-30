@@ -7,10 +7,7 @@ include:
   - cdh5.hadoop.encryption
   {% endif %}
   {% if pillar.cdh5.security.enable %}
-  - krb5
-  - cdh5.security
-  - cdh5.security.stackdio_user
-  - cdh5.hadoop.security
+  - cdh5.hadoop.hdfs.security
   {% endif %}
 
 hadoop-client: 
