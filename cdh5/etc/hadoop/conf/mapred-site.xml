@@ -155,6 +155,10 @@
 
     {% if pillar.cdh5.encryption.enable %}
     <property>
+        <name>mapreduce.jobhistory.webapp.https.address</name>
+        <value>{{ historyserver_fqdn }}:19890</value>
+    </property>
+    <property>
         <name>mapreduce.shuffle.ssl.enabled</name>
         <value>true</value>
         <final>true</final>
