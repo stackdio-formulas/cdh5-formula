@@ -1,5 +1,4 @@
 {%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
-{%- set historyserver_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.mapreduce.historyserver', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 <?xml version="1.0"?>
 <configuration>
     <property>
@@ -157,7 +156,7 @@
     {% if pillar.cdh5.encryption.enable %}
     <property>
         <name>mapreduce.jobhistory.webapp.https.address</name>
-        <value>{{ historyserver_fqdn }}:19890</value>
+        <value>{{ namenode_fqdn }}:19890</value>
     </property>
     <property>
         <name>mapreduce.shuffle.ssl.enabled</name>
