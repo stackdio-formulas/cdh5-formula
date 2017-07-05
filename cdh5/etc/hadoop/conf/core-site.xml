@@ -1,6 +1,6 @@
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') -%}
+{%- set standby_namenode = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.standby-namenode', 'grains.items', 'compound') -%}
 {%- set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- set zookeepers = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').values() -%}
 {%- if kms -%}
     {%- set kms_items = kms.values()[0] -%}
@@ -20,7 +20,7 @@
         <name>io.compression.codecs</name>
         <value>org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.SnappyCodec</value>
     </property>
-    {%- if standby %}
+    {%- if standby_namenode %}
     <!-- Use the uri with the nameservice if we're in HA mode-->
     <property>
         <name>fs.defaultFS</name>
@@ -92,14 +92,29 @@
     </property>
 
     <!-- Rack-awareness properties -->
+    {% if pillar.cdh5.spot_or_not_rack %}
+    <property>
+        <name>net.topology.node.switch.mapping.impl</name>
+        <value>org.apache.hadoop.net.ScriptBasedMapping</value>
+    </property>
+    <property>
+        <name>net.topology.script.file.name</name>
+        <value>/etc/hadoop/conf/set_rack.py</value>
+    </property>
+    {% else %}
     <property>
         <name>net.topology.node.switch.mapping.impl</name>
         <value>org.apache.hadoop.net.TableMapping</value>
     </property>
     <property>
         <name>net.topology.table.file.name</name>
+        {% if pillar.cdh5.rack_by_component %}
+        <value>/etc/hadoop/conf/rack-by-comp.map</value>
+        {% else %}
         <value>/etc/hadoop/conf/host-rack.map</value>
+        {% endif %}
     </property>
+    {% endif %}
 
     {%- if pillar.cdh5.security.enable %}
     {%- from 'krb5/settings.sls' import krb5 with context %}

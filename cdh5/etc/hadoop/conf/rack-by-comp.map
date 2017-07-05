@@ -1,0 +1,14 @@
+{%- set rack1nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.rack.rack1', 'grains.items', 'compound').values() -%}
+
+{%- set rack2nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.rack.rack2', 'grains.items', 'compound').values() -%}
+
+{%- for datanode in rack1nodes -%}
+{{ datanode['fqdn'] }} /rack-1
+{{ datanode['host'] }} /rack-1
+{{ datanode['ipv4'][0] }} /rack-1
+{% endfor %}
+{% for datanode in rack2nodes -%}
+{{ datanode['fqdn'] }} /rack-2
+{{ datanode['host'] }} /rack-2
+{{ datanode['ipv4'][0] }} /rack-2
+{% endfor %}

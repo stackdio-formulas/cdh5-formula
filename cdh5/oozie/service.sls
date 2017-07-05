@@ -1,5 +1,5 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
-{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
+{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
 # 
 # Start the Oozie service
 #
@@ -94,7 +94,7 @@ oozie_kdestroy:
 
 {% endif %}
 
-{% if pillar.cdh5.version >= '5.4.0' %}
+{% if (pillar.cdh5.version.split('.')[1] | int) >= 4 %}
 {% set share = 'oozie-sharelib-yarn' %}
 {% else %}
 {% set share = 'oozie-sharelib-yarn.tar.gz' %}

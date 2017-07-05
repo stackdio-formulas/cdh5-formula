@@ -1,3 +1,23 @@
+#install python dependencies and rack script
+{% if pillar.cdh5.spot_or_not_rack %}
+/etc/hadoop/conf/set_rack.py:
+  file:
+    - managed
+    - source: salt://cdh5/etc/hadoop/conf/set_rack.py
+    - user: root
+    - group: root
+    - mode: 755
+    - require:
+      - file: /etc/hadoop/conf
+
+
+python_dep:
+  pkg:
+    - installed
+    - pkgs:
+      - python
+      - python2-boto3
+{% endif %}
 
 /etc/hadoop/conf:
   file:

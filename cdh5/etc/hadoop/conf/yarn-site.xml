@@ -1,9 +1,12 @@
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set resourcemanager_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.resourcemanager', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set historyserver_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.mapreduce.historyserver', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set standby_namenode = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.standby-namenode', 'grains.items', 'compound') -%}
+{%- set standby_resourcemanager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.yarn.standby-resourcemanager', 'grains.items', 'compound') -%}
 {%- set zookeepers = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').values() -%}
-{%- if standby -%}
-    {%- set standby_items = standby.values()[0] -%}
-    {%- set standby_fqdn = standby_items['fqdn'] -%}
+{%- if standby_resourcemanager -%}
+    {%- set standby_rm_items = standby_resourcemanager.values()[0] -%}
+    {%- set standby_rm_fqdn = standby_rm_items['fqdn'] -%}
 {%- endif -%}
 {%- set spark_historyserver = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.spark.historyserver', 'grains.items', 'compound').values() -%}
 <?xml version="1.0"?>
@@ -25,7 +28,7 @@
 
     <property>
         <name>yarn.log.server.url</name>
-        <value>http{% if pillar.cdh5.encryption.enable %}s{% endif %}://{{ namenode_fqdn }}:{% if pillar.cdh5.encryption.enable %}19890{% else %}19888{% endif %}/jobhistory/logs</value>
+        <value>http{% if pillar.cdh5.encryption.enable %}s{% endif %}://{{ historyserver_fqdn }}:{% if pillar.cdh5.encryption.enable %}19890{% else %}19888{% endif %}/jobhistory/logs</value>
     </property>
 
     <property>
@@ -110,7 +113,7 @@
     </property>
 
     {% if spark_historyserver %}
-    {% if standby %}
+    {% if standby_namenode %}
         {% set hdfs_host = grains.namespace %}
     {% else %}
         {% set hdfs_host = namenode_fqdn ~ ':8020' %}
@@ -130,7 +133,7 @@
     </property>
     {% endif %}
 
-    {% if standby %}
+    {% if standby_resourcemanager %}
     <property>
         <name>yarn.resourcemanager.ha.enabled</name>
         <value>true</value>
@@ -139,12 +142,12 @@
         <name>yarn.resourcemanager.ha.rm-ids</name>
         <value>rm1,rm2</value>
     </property>
-    {% if 'cdh5.hadoop.namenode' in grains.roles %}
+    {% if 'cdh5.hadoop.yarn.resourcemanager' in grains.roles %}
     <property>
         <name>yarn.resourcemanager.ha.id</name>
         <value>rm1</value>
     </property>
-    {% elif 'cdh5.hadoop.standby-namenode' in grains.roles %}
+    {% elif 'cdh5.hadoop.yarn.standby-resourcemanager' in grains.roles %}
     <property>
         <name>yarn.resourcemanager.ha.id</name>
         <value>rm2</value>
@@ -152,15 +155,15 @@
     {% endif %}
     <property>
         <name>yarn.resourcemanager.hostname.rm1</name>
-        <value>{{ namenode_fqdn }}</value>
+        <value>{{ resourcemanager_fqdn }}</value>
     </property>
     <property>
         <name>yarn.resourcemanager.hostname.rm2</name>
-        <value>{{ standby_fqdn }}</value>
+        <value>{{ standby_rm_fqdn }}</value>
     </property>
     <property>
         <name>yarn.web-proxy.address</name>
-        <value>{{ namenode_fqdn }}:8089</value>
+        <value>{{ resourcemanager_fqdn }}:8089</value>
     </property>
     <property>
         <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
@@ -201,7 +204,7 @@
     {% else %}
     <property>
         <name>yarn.resourcemanager.hostname</name>
-        <value>{{ namenode_fqdn }}</value>
+        <value>{{ resourcemanager_fqdn }}</value>
     </property>
     {% endif %}
 

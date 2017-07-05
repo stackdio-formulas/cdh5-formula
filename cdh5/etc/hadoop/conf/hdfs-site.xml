@@ -1,10 +1,10 @@
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') -%}
+{%- set standby_namenode = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.standby-namenode', 'grains.items', 'compound') -%}
 {%- set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') -%}
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
-{%- if standby -%}
-    {%- set standby_items = standby.values()[0] -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- if standby_namenode -%}
+    {%- set standby_items = standby_namenode.values()[0] -%}
     {%- set standby_fqdn = standby_items['fqdn'] -%}
-    {%- set journal_nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.journalnode', 'grains.items', 'compound').values() -%}
+    {%- set journal_nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.journalnode', 'grains.items', 'compound').values() -%}
 {%- endif -%}
 {%- if kms -%}
     {%- set kms_items = kms.values()[0] -%}
@@ -98,7 +98,7 @@
         <value>true</value>
     </property>
 
-    {% if standby %}
+    {% if standby_namenode %}
     <property>
         <name>dfs.nameservices</name>
         <value>{{ grains.namespace }}</value>
