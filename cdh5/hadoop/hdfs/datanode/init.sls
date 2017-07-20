@@ -5,7 +5,6 @@ include:
   - cdh5.repo
   - cdh5.hadoop.conf
   - cdh5.landing_page
-  - cdh5.hadoop.client
   {% if salt['pillar.get']('cdh5:datanode:start_service', True) %}
   - cdh5.hadoop.hdfs.datanode.service
   {% endif %}
