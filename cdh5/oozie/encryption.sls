@@ -4,6 +4,7 @@
     - user: root
     - group: root
     - mode: 400
+    - makedirs: true
     - contents_pillar: ssl:private_key
 
 /etc/oozie/conf/oozie.crt:
