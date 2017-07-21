@@ -30,7 +30,7 @@ hadoop-hdfs-namenode:
     - require_in:
       - file: /etc/hadoop/conf
       {% if pillar.cdh5.encryption.enable %}
-      - file: /etc/hadoop/conf/ca
+      - file: /etc/hadoop/conf/server.key
       {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs

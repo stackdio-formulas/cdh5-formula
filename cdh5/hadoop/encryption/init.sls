@@ -14,6 +14,8 @@
     - group: root
     - mode: 444
     - contents_pillar: ssl:certificate
+    - require:
+      - file: /etc/hadoop/conf/server.key
 
 /etc/hadoop/conf/ca.crt:
   file:
@@ -22,6 +24,8 @@
     - group: root
     - mode: 444
     - contents_pillar: ssl:ca_certificate
+    - require:
+      - file: /etc/hadoop/conf/server.key
 
 /etc/hadoop/conf/chained.crt:
   file:
@@ -30,6 +34,8 @@
     - group: root
     - mode: 444
     - contents_pillar: ssl:chained_certificate
+    - require:
+      - file: /etc/hadoop/conf/server.key
 
 create-pkcs12:
   cmd:
