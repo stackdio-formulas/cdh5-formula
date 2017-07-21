@@ -52,6 +52,7 @@ create-truststore:
     - run
     - user: root
     - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/hadoop/conf/hadoop.truststore -storepass hadoop -file /etc/hadoop/conf/ca.crt -alias root-ca -noprompt
+    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/hadoop/conf/hadoop.truststore -storepass hadoop | grep root-ca
     - require:
       - file: /etc/hadoop/conf/ca.crt
 
@@ -60,6 +61,7 @@ create-keystore:
     - run
     - user: root
     - name: /usr/java/latest/bin/keytool -importkeystore -srckeystore /etc/hadoop/conf/server.pkcs12 -srcstorepass hadoop -srcstoretype pkcs12 -destkeystore /etc/hadoop/conf/hadoop.keystore -deststorepass hadoop
+    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop | grep {{ grains.id }}
     - require:
       - cmd: create-pkcs12
 
