@@ -65,10 +65,19 @@ create-keystore:
     - require:
       - cmd: create-pkcs12
 
+chmod-keystore:
+  cmd:
+    - run
+    - user: root
+    - name: chmod 400 /etc/oozie/conf/oozie.keystore
+    - require:
+      - cmd: create-keystore
+
 chown-keystore:
   cmd:
     - run
     - user: root
-    - name: chown root:root /etc/oozie/conf/oozie.keystore
+    - name: chown oozie:oozie /etc/oozie/conf/oozie.keystore
     - require:
       - cmd: create-keystore
+      - cmd: chmod-keystore
