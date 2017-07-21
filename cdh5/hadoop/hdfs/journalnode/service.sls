@@ -30,5 +30,8 @@ hadoop-hdfs-journalnode-svc:
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf

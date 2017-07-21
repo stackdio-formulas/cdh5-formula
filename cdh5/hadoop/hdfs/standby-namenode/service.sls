@@ -38,6 +38,9 @@ hadoop-hdfs-zkfc-svc:
     - require:
       - pkg: hadoop-hdfs-zkfc
       - cmd: init_standby_namenode
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
@@ -54,5 +57,8 @@ hadoop-hdfs-namenode-svc:
     - require:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
