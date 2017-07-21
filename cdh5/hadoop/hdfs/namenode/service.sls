@@ -36,6 +36,7 @@ init_hdfs:
       - cmd: cdh5_dfs_dirs
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
+      - cmd: create-truststore
       {% endif %}
 
 hadoop-hdfs-namenode-svc:
@@ -46,6 +47,10 @@ hadoop-hdfs-namenode-svc:
     - require:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_hdfs
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
@@ -72,6 +77,10 @@ hadoop-hdfs-zkfc-svc:
     - require:
       - pkg: hadoop-hdfs-zkfc
       - cmd: init_zkfc
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
