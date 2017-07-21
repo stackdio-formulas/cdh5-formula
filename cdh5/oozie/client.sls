@@ -19,6 +19,10 @@ oozie-client:
     - installed
     - require:
       - module: cdh5_refresh_db
+    {% if pillar.cdh5.encryption.enable %}
+    - require_in:
+      - file: /etc/oozie/conf/oozie.key
+    {% endif %}
 
 {% if pillar.cdh5.encryption.enable %}
   {% set oozie_url = 'https://' ~ oozie_host ~ ':11443/oozie' %}

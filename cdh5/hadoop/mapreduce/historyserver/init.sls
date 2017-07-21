@@ -28,6 +28,9 @@ hadoop-mapreduce-historyserver:
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
+      {% if pillar.cdh5.encryption.enable %}
+      - file: /etc/hadoop/conf/hadoop.key
+      {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}

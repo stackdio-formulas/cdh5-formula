@@ -1,4 +1,4 @@
-/etc/oozie/conf/server.key:
+/etc/oozie/conf/oozie.key:
   file:
     - managed
     - user: root
@@ -6,7 +6,7 @@
     - mode: 400
     - contents_pillar: ssl:private_key
 
-/etc/oozie/conf/server.crt:
+/etc/oozie/conf/oozie.crt:
   file:
     - managed
     - user: root
@@ -14,7 +14,7 @@
     - mode: 444
     - contents_pillar: ssl:certificate
     - require:
-      - file: /etc/oozie/conf/server.key
+      - file: /etc/oozie/conf/oozie.key
 
 /etc/oozie/conf/ca.crt:
   file:
@@ -24,7 +24,7 @@
     - mode: 444
     - contents_pillar: ssl:ca_certificate
     - require:
-      - file: /etc/oozie/conf/server.key
+      - file: /etc/oozie/conf/oozie.key
 
 /etc/oozie/conf/chained.crt:
   file:
@@ -34,17 +34,17 @@
     - mode: 444
     - contents_pillar: ssl:chained_certificate
     - require:
-      - file: /etc/oozie/conf/server.key
+      - file: /etc/oozie/conf/oozie.key
 
 create-pkcs12:
   cmd:
     - run
     - user: root
-    - name: openssl pkcs12 -export -in /etc/oozie/conf/server.crt -certfile /etc/oozie/conf/chained.crt -inkey /etc/oozie/conf/server.key -out /etc/oozie/conf/server.pkcs12 -name {{ grains.id }} -password pass:oozie123
+    - name: openssl pkcs12 -export -in /etc/oozie/conf/oozie.crt -certfile /etc/oozie/conf/chained.crt -inkey /etc/oozie/conf/oozie.key -out /etc/oozie/conf/oozie.pkcs12 -name {{ grains.id }} -password pass:oozie123
     - require:
       - file: /etc/oozie/conf/chained.crt
-      - file: /etc/oozie/conf/server.crt
-      - file: /etc/oozie/conf/server.key
+      - file: /etc/oozie/conf/oozie.crt
+      - file: /etc/oozie/conf/oozie.key
 
 create-truststore:
   cmd:
@@ -59,7 +59,7 @@ create-keystore:
   cmd:
     - run
     - user: root
-    - name: /usr/java/latest/bin/keytool -importkeystore -srckeystore /etc/oozie/conf/server.pkcs12 -srcstorepass oozie123 -srcstoretype pkcs12 -destkeystore /etc/oozie/conf/oozie.keystore -deststorepass oozie
+    - name: /usr/java/latest/bin/keytool -importkeystore -srckeystore /etc/oozie/conf/oozie.pkcs12 -srcstorepass oozie123 -srcstoretype pkcs12 -destkeystore /etc/oozie/conf/oozie.keystore -deststorepass oozie
     - unless: /usr/java/latest/bin/keytool -list -keystore /etc/oozie/conf/oozie.keystore -storepass oozie123 | grep {{ grains.id }}
     - require:
       - cmd: create-pkcs12

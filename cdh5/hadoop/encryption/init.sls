@@ -1,5 +1,5 @@
 
-/etc/hadoop/conf/server.key:
+/etc/hadoop/conf/hadoop.key:
   file:
     - managed
     - user: root
@@ -7,7 +7,7 @@
     - mode: 400
     - contents_pillar: ssl:private_key
 
-/etc/hadoop/conf/server.crt:
+/etc/hadoop/conf/hadoop.crt:
   file:
     - managed
     - user: root
@@ -15,7 +15,7 @@
     - mode: 444
     - contents_pillar: ssl:certificate
     - require:
-      - file: /etc/hadoop/conf/server.key
+      - file: /etc/hadoop/conf/hadoop.key
 
 /etc/hadoop/conf/ca.crt:
   file:
@@ -25,7 +25,7 @@
     - mode: 444
     - contents_pillar: ssl:ca_certificate
     - require:
-      - file: /etc/hadoop/conf/server.key
+      - file: /etc/hadoop/conf/hadoop.key
 
 /etc/hadoop/conf/chained.crt:
   file:
@@ -35,17 +35,17 @@
     - mode: 444
     - contents_pillar: ssl:chained_certificate
     - require:
-      - file: /etc/hadoop/conf/server.key
+      - file: /etc/hadoop/conf/hadoop.key
 
 create-pkcs12:
   cmd:
     - run
     - user: root
-    - name: openssl pkcs12 -export -in /etc/hadoop/conf/server.crt -certfile /etc/hadoop/conf/chained.crt -inkey /etc/hadoop/conf/server.key -out /etc/hadoop/conf/server.pkcs12 -name {{ grains.id }} -password pass:hadoop
+    - name: openssl pkcs12 -export -in /etc/hadoop/conf/hadoop.crt -certfile /etc/hadoop/conf/chained.crt -inkey /etc/hadoop/conf/hadoop.key -out /etc/hadoop/conf/hadoop.pkcs12 -name {{ grains.id }} -password pass:hadoop
     - require:
       - file: /etc/hadoop/conf/chained.crt
-      - file: /etc/hadoop/conf/server.crt
-      - file: /etc/hadoop/conf/server.key
+      - file: /etc/hadoop/conf/hadoop.crt
+      - file: /etc/hadoop/conf/hadoop.key
 
 create-truststore:
   cmd:
@@ -60,7 +60,7 @@ create-keystore:
   cmd:
     - run
     - user: root
-    - name: /usr/java/latest/bin/keytool -importkeystore -srckeystore /etc/hadoop/conf/server.pkcs12 -srcstorepass hadoop -srcstoretype pkcs12 -destkeystore /etc/hadoop/conf/hadoop.keystore -deststorepass hadoop
+    - name: /usr/java/latest/bin/keytool -importkeystore -srckeystore /etc/hadoop/conf/hadoop.pkcs12 -srcstorepass hadoop -srcstoretype pkcs12 -destkeystore /etc/hadoop/conf/hadoop.keystore -deststorepass hadoop
     - unless: /usr/java/latest/bin/keytool -list -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop | grep {{ grains.id }}
     - require:
       - cmd: create-pkcs12

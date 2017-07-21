@@ -34,7 +34,7 @@ oozie:
       - module: cdh5_refresh_db
     {% if pillar.cdh5.encryption.enable %}
     - require_in:
-      - file: /etc/oozie/conf/server.key
+      - file: /etc/oozie/conf/oozie.key
     {% endif %}
 
 /etc/oozie/conf/oozie-log4j.properties:
