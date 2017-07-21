@@ -21,7 +21,7 @@ oozie-client:
       - module: cdh5_refresh_db
     {% if pillar.cdh5.encryption.enable %}
     - require_in:
-      - file: /etc/oozie/conf/oozie.key
+      - file: /etc/oozie/conf/ca.crt
     {% endif %}
 
 {% if pillar.cdh5.encryption.enable %}

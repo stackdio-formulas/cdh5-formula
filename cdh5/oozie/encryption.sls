@@ -1,3 +1,22 @@
+
+/etc/oozie/conf/ca.crt:
+  file:
+    - managed
+    - user: root
+    - group: root
+    - mode: 444
+    - contents_pillar: ssl:ca_certificate
+
+create-truststore:
+  cmd:
+    - run
+    - user: root
+    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 -file /etc/oozie/conf/ca.crt -alias root-ca -noprompt
+    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 | grep root-ca
+    - require:
+      - file: /etc/oozie/conf/ca.crt
+
+{% if 'cdh5.oozie' in grains.roles %}
 /etc/oozie/conf/oozie.key:
   file:
     - managed
@@ -6,6 +25,8 @@
     - mode: 400
     - makedirs: true
     - contents_pillar: ssl:private_key
+    - require:
+      - file: /etc/oozie/conf/ca.crt
 
 /etc/oozie/conf/oozie.crt:
   file:
@@ -15,17 +36,7 @@
     - mode: 444
     - contents_pillar: ssl:certificate
     - require:
-      - file: /etc/oozie/conf/oozie.key
-
-/etc/oozie/conf/ca.crt:
-  file:
-    - managed
-    - user: root
-    - group: root
-    - mode: 444
-    - contents_pillar: ssl:ca_certificate
-    - require:
-      - file: /etc/oozie/conf/oozie.key
+      - file: /etc/oozie/conf/ca.crt
 
 /etc/oozie/conf/chained.crt:
   file:
@@ -35,7 +46,7 @@
     - mode: 444
     - contents_pillar: ssl:chained_certificate
     - require:
-      - file: /etc/oozie/conf/oozie.key
+      - file: /etc/oozie/conf/ca.crt
 
 create-pkcs12:
   cmd:
@@ -46,15 +57,6 @@ create-pkcs12:
       - file: /etc/oozie/conf/chained.crt
       - file: /etc/oozie/conf/oozie.crt
       - file: /etc/oozie/conf/oozie.key
-
-create-truststore:
-  cmd:
-    - run
-    - user: root
-    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 -file /etc/oozie/conf/ca.crt -alias root-ca -noprompt
-    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 | grep root-ca
-    - require:
-      - file: /etc/oozie/conf/ca.crt
 
 create-keystore:
   cmd:
@@ -81,3 +83,5 @@ chown-keystore:
     - require:
       - cmd: create-keystore
       - cmd: chmod-keystore
+
+{% endif %}
