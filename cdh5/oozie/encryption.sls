@@ -60,7 +60,7 @@ create-keystore:
   cmd:
     - run
     - user: root
-    - name: /usr/java/latest/bin/keytool -importkeystore -srckeystore /etc/oozie/conf/oozie.pkcs12 -srcstorepass oozie123 -srcstoretype pkcs12 -destkeystore /etc/oozie/conf/oozie.keystore -deststorepass oozie
+    - name: /usr/java/latest/bin/keytool -importkeystore -srckeystore /etc/oozie/conf/oozie.pkcs12 -srcstorepass oozie123 -srcstoretype pkcs12 -destkeystore /etc/oozie/conf/oozie.keystore -deststorepass oozie123
     - unless: /usr/java/latest/bin/keytool -list -keystore /etc/oozie/conf/oozie.keystore -storepass oozie123 | grep {{ grains.id }}
     - require:
       - cmd: create-pkcs12
