@@ -5,6 +5,7 @@
     - user: root
     - group: root
     - mode: 444
+    - makedirs: true
     - contents_pillar: ssl:ca_certificate
 
 create-truststore:
