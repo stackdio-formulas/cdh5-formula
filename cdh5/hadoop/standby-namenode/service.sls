@@ -24,6 +24,7 @@ init_standby_namenode:
       - cmd: cdh5_dfs_dirs
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
+      - cmd: create-truststore
       {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
@@ -38,6 +39,13 @@ hadoop-hdfs-zkfc-svc:
     - require:
       - pkg: hadoop-hdfs-zkfc
       - cmd: init_standby_namenode
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
@@ -54,6 +62,13 @@ hadoop-hdfs-namenode-svc:
     - require:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
@@ -65,5 +80,12 @@ hadoop-yarn-resourcemanager-svc:
     - require:
       - pkg: hadoop-yarn-resourcemanager
       - service: hadoop-hdfs-namenode-svc
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf

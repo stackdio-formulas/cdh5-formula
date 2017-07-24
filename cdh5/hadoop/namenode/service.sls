@@ -41,6 +41,10 @@ init_hdfs:
       - cmd: cdh5_dfs_dirs
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
       {% endif %}
 
 {% if standby %}
@@ -63,6 +67,13 @@ hadoop-hdfs-zkfc-svc:
     - require:
       - pkg: hadoop-hdfs-zkfc
       - cmd: init_zkfc
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - require_in:
       - service: hadoop-yarn-resourcemanager-svc
       - service: hadoop-mapreduce-historyserver-svc
@@ -80,6 +91,13 @@ hadoop-hdfs-namenode-svc:
       # Make sure HDFS is initialized before the namenode
       # is started
       - cmd: init_hdfs
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
@@ -209,6 +227,13 @@ hadoop-yarn-resourcemanager-svc:
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_tmp_dir
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
@@ -221,6 +246,13 @@ hadoop-yarn-proxyserver-svc:
     - require:
       - pkg: hadoop-yarn-proxyserver
       - service: hadoop-yarn-resourcemanager-svc
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 {% endif %}
@@ -241,5 +273,12 @@ hadoop-mapreduce-historyserver-svc:
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_tmp_dir
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf

@@ -46,6 +46,7 @@ hadoop-hdfs-datanode-svc:
       - cmd: dfs_data_dir
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
+      - cmd: create-truststore
       {% endif %}
       {% if pillar.cdh5.security.enable %}
       - file: /etc/default/hadoop-hdfs-datanode
@@ -70,6 +71,7 @@ hadoop-yarn-nodemanager-svc:
       - cmd: datanode_yarn_log_dirs
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
+      - cmd: create-truststore
       {% endif %}
       {% if pillar.cdh5.security.enable %}
       - file: /etc/default/hadoop-hdfs-datanode

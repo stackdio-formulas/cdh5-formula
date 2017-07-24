@@ -1,101 +1,68 @@
-/etc/hadoop/conf/ca:
-  file:
-    - recurse
-    - source: salt://cdh5/ca
-    - template: jinja
-    - user: root
-    - group: root
-    - file_mode: 644
-    - context:
-      conf_dir: /etc/hadoop/conf
-
-/etc/hadoop/conf/ca/private/cakey.pem:
+/etc/hadoop/conf/hadoop.key:
   file:
     - managed
     - user: root
     - group: root
     - mode: 400
-    - makedirs: true
-    - contents_pillar: cdh5:encryption:ca_key
-    - require:
-      - file: /etc/hadoop/conf/ca
+    - contents_pillar: ssl:private_key
 
-/etc/hadoop/conf/ca/certs/cacert.pem:
+/etc/hadoop/conf/hadoop.crt:
   file:
     - managed
     - user: root
     - group: root
-    - mode: 400
-    - makedirs: true
-    - contents_pillar: cdh5:encryption:ca_cert
+    - mode: 444
+    - contents_pillar: ssl:certificate
     - require:
-      - file: /etc/hadoop/conf/ca
+      - file: /etc/hadoop/conf/hadoop.key
 
-# Delete before re-creating to ensure idempotency
-delete-truststore:
+/etc/hadoop/conf/ca.crt:
+  file:
+    - managed
+    - user: root
+    - group: root
+    - mode: 444
+    - contents_pillar: ssl:ca_certificate
+    - require:
+      - file: /etc/hadoop/conf/hadoop.key
+
+/etc/hadoop/conf/chained.crt:
+  file:
+    - managed
+    - user: root
+    - group: root
+    - mode: 444
+    - contents_pillar: ssl:chained_certificate
+    - require:
+      - file: /etc/hadoop/conf/hadoop.key
+
+create-pkcs12:
   cmd:
     - run
     - user: root
-    - name: rm -f /etc/hadoop/conf/hadoop.truststore
+    - name: openssl pkcs12 -export -in /etc/hadoop/conf/hadoop.crt -certfile /etc/hadoop/conf/chained.crt -inkey /etc/hadoop/conf/hadoop.key -out /etc/hadoop/conf/hadoop.pkcs12 -name {{ grains.id }} -password pass:hadoop
+    - require:
+      - file: /etc/hadoop/conf/chained.crt
+      - file: /etc/hadoop/conf/hadoop.crt
+      - file: /etc/hadoop/conf/hadoop.key
 
 create-truststore:
   cmd:
     - run
     - user: root
-    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/hadoop/conf/hadoop.truststore -storepass hadoop -file /etc/hadoop/conf/ca/certs/cacert.pem -alias hadoop-ca -noprompt
+    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/hadoop/conf/hadoop.truststore -storepass hadoop -file /etc/hadoop/conf/ca.crt -alias root-ca -noprompt
+    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/hadoop/conf/hadoop.truststore -storepass hadoop | grep root-ca
     - require:
-      - cmd: delete-truststore
-      - file: /etc/hadoop/conf/ca
-      - file: /etc/hadoop/conf/ca/private/cakey.pem
-      - file: /etc/hadoop/conf/ca/certs/cacert.pem
-
-{% if 'cdh5.hadoop.client' not in grains.roles %}
+      - file: /etc/hadoop/conf/ca.crt
 
 create-keystore:
-  file:
-    - copy
-    - name: /etc/hadoop/conf/hadoop.keystore
-    - source: /etc/hadoop/conf/hadoop.truststore
-    - user: root
-    - group: root
-    - force: true
-    - mode: 640
-    - require:
-      - cmd: create-truststore
-
-create-key:
   cmd:
     - run
     - user: root
-    - name: 'printf "CDH5 {{ grains.id }}\n\nCDH5\nUS\nUS\nUS\nyes\n" | /usr/java/latest/bin/keytool -genkey -alias {{ grains.id }} -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop -keyalg RSA -keysize 2048 -validity 8000 -ext san=dns:{{ grains.fqdn }}'
+    - name: /usr/java/latest/bin/keytool -importkeystore -srckeystore /etc/hadoop/conf/hadoop.pkcs12 -srcstorepass hadoop -srcstoretype pkcs12 -destkeystore /etc/hadoop/conf/hadoop.keystore -deststorepass hadoop
+    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop | grep {{ grains.id }}
     - require:
-      - file: create-keystore
-
-create-csr:
-  cmd:
-    - run
-    - user: root
-    - name: '/usr/java/latest/bin/keytool -certreq -alias {{ grains.id }} -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop -file /etc/hadoop/conf/hadoop.csr -keyalg rsa -ext san=dns:{{ grains.fqdn }}'
-    - require:
-      - cmd: create-key
-
-sign-csr:
-  cmd:
-    - run
-    - user: root
-    - name: 'printf "{{ pillar.cdh5.encryption.ca_key_pass }}\ny\ny\n" | openssl ca -in /etc/hadoop/conf/hadoop.csr -notext -out /etc/hadoop/conf/hadoop-signed.crt -config /etc/hadoop/conf/ca/conf/caconfig.cnf -extensions v3_req'
-    - require:
-      - cmd: create-csr
-
-import-signed-crt:
-  cmd:
-    - run
-    - user: root
-    - name: '/usr/java/latest/bin/keytool -importcert -keystore /etc/hadoop/conf/hadoop.keystore -storepass hadoop -file /etc/hadoop/conf/hadoop-signed.crt -alias {{ grains.id }}'
-    - require:
-      - cmd: sign-csr
-    - require_in:
-      - cmd: remove-ca
+      - cmd: create-pkcs12
 
 chown-keystore:
   cmd:
@@ -103,17 +70,7 @@ chown-keystore:
     - user: root
     - name: chown root:hadoop /etc/hadoop/conf/hadoop.keystore
     - require:
-      - cmd: import-signed-crt
-
-{% endif %}
-
-# Don't leave the CA lying around.  Must be a cmd instead of file.absent, as it causes a name collision otherwise.
-remove-ca:
-  cmd:
-    - run
-    - name: rm -rf /etc/hadoop/conf/ca
-    - require:
-      - cmd: create-truststore
+      - cmd: create-keystore
 
 nginx:
   pkg:
