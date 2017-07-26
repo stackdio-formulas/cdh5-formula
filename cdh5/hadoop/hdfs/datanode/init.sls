@@ -23,7 +23,10 @@ include:
 ##
 hadoop-hdfs-datanode:
   pkg:
-    - installed 
+    - installed
+    - pkgs:
+      - hadoop-hdfs-datanode
+      - spark-core
     - require:
       - module: cdh5_refresh_db
       {% if pillar.cdh5.security.enable %}

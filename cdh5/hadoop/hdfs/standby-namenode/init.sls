@@ -20,6 +20,9 @@ include:
 hadoop-hdfs-namenode:
   pkg:
     - installed
+    - pkgs:
+      - hadoop-hdfs-namenode
+      - spark-core
     - require:
       - module: cdh5_refresh_db
       {% if pillar.cdh5.security.enable %}

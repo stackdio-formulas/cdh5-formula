@@ -20,6 +20,9 @@ include:
 hadoop-yarn-resourcemanager:
   pkg:
     - installed
+    - pkgs:
+      - hadoop-yarn-resourcemanager
+      - spark-core
     - require:
       - module: cdh5_refresh_db
       {% if pillar.cdh5.security.enable %}

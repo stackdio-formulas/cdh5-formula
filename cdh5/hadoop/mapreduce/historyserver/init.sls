@@ -21,6 +21,9 @@ include:
 hadoop-mapreduce-historyserver:
   pkg:
     - installed
+    - pkgs:
+      - hadoop-mapreduce-historyserver
+      - spark-core
     - require:
       - module: cdh5_refresh_db
       {% if pillar.cdh5.security.enable %}
