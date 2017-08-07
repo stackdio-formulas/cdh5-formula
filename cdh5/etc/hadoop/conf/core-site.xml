@@ -10,7 +10,7 @@
 <configuration>
     <property>
         <name>hadoop.tmp.dir</name>
-        <value>/mnt/tmp/hadoop</value>
+        <value>/tmp/hadoop/${user.name}</value>
     </property>
     <property>
         <name>io.file.buffer.size</name>

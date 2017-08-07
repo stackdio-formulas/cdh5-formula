@@ -33,6 +33,23 @@ python_dep:
     - exclude_pat: ssl-*.xml
     {% endif %}
 
+/mnt/tmp/hadoop:
+  file:
+    - directory
+    - user: root
+    - group: root
+    - mode: 777
+    - makedirs: true
+
+/tmp/hadoop:
+  file:
+    - symlink
+    - target: /mnt/tmp/hadoop
+    - user: root
+    - group: root
+    - mode: 777
+    - require:
+      - file: /mnt/tmp/hadoop
 
 /etc/hadoop/conf/container-executor.cfg:
   file:

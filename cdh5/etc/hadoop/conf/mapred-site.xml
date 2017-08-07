@@ -6,10 +6,6 @@
         <value>yarn</value>
     </property>
     <property>
-        <name>mapreduce.cluster.temp.dir</name>
-        <value>/tmp/mapred/temp</value>
-    </property>
-    <property>
         <name>mapreduce.jobhistory.webapp.address</name>
         <value>{{ historyserver_fqdn }}:19888</value>
     </property>
