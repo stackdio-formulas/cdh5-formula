@@ -201,6 +201,10 @@
         <name>yarn.resourcemanager.zk-address</name>
         <value>{% for zk in zookeepers %}{{ zk['fqdn'] }}{% if not loop.last %},{% endif %}{% endfor %}</value>
     </property>
+    <property>
+        <name>yarn.resourcemanager.zk-num-retries</name>
+        <value>10000</value>
+    </property>
     {% else %}
     <property>
         <name>yarn.resourcemanager.hostname</name>
