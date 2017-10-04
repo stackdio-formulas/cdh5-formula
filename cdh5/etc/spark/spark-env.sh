@@ -84,7 +84,7 @@ export SPARK_MASTER_PORT=7077
 export SPARK_WORKER_PORT=7078
 export SPARK_WORKER_WEBUI_PORT=18081
 export SPARK_WORKER_DIR=/var/run/spark/work
-export SPARK_LOG_DIR=/var/log/spark
+export SPARK_LOG_DIR=/mnt/spark/logs
 export SPARK_PID_DIR='/var/run/spark/'
 
 if [ -n "$HADOOP_HOME" ]; then

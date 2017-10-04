@@ -63,6 +63,22 @@ history-dir:
     - require:
       - pkg: spark-history-server
 
+/mnt/spark:
+  file:
+    - directory
+    - user: spark
+    - group: spark
+    - require:
+      - pkg: spark-history-server
+
+/mnt/spark/logs:
+  file:
+    - directory
+    - user: spark
+    - group: spark
+    - require:
+      - pkg: spark-history-server
+      - file: /mnt/spark
 
 spark-history-server-svc:
   service:
@@ -71,6 +87,7 @@ spark-history-server-svc:
     - require:
       - pkg: spark-history-server
       - cmd: history-dir
+      - file: /mnt/spark/logs
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_spark_keytabs
       {% endif %}
