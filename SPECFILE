@@ -128,6 +128,8 @@ pillar_defaults:
       permissions: true
       block_size: 268435456
       replication: 3
+      namenode_opts: ''
+      datanode_opts: ''
     mapred:
       system_dir: /hadoop/system/mapred
       memory_mb: 2048
