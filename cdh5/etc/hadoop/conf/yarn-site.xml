@@ -120,6 +120,10 @@
     {% endif %}
     <!-- Add these spark properties here so they get picked up by synthesys jobs -->
     <property>
+        <name>spark.ui.enabled</name>
+        <value>true</value>
+    </property>
+    <property>
         <name>spark.eventLog.enabled</name>
         <value>true</value>
     </property>
