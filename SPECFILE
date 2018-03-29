@@ -50,6 +50,9 @@ components:
   - title: HBase Secure Permissions
     description: Separate state because it needs to run on the master AFTER the regionservers are started.  Used only when security is enabled.
     sls_path: cdh5.hbase.security.permissions
+  - title: HBase Client
+    description: HBase Client Node
+    sls_path: cdh5.hbase.client
   - title: Oozie
     description: Oozie
     sls_path: cdh5.oozie
@@ -140,14 +143,9 @@ pillar_defaults:
       start_service: true
       tmp_dir: /mnt/hbase/tmp
       log_dir: /mnt/hbase/logs
-      master_initial_heap_mb: 1024
-      master_max_heap_mb: 1024
-      master_young_gen_mb: 256
-      region_initial_heap_mb: 1024
-      region_max_heap_mb: 1024
-      region_young_gen_mb: 256
+      master_max_heap: 1000m
+      region_max_heap: 1000m
       jute_maxbuffer: 10485750
-      manage_zk: false
     zookeeper:
       data_dir: /mnt/zk/data
       start_service: true
