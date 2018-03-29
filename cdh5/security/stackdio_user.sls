@@ -1,4 +1,4 @@
-{% if pillar.cdh5.security.enable %}
+
 include:
   - krb5
   - cdh5.security
@@ -18,4 +18,3 @@ generate_keytab_{{ user.username }}:
     - require:
       - module: load_admin_keytab
 {% endfor %}
-{% endif %}

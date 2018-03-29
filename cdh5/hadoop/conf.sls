@@ -1,3 +1,23 @@
+#install python dependencies and rack script
+{% if pillar.cdh5.spot_or_not_rack %}
+/etc/hadoop/conf/set_rack.py:
+  file:
+    - managed
+    - source: salt://cdh5/etc/hadoop/conf/set_rack.py
+    - user: root
+    - group: root
+    - mode: 755
+    - require:
+      - file: /etc/hadoop/conf
+
+
+python_dep:
+  pkg:
+    - installed
+    - pkgs:
+      - python
+      - python2-boto3
+{% endif %}
 
 /etc/hadoop/conf:
   file:
@@ -13,6 +33,23 @@
     - exclude_pat: ssl-*.xml
     {% endif %}
 
+/mnt/tmp/hadoop:
+  file:
+    - directory
+    - user: root
+    - group: root
+    - mode: 777
+    - makedirs: true
+
+/tmp/hadoop:
+  file:
+    - symlink
+    - target: /mnt/tmp/hadoop
+    - user: root
+    - group: root
+    - mode: 777
+    - require:
+      - file: /mnt/tmp/hadoop
 
 /etc/hadoop/conf/container-executor.cfg:
   file:

@@ -1,30 +1,29 @@
-# From cloudera, cdh5 requires JDK7, so include it along with the 
-# cdh5 repository to install their packages.
 
 include:
   - cdh5.repo
   - cdh5.hadoop.conf
   - cdh5.landing_page
-  {% if salt['pillar.get']('cdh5:journalnode:start_service', True) %}
-  - cdh5.hadoop.journalnode.service
+  {% if salt['pillar.get']('cdh5:historyserver:start_service', True) %}
+  - cdh5.hadoop.mapreduce.historyserver.service
   {% endif %}
   {% if pillar.cdh5.encryption.enable %}
   - cdh5.hadoop.encryption
   {% endif %}
   {% if pillar.cdh5.security.enable %}
-  - krb5
-  - cdh5.security
-  - cdh5.hadoop.security
+  - cdh5.hadoop.mapreduce.security
   {% endif %}
 
 ##
-# Installs the journalnode package for high availability
+# Installs the mapreduce historyserver package.
 #
 # Depends on: JDK7
 ##
-hadoop-hdfs-journalnode:
+hadoop-mapreduce-historyserver:
   pkg:
     - installed
+    - pkgs:
+      - hadoop-mapreduce-historyserver
+      - spark-core
     - require:
       - module: cdh5_refresh_db
       {% if pillar.cdh5.security.enable %}

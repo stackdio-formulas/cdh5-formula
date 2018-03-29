@@ -1,4 +1,4 @@
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set historyserver_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.mapreduce.historyserver', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 <?xml version="1.0"?>
 <configuration>
     <property>
@@ -6,16 +6,12 @@
         <value>yarn</value>
     </property>
     <property>
-        <name>mapreduce.cluster.temp.dir</name>
-        <value>/tmp/mapred/temp</value>
-    </property>
-    <property>
         <name>mapreduce.jobhistory.webapp.address</name>
-        <value>{{ namenode_fqdn }}:19888</value>
+        <value>{{ historyserver_fqdn }}:19888</value>
     </property>
     <property>
         <name>mapreduce.jobhistory.address</name>
-        <value>{{ namenode_fqdn }}:10020</value>
+        <value>{{ historyserver_fqdn }}:10020</value>
     </property>
     <property>
         <name>yarn.app.mapreduce.am.staging-dir</name>
@@ -156,7 +152,7 @@
     {% if pillar.cdh5.encryption.enable %}
     <property>
         <name>mapreduce.jobhistory.webapp.https.address</name>
-        <value>{{ namenode_fqdn }}:19890</value>
+        <value>{{ historyserver_fqdn }}:19890</value>
     </property>
     <property>
         <name>mapreduce.shuffle.ssl.enabled</name>

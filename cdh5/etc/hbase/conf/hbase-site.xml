@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby-namenode', 'grains.items', 'compound') -%}
-{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.standby-namenode', 'grains.items', 'compound') -%}
+{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
 {% set master_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hbase.master', 'grains.items', 'compound').values()[0]['fqdn'] %}
 <configuration>
     <property>
