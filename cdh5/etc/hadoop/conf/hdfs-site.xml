@@ -37,6 +37,10 @@
         <name>dfs.datanode.max.transfer.threads</name>
         <value>8192</value>
     </property>
+    <property>
+        <name>ipc.maximum.data.length</name>
+        <value>134217728</value>
+    </property>
 
     <property>
         <name>dfs.permissions</name>
