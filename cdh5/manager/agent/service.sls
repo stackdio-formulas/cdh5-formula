@@ -1,6 +1,8 @@
 cloudera-scm-agent-svc:
-  service:
-    - running
+  service.running:
     - name: cloudera-scm-agent
+    - enable: true
     - require:
-      - file: scm_agent_config
+      - pkg: scm-agent-packages
+    - watch:
+      - file: scm-agent-config

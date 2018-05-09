@@ -9,13 +9,15 @@ include:
   - cdh5.security
   - cdh5.manager.security
   {% endif %}
+  {% if pillar.cdh5.encryption.enable %}
+  - cdh5.manager.server.encryption
+  {% endif %}
 
-scm_server_packages:
-  pkg:
-    - installed
+scm-server-packages:
+  pkg.installed:
     - pkgs:
       - cloudera-manager-server
       - cloudera-manager-daemons
       - cloudera-manager-server-db-2
     - require:
-      - module: cloudera_manager_repo_refresh
+      - module: cloudera-manager-repo-refresh

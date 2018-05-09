@@ -73,6 +73,7 @@ hbase-master-svc:
   service:
     - running
     - name: hbase-master
+    - enable: true
     - require: 
       - pkg: hbase-master
       - cmd: hbase-init
@@ -94,6 +95,7 @@ hbase-thrift-svc:
   service:
     - running
     - name: hbase-thrift
+    - enable: true
     - require:
       - service: hbase-master-svc
     - watch:

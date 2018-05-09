@@ -6,6 +6,7 @@ hbase-regionserver-svc:
   service:
     - running
     - name: hbase-regionserver
+    - enable: true
     - require: 
       - pkg: hbase-regionserver
       - file: /etc/hbase/conf/hbase-site.xml
