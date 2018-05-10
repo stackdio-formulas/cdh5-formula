@@ -9,7 +9,7 @@
 # NOTE this means that any 'hdfs dfs' commands will need
 # to require this state to be sure we have a krb ticket
 {% if pillar.cdh5.security.enable %}
-hdfs_kinit:
+hdfs-kinit:
   cmd:
     - run
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
@@ -17,10 +17,24 @@ hdfs_kinit:
     - group: hdfs
     - env:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
-    - require:
-      - cmd: generate_hbase_keytabs
+    - require_in:
+      - cmd: hbase-init
 
-hbase_kinit:
+hdfs-kdestroy:
+  cmd:
+    - run
+    - name: 'kdestroy'
+    - user: hdfs
+    - group: hdfs
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: hdfs-kinit
+      - cmd: hbase-init
+    - require_in:
+      - service: hbase-master-svc
+
+hbase-kinit:
   cmd:
     - run
     - name: 'kinit -kt /etc/hbase/conf/hbase.keytab hbase/{{ grains.fqdn }}'
@@ -28,7 +42,19 @@ hbase_kinit:
     - env:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require:
-      - cmd: generate_hbase_keytabs
+      - cmd: generate_hbase_keytab
+
+hbase-kdestroy:
+  cmd:
+    - run
+    - name: 'kdestroy'
+    - user: hbase
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: hbase-kinit
+    - require_in:
+      - service: hbase-master-svc
 {% endif %}
 
 hbase-init:
@@ -36,13 +62,10 @@ hbase-init:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hdfs dfs -mkdir /hbase && hdfs dfs -chown hbase:hbase /hbase'
-    - unless: 'hdfs dfs -test -d /hbase'
+    - name: 'hdfs dfs -mkdir -p /hbase && hdfs dfs -chown hbase:hbase /hbase'
     - require:
       - pkg: hadoop-client
-      {% if pillar.cdh5.security.enable %}
-      - cmd: hdfs_kinit
-      {% endif %}
+      - pkg: hbase-master
 
 {% if kms %}
 create_hbase_key:
@@ -53,7 +76,9 @@ create_hbase_key:
     - unless: 'hadoop key list | grep hbase'
     {% if pillar.cdh5.security.enable %}
     - require:
-      - cmd: hbase_kinit
+      - cmd: hbase-kinit
+    - require_in:
+      - cmd: hbase-kdestroy
     {% endif %}
 
 create_hbase_zone:
@@ -76,15 +101,16 @@ hbase-master-svc:
     - require: 
       - pkg: hbase-master
       - cmd: hbase-init
-      - file: /etc/hbase/conf/hbase-site.xml
-      - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.cdh5.hbase.tmp_dir }}
       - file: {{ pillar.cdh5.hbase.log_dir }}
-      {% if pillar.cdh5.security.enable %}
-      - cmd: generate_hbase_keytabs
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      - cmd: chown-hbase-keystore
+      - cmd: create-hbase-truststore
       {% endif %}
-      {% if salt['pillar.get']('cdh5:hbase:manage_zk', True) %}
-      - service: zookeeper-server-svc
+      {% if pillar.cdh5.security.enable %}
+      - cmd: generate_hbase_keytab
       {% endif %}
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
@@ -96,7 +122,12 @@ hbase-thrift-svc:
     - name: hbase-thrift
     - require:
       - service: hbase-master-svc
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      - cmd: chown-hbase-keystore
+      - cmd: create-hbase-truststore
+      {% endif %}
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
-

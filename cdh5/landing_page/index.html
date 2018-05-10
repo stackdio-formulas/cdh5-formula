@@ -7,7 +7,7 @@
 {%- set hue = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hue', 'grains.items', 'compound').values() -%}
 {%- set oozie = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.oozie', 'grains.items', 'compound').values() -%}
 {%- set spark = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.spark.historyserver', 'grains.items', 'compound').values() -%}
-{%- set hbase_master = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hbase.master', 'grains.items', 'compound').values() -%}
+{%- set hbase_masters = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hbase.master', 'grains.items', 'compound').values() -%}
 {%- set impala_state_store = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.impala.state-store', 'grains.items', 'compound').values() -%}
 {%- set impala_catalog = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.impala.catalog', 'grains.items', 'compound').values() -%}
 {%- set manager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.manager.server', 'grains.items', 'compound').values() -%}
@@ -118,12 +118,14 @@ a:hover {
             </div> <!-- col-md-6 -->
 
             <div class="col-md-6">
-                {% if hbase_master %}
+                {% if hbase_masters %}
                 <h4>HBase</h4>
                 <ul>
-                    <li><a href='http://{{ hbase_master[0]["fqdn"] }}:60010/'>HBase Master</a></li>
+                    {% for hbase_master in hbase_masters %}
+                    <li><a href='http{% if https %}s{% endif %}://{{ hbase_master["fqdn"] }}:60010/'>HBase Master</a></li>
+                    {% endfor %}
                     {% if 'cdh5.hbase.regionserver' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:60030/'>HBase RegionServer</a></li>
+                    <li><a href='http{% if https %}s{% endif %}://{{ fqdn }}:60030/'>HBase RegionServer</a></li>
                     {% endif %}
                 </ul>
                 {% endif %}
