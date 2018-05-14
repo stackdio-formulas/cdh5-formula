@@ -133,6 +133,31 @@
     </property>
     {% endif %}
 
+    {% if pillar.cdh5.yarn.scheduler == 'fair' %}
+    <!-- Fair scheduler things -->
+    <!-- I think these are what we want -->
+    <property>
+        <name>yarn.resourcemanager.scheduler.class</name>
+        <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler</value>
+    </property>
+    <property>
+        <name>yarn.scheduler.fair.user-as-default-queue</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>yarn.scheduler.fair.preemption</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>yarn.scheduler.fair.preemption.cluster-utilization-threshold</name>
+        <value>0.8</value>
+    </property>
+    <property>
+        <name>yarn.scheduler.fair.sizebasedweight</name>
+        <value>true</value>
+    </property>
+    {% endif %}
+
     {% if standby_resourcemanager %}
     <property>
         <name>yarn.resourcemanager.ha.enabled</name>

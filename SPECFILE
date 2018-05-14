@@ -119,6 +119,7 @@ pillar_defaults:
       log_dirs: /mnt/hadoop/yarn/logs
       log_retain_seconds: -1
       max_completed_applications: 5000
+      scheduler: fair
     io:
       sort_factor: 64
       sort_mb: 256
