@@ -320,8 +320,13 @@
         <value>*</value>
     </property>
 
-{% if pillar.cdh5.security.enable %}
-{% from 'krb5/settings.sls' import krb5 with context %}
+    {% if pillar.cdh5.security.enable %}
+    {% from 'krb5/settings.sls' import krb5 with context %}
+    <property>
+        <name>oozie.credentials.credentialclasses</name>
+        <value>hcat=org.apache.oozie.action.hadoop.HCatCredentials,hbase=org.apache.oozie.action.hadoop.HbaseCredentials</value>
+    </property>
+
     <!-- Security related configuration -->
     <property>
         <name>oozie.service.HadoopAccessorService.kerberos.enabled</name>
@@ -381,6 +386,6 @@
             Referring to the same keytab file Oozie uses for its Kerberos credentials for Hadoop.
         </description>
     </property>
-{% endif %}
+    {% endif %}
 
 </configuration>
