@@ -27,7 +27,7 @@ import-ca:
   file.managed:
     - user: root
     - group: root
-    - mode: 400
+    - mode: 444
     - makedirs: true
     - contents_pillar: ssl:private_key
     - require:
@@ -50,6 +50,15 @@ import-ca:
     - contents_pillar: ssl:chained_certificate
     - require:
       - file: /opt/cloudera/security/pki/ca.crt
+
+/opt/cloudera/security/pki/agent.cert.pem:
+  file.symlink:
+    - target: /opt/cloudera/security/pki/{{ grains.fqdn }}-agent.cert.pem
+    - user: root
+    - group: root
+    - mode: 444
+    - require:
+      - file: /opt/cloudera/security/pki/{{ grains.fqdn }}-agent.cert.pem
 
 create-pkcs12:
   cmd.run:
