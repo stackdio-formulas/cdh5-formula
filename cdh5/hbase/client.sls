@@ -3,7 +3,6 @@
 #
 include:
   - cdh5.repo
-  - cdh5.hadoop.client
   - cdh5.hbase.conf
   - cdh5.landing_page
   {% if pillar.cdh5.encryption.enable %}
