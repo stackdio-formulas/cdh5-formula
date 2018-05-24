@@ -117,7 +117,5 @@ SPARK_DIST_CLASSPATH="$SPARK_DIST_CLASSPATH:/usr/lib/paquet/lib/*"
 SPARK_DIST_CLASSPATH="$SPARK_DIST_CLASSPATH:/usr/lib/avro/lib/*"
 
 {% if pillar.cdh5.security.enable %}
-{% from 'krb5/settings.sls' import krb5 with context %}
-
-SPARK_HISTORY_OPTS="$SPARK_HISTORY_OPTS -Dspark.history.kerberos.enabled=true -Dspark.history.kerberos.principal=spark/{{ grains.fqdn }}@{{ krb5.realm }} -Dspark.history.kerberos.keytab=/etc/spark/conf/spark.keytab -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
+SPARK_HISTORY_OPTS="$SPARK_HISTORY_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
 {% endif %}

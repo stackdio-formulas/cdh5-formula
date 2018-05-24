@@ -5,8 +5,7 @@ include:
   - cdh5.security.stackdio_user
 
 generate_spark_keytabs:
-  cmd:
-    - script 
+  cmd.script:
     - source: salt://cdh5/spark/security/generate_keytabs.sh
     - template: jinja
     - user: root

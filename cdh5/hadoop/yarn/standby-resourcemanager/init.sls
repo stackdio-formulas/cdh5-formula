@@ -1,7 +1,3 @@
-##
-# Standby NameNode
-##
-
 
 include:
   - cdh5.repo
@@ -17,6 +13,11 @@ include:
   - cdh5.hadoop.yarn.security
   {% endif %}
 
+##
+# Installs the yarn resourcemanager package.
+#
+# Depends on: JDK
+##
 hadoop-yarn-resourcemanager:
   pkg:
     - installed

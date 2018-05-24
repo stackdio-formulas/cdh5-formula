@@ -7,8 +7,7 @@
 # to require this state to be sure we have a krb ticket
 {% if pillar.cdh5.security.enable %}
 hdfs_kinit:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
     - group: hdfs
@@ -18,8 +17,7 @@ hdfs_kinit:
       - cmd: history-dir
 
 hdfs_kdestroy:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: hdfs
     - group: hdfs
@@ -30,20 +28,16 @@ hdfs_kdestroy:
       - cmd: history-dir
 {% endif %}
 
-
 history-dir:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p /user/spark/applicationHistory && hdfs dfs -chown -R spark:spark /user/spark && hdfs dfs -chmod 1777 /user/spark/applicationHistory'
     - require:
       - pkg: spark-history-server
 
-
 /etc/spark/conf/spark-defaults.conf:
-  file:
-    - managed
+  file.managed:
     - user: root
     - group: root
     - mode: 644
@@ -52,9 +46,28 @@ history-dir:
     - require:
       - pkg: spark-history-server
 
+/etc/spark/conf/spark-history-server.conf:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 644
+    - source: salt://cdh5/etc/spark/spark-history-server.conf
+    - template: jinja
+    - require:
+      - pkg: spark-history-server
+
+/etc/default/spark:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 644
+    - source: salt://cdh5/etc/default/spark
+    - template: jinja
+    - require:
+      - pkg: spark-history-server
+
 /etc/spark/conf/spark-env.sh:
-  file:
-    - managed
+  file.managed:
     - user: root
     - group: root
     - mode: 755
@@ -64,16 +77,14 @@ history-dir:
       - pkg: spark-history-server
 
 /mnt/spark:
-  file:
-    - directory
+  file.directory:
     - user: spark
     - group: spark
     - require:
       - pkg: spark-history-server
 
 /mnt/spark/logs:
-  file:
-    - directory
+  file.directory:
     - user: spark
     - group: spark
     - require:
@@ -81,16 +92,20 @@ history-dir:
       - file: /mnt/spark
 
 spark-history-server-svc:
-  service:
-    - running
+  service.running:
     - name: spark-history-server
     - require:
       - pkg: spark-history-server
       - cmd: history-dir
       - file: /mnt/spark/logs
+      {% if pillar.cdh5.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_spark_keytabs
       {% endif %}
     - watch:
-      - file: /etc/spark/conf/spark-defaults.conf
+      - file: /etc/spark/conf/spark-history-server.conf
       - file: /etc/spark/conf/spark-env.sh
+      - file: /etc/default/spark

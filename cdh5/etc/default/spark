@@ -1,0 +1,3 @@
+export SPARK_HISTORY_SERVER_LOG_DIR=hdfs:///user/spark/applicationHistory
+export SPARK_CONF_DIR=/etc/spark/conf
+export DAEMON_FLAGS="--properties-file ${SPARK_CONF_DIR}/spark-history-server.conf"
