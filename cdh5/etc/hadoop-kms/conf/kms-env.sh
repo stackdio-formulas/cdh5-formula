@@ -75,19 +75,19 @@ export CATALINA_OPTS="$CATALINA_OPTS -Djava.security.krb5.conf={{ pillar.krb5.co
 {% if pillar.cdh5.encryption.enable %}
 # The location of the SSL keystore if using SSL
 #
-# export KMS_SSL_KEYSTORE_FILE=/etc/hadoop-kms/conf/kms.keystore
+export KMS_SSL_KEYSTORE_FILE=/etc/hadoop-kms/conf/kms.keystore
 
 # The password of the SSL keystore if using SSL
 #
-# export KMS_SSL_KEYSTORE_PASS=hadoopkms
+export KMS_SSL_KEYSTORE_PASS=hadoopkms
 
 # The location of the SSL keystore if using SSL
 #
-# export KMS_SSL_TRUSTSTORE_FILE=/etc/hadoop-kms/conf/kms.truststore
+export KMS_SSL_TRUSTSTORE_FILE=/etc/hadoop-kms/conf/kms.truststore
 
 # The password of the SSL keystore if using SSL
 #
-# export KMS_SSL_TRUSTSTORE_PASS=hadoopkms
+export KMS_SSL_TRUSTSTORE_PASS=hadoopkms
 {% endif %}
 
 # The full path to any native libraries that need to be loaded
