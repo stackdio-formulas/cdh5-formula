@@ -10,8 +10,8 @@
     </property>
 
     <property>
-        <name>hadoop.security.keystore.java-keystore-provider.password-file</name>
-        <value>kms.keystore.password</value>
+        <name>hadoop.security.keystore.JavaKeyStoreProvider.password</name>
+        <value>hadoopkms</value>
     </property>
 
     <!-- KMS Cache -->
