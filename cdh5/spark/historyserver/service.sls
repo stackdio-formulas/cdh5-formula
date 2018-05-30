@@ -1,4 +1,4 @@
-
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.kms', 'grains.items', 'compound') %}
 
 # When security is enabled, we need to get a kerberos ticket
 # for the hdfs principal so that any interaction with HDFS
@@ -35,6 +35,8 @@ history-dir:
     - name: 'hdfs dfs -mkdir -p /user/spark/applicationHistory && hdfs dfs -chown -R spark:spark /user/spark && hdfs dfs -chmod 1777 /user/spark/applicationHistory'
     - require:
       - pkg: spark-history-server
+
+{% if kms %}
 
 {% if pillar.cdh5.security.enable %}
 spark_kinit:
@@ -76,8 +78,14 @@ create_spark_zone:
     - require:
       - cmd: create_spark_key
       - cmd: history-dir
+      {% if pillar.cdh5.security.enable %}
+      - cmd: hdfs_kinit
+      {% endif %}
     - require_in:
       - service: spark-history-server-svc
+      {% if pillar.cdh5.security.enable %}
+      - cmd: hdfs_kdestroy
+      {% endif %}
 {% endif %}
 
 /etc/spark/conf/spark-defaults.conf:

@@ -101,8 +101,14 @@ create_mapred_zone:
     - require:
       - cmd: create_mapred_key
       - cmd: hdfs_mapreduce_var_dir
+      {% if pillar.cdh5.security.enable %}
+      - cmd: hdfs_kinit_for_mapred
+      {% endif %}
     - require_in:
       - service: hadoop-mapreduce-historyserver-svc
+      {% if pillar.cdh5.security.enable %}
+      - cmd: hdfs_kdestroy_for_mapred
+      {% endif %}
 {% endif %}
 
 ##

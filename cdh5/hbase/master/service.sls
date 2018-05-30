@@ -83,8 +83,14 @@ create_hbase_zone:
     - require:
       - cmd: create_hbase_key
       - cmd: hbase-init
+      {% if pillar.cdh5.security.enable %}
+      - cmd: hdfs-kinit
+      {% endif %}
     - require_in:
       - service: hbase-master-svc
+      {% if pillar.cdh5.security.enable %}
+      - cmd: hdfs-kdestroy
+      {% endif %}
 {% endif %}
 
 hbase-master-svc:
