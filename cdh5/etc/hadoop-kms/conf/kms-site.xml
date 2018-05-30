@@ -6,7 +6,7 @@
 
     <property>
         <name>hadoop.kms.key.provider.uri</name>
-        <value>jceks://file@//etc/hadoop-kms/conf/kms.jceks</value>
+        <value>jceks://file@/${user.home}/kms.keystore</value>
     </property>
 
     <property>
