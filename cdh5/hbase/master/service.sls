@@ -10,8 +10,7 @@
 # to require this state to be sure we have a krb ticket
 {% if pillar.cdh5.security.enable %}
 hdfs-kinit:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
     - group: hdfs
@@ -21,8 +20,7 @@ hdfs-kinit:
       - cmd: hbase-init
 
 hdfs-kdestroy:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: hdfs
     - group: hdfs
@@ -35,8 +33,7 @@ hdfs-kdestroy:
       - service: hbase-master-svc
 
 hbase-kinit:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hbase/conf/hbase.keytab hbase/{{ grains.fqdn }}'
     - user: hbase
     - env:
@@ -45,8 +42,7 @@ hbase-kinit:
       - cmd: generate_hbase_keytab
 
 hbase-kdestroy:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: hbase
     - env:
@@ -58,8 +54,7 @@ hbase-kdestroy:
 {% endif %}
 
 hbase-init:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p /hbase && hdfs dfs -chown hbase:hbase /hbase'
@@ -69,11 +64,10 @@ hbase-init:
 
 {% if kms %}
 create_hbase_key:
-  cmd:
-    - run
+  cmd.run:
     - user: hbase
-    - name: 'hadoop key create hbase'
-    - unless: 'hadoop key list | grep hbase'
+    - name: 'hadoop key create hbase-key'
+    - unless: 'hadoop key list | grep hbase-key'
     {% if pillar.cdh5.security.enable %}
     - require:
       - cmd: hbase-kinit
@@ -82,10 +76,9 @@ create_hbase_key:
     {% endif %}
 
 create_hbase_zone:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
-    - name: 'hdfs crypto -createZone -keyName hbase -path /hbase'
+    - name: 'hdfs crypto -createZone -keyName hbase-key -path /hbase'
     - unless: 'hdfs crypto -listZones | grep /hbase'
     - require:
       - cmd: create_hbase_key
@@ -95,8 +88,7 @@ create_hbase_zone:
 {% endif %}
 
 hbase-master-svc:
-  service:
-    - running
+  service.running:
     - name: hbase-master
     - require: 
       - pkg: hbase-master
@@ -117,8 +109,7 @@ hbase-master-svc:
       - file: /etc/hbase/conf/hbase-env.sh
 
 hbase-thrift-svc:
-  service:
-    - running
+  service.running:
     - name: hbase-thrift
     - require:
       - service: hbase-master-svc

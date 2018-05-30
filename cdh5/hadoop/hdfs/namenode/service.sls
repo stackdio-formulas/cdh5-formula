@@ -12,8 +12,7 @@
 # and is owned by the hdfs user
 ##
 cdh5_dfs_dirs:
-  cmd:
-    - run
+  cmd.run:
     - name: 'mkdir -p {{ dfs_name_dir }} && chown -R hdfs:hdfs `dirname {{ dfs_name_dir }}`'
     - unless: 'test -d {{ dfs_name_dir }}'
     - require:
@@ -26,8 +25,7 @@ cdh5_dfs_dirs:
 # Initialize HDFS. This should only run once, immediately
 # following an install of hadoop.
 init_hdfs:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs namenode -format -force'
@@ -40,8 +38,7 @@ init_hdfs:
       {% endif %}
 
 hadoop-hdfs-namenode-svc:
-  service:
-    - running
+  service.running:
     - name: hadoop-hdfs-namenode
     - enable: true
     - require:
@@ -59,23 +56,22 @@ hadoop-hdfs-namenode-svc:
 
 {% if standby %}
 init_zkfc:
-  cmd:
-    - run
+  cmd.run:
     - name: hdfs zkfc -formatZK
     - user: hdfs
     - group: hdfs
     - unless: 'zookeeper-client stat /hadoop-ha/{{ grains.namespace }} 2>&1 | grep "cZxid"'
     - require:
+      - pkg: hadoop-hdfs-namenode
       - cmd: cdh5_dfs_dirs
 
 # Start up the ZKFC
 hadoop-hdfs-zkfc-svc:
-  service:
-    - running
+  service.running:
     - name: hadoop-hdfs-zkfc
     - enable: true
     - require:
-      - pkg: hadoop-hdfs-zkfc
+      - pkg: hadoop-hdfs-namenode
       - cmd: init_zkfc
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
@@ -95,8 +91,7 @@ hadoop-hdfs-zkfc-svc:
 # to require this state to be sure we have a krb ticket
 {% if pillar.cdh5.security.enable %}
 hdfs_kinit:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
     - group: hdfs
@@ -108,8 +103,7 @@ hdfs_kinit:
       - cmd: hdfs_tmp_dir
 
 hdfs_kdestroy:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: hdfs
     - group: hdfs
@@ -122,8 +116,7 @@ hdfs_kdestroy:
 
 # HDFS tmp directory
 hdfs_tmp_dir:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir /tmp && hdfs dfs -chmod -R 1777 /tmp'
@@ -135,8 +128,7 @@ hdfs_tmp_dir:
 {% for user_obj in pillar.__stackdio__.users %}
 {% set user = user_obj.username %}
 hdfs_dir_{{ user }}:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p /user/{{ user }} && hdfs dfs -chown {{ user }}:{{ user }} /user/{{ user }}'

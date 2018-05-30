@@ -36,6 +36,50 @@ history-dir:
     - require:
       - pkg: spark-history-server
 
+{% if pillar.cdh5.security.enable %}
+spark_kinit:
+  cmd.run:
+    - name: 'kinit -kt /etc/spark/conf/spark.keytab spark/{{ grains.fqdn }}'
+    - user: spark
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: generate_spark_keytabs
+    - require_in:
+      - cmd: create_spark_key
+      - cmd: create_spark_zone
+
+spark_kdestroy:
+  cmd.run:
+    - name: 'kdestroy'
+    - user: spark
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: spark_kinit
+      - cmd: create_spark_key
+      - cmd: create_spark_zone
+{% endif %}
+
+create_spark_key:
+  cmd.run:
+    - user: spark
+    - name: 'hadoop key create spark-key'
+    - unless: 'hadoop key list | grep spark-key'
+
+create_spark_zone:
+  cmd:
+    - run
+    - user: hdfs
+    - name: 'hdfs crypto -createZone -keyName spark-key -path /user/spark/applicationHistory'
+    - unless: 'hdfs crypto -listZones | grep /user/spark/applicationHistory'
+    - require:
+      - cmd: create_spark_key
+      - cmd: history-dir
+    - require_in:
+      - service: spark-history-server-svc
+{% endif %}
+
 /etc/spark/conf/spark-defaults.conf:
   file.managed:
     - user: root

@@ -1,7 +1,5 @@
-{% if pillar.cdh5.security.enable %}
 generate_hadoop_kms_keytabs:
-  cmd:
-    - script
+  cmd.script:
     - source: salt://cdh5/hadoop/kms/security/generate_keytabs.sh
     - template: jinja
     - user: root
@@ -11,4 +9,3 @@ generate_hadoop_kms_keytabs:
     - require:
       - module: load_admin_keytab
       - cmd: generate_http_keytab
-{% endif %}

@@ -3,8 +3,7 @@
 
 # Make sure the journal data directory exists if necessary
 cdh5_journal_dir:
-  cmd:
-    - run
+  cmd.run:
     - name: 'mkdir -p {{ journal_dir }} && chown -R hdfs:hdfs `dirname {{ journal_dir }}`'
     - unless: 'test -d {{ journal_dir }}'
     - require:
@@ -20,8 +19,7 @@ cdh5_journal_dir:
 # Depends on: JDK7
 ##
 hadoop-hdfs-journalnode-svc:
-  service:
-    - running
+  service.running:
     - name: hadoop-hdfs-journalnode
     - enable: true
     - require:

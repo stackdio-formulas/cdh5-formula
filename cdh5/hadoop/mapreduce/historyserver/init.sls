@@ -19,8 +19,7 @@ include:
 # Depends on: JDK7
 ##
 hadoop-mapreduce-historyserver:
-  pkg:
-    - installed
+  pkg.installed:
     - pkgs:
       - hadoop-mapreduce-historyserver
       - spark-core

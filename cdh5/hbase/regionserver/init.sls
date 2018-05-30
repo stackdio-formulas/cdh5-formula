@@ -19,8 +19,7 @@ include:
 
 
 hbase-regionserver:
-  pkg:
-    - installed 
+  pkg.installed:
     - require:
       - module: cdh5_refresh_db
       {% if pillar.cdh5.security.enable %}
