@@ -53,7 +53,7 @@
 
     <property>
         <name>hadoop.kms.authentication.kerberos.principal</name>
-        <value>HTTP/_HOST@{{ krb5.realm }}</value>
+        <value>HTTP/{{ grains.fqdn }}@{{ krb5.realm }}</value>
     </property>
 
     <property>
@@ -99,7 +99,7 @@
 
     <property>
         <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.kerberos.principal</name>
-        <value>kms/_HOST@{{ krb5.realm }}</value>
+        <value>kms/{{ grains.fqdn }}@{{ krb5.realm }}</value>
     </property>
     {% else %}
     <property>
