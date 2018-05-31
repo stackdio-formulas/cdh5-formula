@@ -1,3 +1,8 @@
+
+include:
+  - krb5
+  - cdh5.security
+
 generate_hadoop_kms_keytabs:
   cmd.script:
     - source: salt://cdh5/hadoop/kms/security/generate_keytabs.sh
