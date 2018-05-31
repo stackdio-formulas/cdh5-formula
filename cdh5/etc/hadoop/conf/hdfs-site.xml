@@ -232,7 +232,7 @@
     {% if kms %}
     <property>
         <name>dfs.encryption.key.provider.uri</name>
-        <value>kms://http@{{ kms_fqdn }}:16000/kms</value>
+        <value>kms://http{% if pillar.cdh5.encryption.enable %}s{% endif %}@{{ kms_fqdn }}:16000/kms</value>
     </property>
     {% endif %}
 
