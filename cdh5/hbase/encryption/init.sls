@@ -1,14 +1,12 @@
 /etc/hbase/conf/hbase.key:
-  file:
-    - managed
+  file.managed:
     - user: root
     - group: root
     - mode: 400
     - contents_pillar: ssl:private_key
 
 /etc/hbase/conf/hbase.crt:
-  file:
-    - managed
+  file.managed:
     - user: root
     - group: root
     - mode: 444
@@ -17,8 +15,7 @@
       - file: /etc/hbase/conf/hbase.key
 
 /etc/hbase/conf/ca.crt:
-  file:
-    - managed
+  file.managed:
     - user: root
     - group: root
     - mode: 444
@@ -27,8 +24,7 @@
       - file: /etc/hbase/conf/hbase.key
 
 /etc/hbase/conf/chained.crt:
-  file:
-    - managed
+  file.managed:
     - user: root
     - group: root
     - mode: 444
@@ -37,8 +33,7 @@
       - file: /etc/hbase/conf/hbase.key
 
 create-hbase-pkcs12:
-  cmd:
-    - run
+  cmd.run:
     - user: root
     - name: openssl pkcs12 -export -in /etc/hbase/conf/hbase.crt -certfile /etc/hbase/conf/chained.crt -inkey /etc/hbase/conf/hbase.key -out /etc/hbase/conf/hbase.pkcs12 -name {{ grains.id }} -password pass:hbase123
     - require:
@@ -47,8 +42,7 @@ create-hbase-pkcs12:
       - file: /etc/hbase/conf/hbase.key
 
 create-hbase-truststore:
-  cmd:
-    - run
+  cmd.run:
     - user: root
     - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/hbase/conf/hbase.truststore -storepass hbase123 -file /etc/hbase/conf/ca.crt -alias root-ca -noprompt
     - unless: /usr/java/latest/bin/keytool -list -keystore /etc/hbase/conf/hbase.truststore -storepass hbase123 | grep trustedCertEntry | grep root-ca
@@ -56,8 +50,7 @@ create-hbase-truststore:
       - file: /etc/hbase/conf/ca.crt
 
 create-hbase-keystore:
-  cmd:
-    - run
+  cmd.run:
     - user: root
     - name: /usr/java/latest/bin/keytool -importkeystore -srckeystore /etc/hbase/conf/hbase.pkcs12 -srcstorepass hbase123 -srcstoretype pkcs12 -destkeystore /etc/hbase/conf/hbase.keystore -deststorepass hbase123
     - unless: /usr/java/latest/bin/keytool -list -keystore /etc/hbase/conf/hbase.keystore -storepass hbase123 | grep PrivateKeyEntry | grep {{ grains.id }}
@@ -65,8 +58,7 @@ create-hbase-keystore:
       - cmd: create-hbase-pkcs12
 
 chown-hbase-keystore:
-  cmd:
-    - run
+  cmd.run:
     - user: root
     - name: chown root:hbase /etc/hbase/conf/hbase.keystore
     - require:

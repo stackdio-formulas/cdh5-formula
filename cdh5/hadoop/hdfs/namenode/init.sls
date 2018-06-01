@@ -15,16 +15,20 @@ include:
   {% endif %}
 
 ##
-# Installs the namenode package.  This happens on both regular and standy namenodes.
+# Installs the necessary packages for the namenode to operate.
 #
 # Depends on: JDK7
 ##
 hadoop-hdfs-namenode:
-  pkg:
-    - installed
+  pkg.installed:
     - pkgs:
       - hadoop-hdfs-namenode
+      - hadoop-mapreduce
       - spark-core
+      {% if standby %}
+      # Only for HA
+      - hadoop-hdfs-zkfc
+      {% endif %}
     - require:
       - module: cdh5_refresh_db
       {% if pillar.cdh5.security.enable %}
@@ -38,25 +42,3 @@ hadoop-hdfs-namenode:
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
-
-
-{% if standby %}
-# Only needed for HA
-hadoop-hdfs-zkfc:
-  pkg:
-    - installed
-    - require:
-      - module: cdh5_refresh_db
-      {% if pillar.cdh5.security.enable %}
-      - file: krb5_conf_file
-      {% endif %}
-    - require_in:
-      - file: /etc/hadoop/conf
-      {% if pillar.cdh5.encryption.enable %}
-      - file: /etc/hadoop/conf/hadoop.key
-      {% endif %}
-      {% if pillar.cdh5.security.enable %}
-      - cmd: generate_hadoop_keytabs
-      {% endif %}
-
-{% endif %}

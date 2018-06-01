@@ -1,4 +1,9 @@
 
+{%- set libcrypto_pkg = salt['grains.filter_by']({
+  'RedHat': 'openssl-devel',
+  'Debian': 'libssl-dev'
+}, default='RedHat') -%}
+
 include:
   - cdh5.repo
   - cdh5.hadoop.conf
@@ -11,8 +16,10 @@ include:
   {% endif %}
 
 hadoop-client: 
-  pkg:
-    - installed
+  pkg.installed:
+    - pkgs:
+      - hadoop-client
+      - {{ libcrypto_pkg }}
     - require:
       - module: cdh5_refresh_db
       {% if pillar.cdh5.security.enable %}

@@ -3,8 +3,7 @@
 #
 
 hbase-regionserver-svc:
-  service:
-    - running
+  service.running:
     - name: hbase-regionserver
     - require: 
       - pkg: hbase-regionserver

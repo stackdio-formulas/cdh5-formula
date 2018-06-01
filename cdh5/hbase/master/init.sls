@@ -19,8 +19,7 @@ include:
   {% endif %}
 
 hbase-master:
-  pkg:
-    - installed 
+  pkg.installed:
     - pkgs:
       - hbase-master
       - hbase-thrift

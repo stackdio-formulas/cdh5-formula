@@ -2,8 +2,7 @@
 
 # make the hdfs data directories
 dfs_data_dir:
-  cmd:
-    - run
+  cmd.run:
     - name: 'for dd in `echo {{ dfs_data_dir }} | sed "s/,/\n/g"`; do mkdir -p $dd && chmod -R 755 $dd && chown -R hdfs:hdfs `dirname $dd`; done'
     - unless: "test -d `echo {{ dfs_data_dir }} | awk -F, '{print $1}'` && [ $(stat -c '%U' $(echo {{ dfs_data_dir }} | awk -F, '{print $1}')) == 'hdfs' ]"
     - require:
@@ -16,8 +15,7 @@ dfs_data_dir:
 #
 ##
 hadoop-hdfs-datanode-svc:
-  service:
-    - running
+  service.running:
     - name: hadoop-hdfs-datanode
     - enable: true
     - require: 

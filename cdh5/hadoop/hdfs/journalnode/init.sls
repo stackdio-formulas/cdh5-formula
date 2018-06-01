@@ -21,8 +21,7 @@ include:
 # Depends on: JDK7
 ##
 hadoop-hdfs-journalnode:
-  pkg:
-    - installed
+  pkg.installed:
     - require:
       - module: cdh5_refresh_db
       {% if pillar.cdh5.security.enable %}

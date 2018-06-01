@@ -1,6 +1,5 @@
 /etc/hadoop-kms/conf:
-  file:
-    - recurse
+  file.recurse:
     - source: salt://cdh5/etc/hadoop-kms/conf
     - template: jinja
     - user: root

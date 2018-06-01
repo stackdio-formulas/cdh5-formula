@@ -15,8 +15,7 @@
 # to require this state to be sure we have a krb ticket
 {% if pillar.cdh5.security.enable %}
 hdfs_kinit_for_mapred:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
     - group: hdfs
@@ -29,8 +28,7 @@ hdfs_kinit_for_mapred:
       - cmd: hdfs_mapreduce_var_dir
 
 hdfs_kdestroy_for_mapred:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: hdfs
     - group: hdfs
@@ -45,8 +43,7 @@ hdfs_kdestroy_for_mapred:
 
 # HDFS MapReduce log directories
 hdfs_mapreduce_log_dir:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p {{ mapred_log_dir }} && hdfs dfs -chown yarn:hadoop {{ mapred_log_dir }}'
@@ -54,8 +51,7 @@ hdfs_mapreduce_log_dir:
 
 # HDFS MapReduce var directories
 hdfs_mapreduce_var_dir:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p {{ mapred_staging_dir }} && hdfs dfs -chmod -R 1777 {{ mapred_staging_dir }} && hdfs dfs -chown mapred:hadoop {{ mapred_staging_dir }}'
@@ -65,8 +61,7 @@ hdfs_mapreduce_var_dir:
 
 {% if pillar.cdh5.security.enable %}
 mapred_kinit:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hadoop/conf/mapred.keytab mapred/{{ grains.fqdn }}'
     - user: mapred
     - env:
@@ -78,8 +73,7 @@ mapred_kinit:
       - cmd: create_mapred_zone
 
 mapred_kdestroy:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: mapred
     - env:
@@ -91,11 +85,10 @@ mapred_kdestroy:
 {% endif %}
 
 create_mapred_key:
-  cmd:
-    - run
+  cmd.run:
     - user: mapred
-    - name: 'hadoop key create mapred'
-    - unless: 'hadoop key list | grep mapred'
+    - name: 'hadoop key create mapred-key'
+    - unless: 'hadoop key list | grep mapred-key'
     - require:
       - file: /etc/hadoop/conf
 
@@ -103,13 +96,19 @@ create_mapred_zone:
   cmd:
     - run
     - user: hdfs
-    - name: 'hdfs crypto -createZone -keyName mapred -path {{ mapred_staging_dir }}'
+    - name: 'hdfs crypto -createZone -keyName mapred-key -path {{ mapred_staging_dir }}'
     - unless: 'hdfs crypto -listZones | grep {{ mapred_staging_dir }}'
     - require:
       - cmd: create_mapred_key
       - cmd: hdfs_mapreduce_var_dir
+      {% if pillar.cdh5.security.enable %}
+      - cmd: hdfs_kinit_for_mapred
+      {% endif %}
     - require_in:
       - service: hadoop-mapreduce-historyserver-svc
+      {% if pillar.cdh5.security.enable %}
+      - cmd: hdfs_kdestroy_for_mapred
+      {% endif %}
 {% endif %}
 
 ##

@@ -3,8 +3,7 @@
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
 cdh5_dfs_dirs:
-  cmd:
-    - run
+  cmd.run:
     - name: 'mkdir -p {{ dfs_name_dir }} && chown -R hdfs:hdfs `dirname {{ dfs_name_dir }}`'
     - unless: 'test -d {{ dfs_name_dir }}'
     - require:
@@ -14,8 +13,7 @@ cdh5_dfs_dirs:
 # Initialize the standby namenode, which will sync the configuration
 # and metadata from the active namenode
 init_standby_namenode:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs namenode -bootstrapStandby -force -nonInteractive'
@@ -32,12 +30,11 @@ init_standby_namenode:
 
 # Start up the ZKFC
 hadoop-hdfs-zkfc-svc:
-  service:
-    - running
+  service.running:
     - name: hadoop-hdfs-zkfc
     - enable: true
     - require:
-      - pkg: hadoop-hdfs-zkfc
+      - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
@@ -55,8 +52,7 @@ hadoop-hdfs-zkfc-svc:
 # Depends on: JDK7
 ##
 hadoop-hdfs-namenode-svc:
-  service:
-    - running
+  service.running:
     - name: hadoop-hdfs-namenode
     - enable: true
     - require:

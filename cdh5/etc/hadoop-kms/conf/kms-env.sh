@@ -1,3 +1,6 @@
+#!/bin/bash
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -15,7 +18,9 @@
 # Settings for the Embedded Tomcat that runs KMS
 # Java System properties for KMS should be specified in this variable
 #
+{% if pillar.cdh5.security.enable %}
 export CATALINA_OPTS="$CATALINA_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
+{% endif %}
 
 # KMS logs directory
 #
@@ -33,17 +38,57 @@ export CATALINA_OPTS="$CATALINA_OPTS -Djava.security.krb5.conf={{ pillar.krb5.co
 #
 # export KMS_ADMIN_PORT=`expr ${KMS_HTTP_PORT} + 1`
 
+# The Tomcat protocol to use for handling requests.
+# The default HTTP/1.1 handler is thread-per-request.
+# The NIO handler multiplexes multiple requests per thread.
+#
+# export KMS_PROTOCOL="HTTP/1.1"
+# export KMS_PROTOCOL="org.apache.coyote.http11.Http11NioProtocol"
+
 # The maximum number of Tomcat handler threads
 #
 # export KMS_MAX_THREADS=1000
 
+# The maximum queue length for incoming connection requests when all possible
+# request processing threads are in use. Any requests received when the queue
+# is full will be refused.
+#
+# export KMS_ACCEPT_COUNT=500
+
+# The number of threads to be used to accept connections. Increase this value
+# on a multi CPU machine, although you would never really need more than 2.
+# Also, with a lot of non keep alive connections, you might want to increase
+# this value as well.
+#
+# Increasing this has no effect unless using the NIO protocol.
+#
+# export KMS_ACCEPTOR_THREAD_COUNT=1
+
+# The maximum size of Tomcat HTTP header
+#
+# export KMS_MAX_HTTP_HEADER_SIZE=65536
+
+# The comma separated list of encryption ciphers for SSL
+#
+# export KMS_SSL_CIPHERS=
+
+{% if pillar.cdh5.encryption.enable %}
 # The location of the SSL keystore if using SSL
 #
-# export KMS_SSL_KEYSTORE_FILE=${HOME}/.keystore
+export KMS_SSL_KEYSTORE_FILE=/etc/hadoop-kms/conf/kms.keystore
 
 # The password of the SSL keystore if using SSL
 #
-# export KMS_SSL_KEYSTORE_PASS=password
+export KMS_SSL_KEYSTORE_PASS=hadoopkms
+
+# The location of the SSL keystore if using SSL
+#
+export KMS_SSL_TRUSTSTORE_FILE=/etc/hadoop-kms/conf/kms.truststore
+
+# The password of the SSL keystore if using SSL
+#
+export KMS_SSL_TRUSTSTORE_PASS=hadoopkms
+{% endif %}
 
 # The full path to any native libraries that need to be loaded
 # (For eg. location of natively compiled tomcat Apache portable

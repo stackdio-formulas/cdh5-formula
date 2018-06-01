@@ -22,8 +22,7 @@ include:
 #
 ##
 hadoop-hdfs-datanode:
-  pkg:
-    - installed
+  pkg.installed:
     - pkgs:
       - hadoop-hdfs-datanode
       - spark-core
@@ -43,8 +42,7 @@ hadoop-hdfs-datanode:
 
 {% if pillar.cdh5.security.enable %}
 /etc/default/hadoop-hdfs-datanode:
-  file:
-    - managed
+  file.managed:
     - source: salt://cdh5/etc/default/hadoop-hdfs-datanode
     - template: jinja
     - makedirs: true

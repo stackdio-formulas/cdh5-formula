@@ -1,4 +1,9 @@
 
+##
+# Starts yarn resourcemanager service.
+#
+# Depends on: JDK7
+##
 hadoop-yarn-resourcemanager-svc:
   service:
     - running

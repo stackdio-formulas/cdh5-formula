@@ -1,3 +1,4 @@
+{%- set zookeepers = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.zookeeper', 'grains.items', 'compound').values() -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
@@ -10,7 +11,7 @@
 
     <property>
         <name>hadoop.security.keystore.JavaKeyStoreProvider.password</name>
-        <value>none</value>
+        <value>hadoopkms</value>
     </property>
 
     <!-- KMS Cache -->
@@ -38,8 +39,8 @@
     </property>
 
     <!-- KMS Security -->
-    {%- if pillar.cdh5.security.enable %}
-    {%- from 'krb5/settings.sls' import krb5 with context %}
+    {% if pillar.cdh5.security.enable %}
+    {% from 'krb5/settings.sls' import krb5 with context %}
     <property>
         <name>hadoop.kms.authentication.type</name>
         <value>kerberos</value>
@@ -52,24 +53,64 @@
 
     <property>
         <name>hadoop.kms.authentication.kerberos.principal</name>
-        <value>*</value>
+        <value>HTTP/{{ grains.fqdn }}@{{ krb5.realm }}</value>
     </property>
 
     <property>
         <name>hadoop.kms.authentication.kerberos.name.rules</name>
         <value>DEFAULT</value>
     </property>
-    {%- else -%}
+    {% else %}
     <property>
         <name>hadoop.kms.authentication.type</name>
         <value>simple</value>
     </property>
-    {%- endif %}
+    {% endif %}
 
     <!-- Authentication cookie signature source -->
     <property>
         <name>hadoop.kms.authentication.signer.secret.provider</name>
         <value>random</value>
+    </property>
+
+    <!-- Configuration for 'zookeeper' authentication cookie signature source -->
+
+    <property>
+        <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.path</name>
+        <value>/hadoop-kms/hadoop-auth-signature-secret</value>
+    </property>
+
+    <property>
+        <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.connection.string</name>
+        <value>{% for zk in zookeepers %}{{ zk['fqdn'] }}{% if not loop.last %},{% endif %}{% endfor %}</value>
+    </property>
+
+    {% if pillar.cdh5.security.enable %}
+    {% from 'krb5/settings.sls' import krb5 with context %}
+    <property>
+        <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.auth.type</name>
+        <value>kerberos</value>
+    </property>
+
+    <property>
+        <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.kerberos.keytab</name>
+        <value>/etc/hadoop-kms/conf/kms.keytab</value>
+    </property>
+
+    <property>
+        <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.kerberos.principal</name>
+        <value>kms/{{ grains.fqdn }}@{{ krb5.realm }}</value>
+    </property>
+    {% else %}
+    <property>
+        <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.auth.type</name>
+        <value>none</value>
+    </property>
+    {% endif %}
+
+    <property>
+        <name>hadoop.kms.audit.logger</name>
+        <value>org.apache.hadoop.crypto.key.kms.server.SimpleKMSAuditLogger</value>
     </property>
 
     <!-- access for oozie -->

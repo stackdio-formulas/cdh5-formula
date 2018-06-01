@@ -62,6 +62,9 @@ components:
   - title: Spark History Server
     description: Spark History Server
     sls_path: cdh5.spark.historyserver
+  - title: Spark Client
+    description: Spark Client
+    sls_path: cdh5.spark.client
   - title: Hue
     description: Hue
     sls_path: cdh5.hue

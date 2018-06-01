@@ -116,8 +116,8 @@
     </property>
     {% endif %}
 
-    {%- if pillar.cdh5.security.enable %}
-    {%- from 'krb5/settings.sls' import krb5 with context %}
+    {% if pillar.cdh5.security.enable %}
+    {% from 'krb5/settings.sls' import krb5 with context %}
     <property>
         <name>hadoop.security.authentication</name>
         <value>kerberos</value>
@@ -130,13 +130,15 @@
         <name>hue.kerberos.principal.shortname</name>
         <value>hue</value>
     </property>
-    {%- endif %}
+    {% endif %}
+
     {% if kms %}
     <property>
         <name>hadoop.security.key.provider.path</name>
-        <value>kms://http@{{ kms_fqdn }}:16000/kms</value>
+        <value>kms://http{% if pillar.cdh5.encryption.enable %}s{% endif %}@{{ kms_fqdn }}:16000/kms</value>
     </property>
     {% endif %}
+
     {% if pillar.cdh5.encryption.enable %}
     <property>
         <name>hadoop.rpc.protection</name>

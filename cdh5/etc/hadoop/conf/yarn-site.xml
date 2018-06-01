@@ -13,12 +13,17 @@
 <configuration>
     <property>
         <name>yarn.nodemanager.aux-services</name>
-        <value>mapreduce_shuffle</value>
+        <value>mapreduce_shuffle,spark_shuffle</value>
     </property>
 
     <property>
         <name>yarn.nodemanager.aux-services.mapreduce_shuffle.class</name>
         <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services.spark_shuffle.class</name>
+        <value>org.apache.spark.network.yarn.YarnShuffleService</value>
     </property>
 
     <property>
@@ -112,7 +117,6 @@
         <value>{{ pillar.cdh5.yarn.num_cpus }}</value>
     </property>
 
-    {% if spark_historyserver %}
     {% if standby_namenode %}
         {% set hdfs_host = grains.namespace %}
     {% else %}
@@ -127,9 +131,11 @@
         <name>spark.eventLog.dir</name>
         <value>hdfs://{{ hdfs_host }}/user/spark/applicationHistory</value>
     </property>
+
+    {% if spark_historyserver %}
     <property>
         <name>spark.yarn.historyServer.address</name>
-        <value>http://{{ spark_historyserver[0]['fqdn'] }}:18080</value>
+        <value>http{% if pillar.cdh5.encryption.enable %}s{% endif %}://{{ spark_historyserver[0]['fqdn'] }}:{% if pillar.cdh5.encryption.enable %}18488{% else %}18080{% endif %}</value>
     </property>
     {% endif %}
 
@@ -178,18 +184,59 @@
         <value>rm2</value>
     </property>
     {% endif %}
+
+    <!-- Everything for RM1 -->
     <property>
-        <name>yarn.resourcemanager.hostname.rm1</name>
-        <value>{{ resourcemanager_fqdn }}</value>
+        <name>yarn.resourcemanager.address.rm1</name>
+        <value>{{ resourcemanager_fqdn }}:8032</value>
     </property>
     <property>
-        <name>yarn.resourcemanager.hostname.rm2</name>
-        <value>{{ standby_rm_fqdn }}</value>
+        <name>yarn.resourcemanager.scheduler.address.rm1</name>
+        <value>{{ resourcemanager_fqdn }}:8030</value>
     </property>
     <property>
-        <name>yarn.web-proxy.address</name>
-        <value>{{ resourcemanager_fqdn }}:8089</value>
+        <name>yarn.resourcemanager.resource-tracker.address.rm1</name>
+        <value>{{ resourcemanager_fqdn }}:8031</value>
     </property>
+    <property>
+        <name>yarn.resourcemanager.admin.address.rm1</name>
+        <value>{{ resourcemanager_fqdn }}:8033</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.webapp.address.rm1</name>
+        <value>{{ resourcemanager_fqdn }}:8088</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.webapp.https.address.rm1</name>
+        <value>{{ resourcemanager_fqdn }}:8090</value>
+    </property>
+
+    <!-- Everything for RM2 -->
+    <property>
+        <name>yarn.resourcemanager.address.rm2</name>
+        <value>{{ standby_rm_fqdn }}:8032</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.scheduler.address.rm2</name>
+        <value>{{ standby_rm_fqdn }}:8030</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.resource-tracker.address.rm2</name>
+        <value>{{ standby_rm_fqdn }}:8031</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.admin.address.rm2</name>
+        <value>{{ standby_rm_fqdn }}:8033</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.webapp.address.rm2</name>
+        <value>{{ standby_rm_fqdn }}:8088</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.webapp.https.address.rm2</name>
+        <value>{{ standby_rm_fqdn }}:8090</value>
+    </property>
+
     <property>
         <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
         <value>true</value>
@@ -246,16 +293,6 @@
     </property>
     <property>
         <name>yarn.resourcemanager.principal</name>
-        <value>yarn/_HOST@{{ krb5.realm }}</value>
-    </property>
-
-    <!-- ProxyServer security configs -->
-    <property>
-        <name>yarn.web-proxy.keytab</name>
-        <value>/etc/hadoop/conf/yarn.keytab</value>    <!-- path to the YARN keytab -->
-    </property>
-    <property>
-        <name>yarn.web-proxy.principal</name>
         <value>yarn/_HOST@{{ krb5.realm }}</value>
     </property>
 
