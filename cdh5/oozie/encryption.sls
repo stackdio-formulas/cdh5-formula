@@ -7,15 +7,6 @@
     - makedirs: true
     - contents_pillar: ssl:ca_certificate
 
-create-truststore:
-  cmd:
-    - run
-    - user: root
-    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 -file /etc/oozie/conf/ca.crt -alias root-ca -noprompt
-    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 | grep root-ca
-    - require:
-      - file: /etc/oozie/conf/ca.crt
-
 {% if 'cdh5.oozie' in grains.roles %}
 /etc/oozie/conf/oozie.key:
   file:

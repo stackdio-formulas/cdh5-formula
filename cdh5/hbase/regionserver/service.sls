@@ -11,7 +11,6 @@ hbase-regionserver-svc:
       - file: {{ pillar.cdh5.hbase.log_dir }}
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-hbase-keystore
-      - cmd: create-hbase-truststore
       {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hbase_keytab

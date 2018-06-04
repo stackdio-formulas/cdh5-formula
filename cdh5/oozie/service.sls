@@ -128,7 +128,6 @@ oozie-svc:
       - file: /var/lib/oozie
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
-      - cmd: create-truststore
       {% endif %}
     - watch:
       - cmd: ooziedb

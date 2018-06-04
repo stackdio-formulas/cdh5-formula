@@ -22,7 +22,6 @@ init_standby_namenode:
       - cmd: cdh5_dfs_dirs
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
-      - cmd: create-truststore
       {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
@@ -38,7 +37,6 @@ hadoop-hdfs-zkfc-svc:
       - cmd: init_standby_namenode
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
-      - cmd: create-truststore
       {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
@@ -60,7 +58,6 @@ hadoop-hdfs-namenode-svc:
       - cmd: init_standby_namenode
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
-      - cmd: create-truststore
       {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
