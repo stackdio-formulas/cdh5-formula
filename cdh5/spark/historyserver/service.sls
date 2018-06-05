@@ -152,7 +152,6 @@ spark-history-server-svc:
       - file: /mnt/spark/logs
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
-      - cmd: create-truststore
       {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_spark_keytabs

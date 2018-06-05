@@ -103,9 +103,7 @@ hbase-master-svc:
       - file: {{ pillar.cdh5.hbase.log_dir }}
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
-      - cmd: create-truststore
       - cmd: chown-hbase-keystore
-      - cmd: create-hbase-truststore
       {% endif %}
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hbase_keytab
@@ -121,9 +119,7 @@ hbase-thrift-svc:
       - service: hbase-master-svc
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
-      - cmd: create-truststore
       - cmd: chown-hbase-keystore
-      - cmd: create-hbase-truststore
       {% endif %}
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml

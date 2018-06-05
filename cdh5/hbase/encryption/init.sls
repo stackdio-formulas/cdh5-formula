@@ -41,14 +41,6 @@ create-hbase-pkcs12:
       - file: /etc/hbase/conf/hbase.crt
       - file: /etc/hbase/conf/hbase.key
 
-create-hbase-truststore:
-  cmd.run:
-    - user: root
-    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/hbase/conf/hbase.truststore -storepass hbase123 -file /etc/hbase/conf/ca.crt -alias root-ca -noprompt
-    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/hbase/conf/hbase.truststore -storepass hbase123 | grep trustedCertEntry | grep root-ca
-    - require:
-      - file: /etc/hbase/conf/ca.crt
-
 create-hbase-keystore:
   cmd.run:
     - user: root

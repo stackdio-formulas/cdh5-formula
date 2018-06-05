@@ -2,18 +2,6 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
     <property>
-        <name>ssl.server.truststore.location</name>
-        <value>/etc/hadoop/conf/hadoop.truststore</value>
-    </property>
-    <property>
-        <name>ssl.server.truststore.password</name>
-        <value>hadoop</value>
-    </property>
-    <property>
-        <name>ssl.server.truststore.type</name>
-        <value>jks</value>
-    </property>
-    <property>
         <name>ssl.server.keystore.location</name>
         <value>/etc/hadoop/conf/hadoop.keystore</value>
     </property>

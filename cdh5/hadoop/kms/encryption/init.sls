@@ -41,14 +41,6 @@ create-pkcs12:
       - file: /etc/hadoop-kms/conf/kms.crt
       - file: /etc/hadoop-kms/conf/kms.key
 
-create-truststore:
-  cmd.run:
-    - user: root
-    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/hadoop-kms/conf/kms.truststore -storepass hadoopkms -file /etc/hadoop-kms/conf/ca.crt -alias root-ca -noprompt
-    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/hadoop-kms/conf/kms.truststore -storepass hadoopkms | grep root-ca
-    - require:
-      - file: /etc/hadoop-kms/conf/ca.crt
-
 create-keystore:
   cmd.run:
     - user: root

@@ -41,14 +41,6 @@ create-pkcs12:
       - file: /etc/spark/conf/spark.crt
       - file: /etc/spark/conf/spark.key
 
-create-truststore:
-  cmd.run:
-    - user: root
-    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/spark/conf/spark.truststore -storepass spark123 -file /etc/spark/conf/ca.crt -alias root-ca -noprompt
-    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/spark/conf/spark.truststore -storepass spark123 | grep root-ca
-    - require:
-      - file: /etc/spark/conf/ca.crt
-
 create-keystore:
   cmd.run:
     - user: root
