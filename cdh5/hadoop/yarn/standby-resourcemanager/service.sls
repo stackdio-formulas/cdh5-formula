@@ -11,6 +11,7 @@ hadoop-yarn-resourcemanager-svc:
     - enable: true
     - require:
       - pkg: hadoop-yarn-resourcemanager
+      - cmd: hadoop-yarn-resourcemanager-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}

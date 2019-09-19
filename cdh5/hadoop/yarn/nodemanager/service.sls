@@ -34,6 +34,7 @@ hadoop-yarn-nodemanager-svc:
       - pkg: hadoop-yarn-nodemanager
       - cmd: yarn_local_dirs
       - cmd: yarn_log_dirs
+      - cmd: hadoop-yarn-nodemanager-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}

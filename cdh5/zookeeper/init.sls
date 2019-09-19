@@ -24,6 +24,12 @@ zookeeper-server:
     - require:
       - pkg: zookeeper
 
+zookeeper-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/zookeeper-server"
+    - require:
+      - pkg: zookeeper-server
+
 /etc/zookeeper/conf/log4j.properties:
   file:
     - replace

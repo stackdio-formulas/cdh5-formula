@@ -9,6 +9,7 @@ hbase-regionserver-svc:
       - pkg: hbase-regionserver
       - file: {{ pillar.cdh5.hbase.tmp_dir }}
       - file: {{ pillar.cdh5.hbase.log_dir }}
+      - cmd: hbase-regionserver-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-hbase-keystore
       {% endif %}

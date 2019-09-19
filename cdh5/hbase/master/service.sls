@@ -101,6 +101,7 @@ hbase-master-svc:
       - cmd: hbase-init
       - file: {{ pillar.cdh5.hbase.tmp_dir }}
       - file: {{ pillar.cdh5.hbase.log_dir }}
+      - cmd: hbase-master-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       - cmd: chown-hbase-keystore
@@ -117,6 +118,7 @@ hbase-thrift-svc:
     - name: hbase-thrift
     - require:
       - service: hbase-master-svc
+      - cmd: hbase-thrift-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       - cmd: chown-hbase-keystore

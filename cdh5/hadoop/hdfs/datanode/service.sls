@@ -21,6 +21,7 @@ hadoop-hdfs-datanode-svc:
     - require: 
       - pkg: hadoop-hdfs-datanode
       - cmd: dfs_data_dir
+      - cmd: hadoop-hdfs-datanode-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}

@@ -126,6 +126,7 @@ oozie-svc:
       - cmd: populate-oozie-sharelibs
       - file: /var/log/oozie
       - file: /var/lib/oozie
+      - cmd: oozie-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}

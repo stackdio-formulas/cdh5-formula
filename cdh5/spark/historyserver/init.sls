@@ -29,3 +29,9 @@ spark-history-server:
       - cmd: generate_spark_keytabs
       {% endif %}
     {% endif %}
+
+spark-history-server-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/spark-history-server"
+    - require:
+      - pkg: spark-history-server

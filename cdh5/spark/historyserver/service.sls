@@ -150,6 +150,7 @@ spark-history-server-svc:
       - pkg: spark-history-server
       - cmd: history-dir
       - file: /mnt/spark/logs
+      - cmd: spark-history-server-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}

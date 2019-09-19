@@ -7,6 +7,7 @@ hadoop-kms-server-svc:
     - require:
       - pkg: hadoop-kms-server
       - file: /etc/hadoop-kms/conf
+      - cmd: hadoop-kms-server-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: replace-tomcat-conf
       - cmd: chown-keystore

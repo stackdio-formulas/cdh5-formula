@@ -43,6 +43,7 @@ hadoop-hdfs-namenode-svc:
     - require:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_hdfs
+      - cmd: hadoop-hdfs-namenode-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
@@ -71,6 +72,7 @@ hadoop-hdfs-zkfc-svc:
     - require:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_zkfc
+      - cmd: hadoop-hdfs-zkfc-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}

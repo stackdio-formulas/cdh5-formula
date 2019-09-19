@@ -40,6 +40,12 @@ hadoop-hdfs-datanode:
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
+hadoop-hdfs-datanode-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/hadoop-hdfs-datanode"
+    - require:
+      - pkg: hadoop-hdfs-datanode
+
 {% if pillar.cdh5.security.enable %}
 /etc/default/hadoop-hdfs-datanode:
   file.managed:

@@ -31,6 +31,13 @@ hadoop-kms-server:
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
 
+hadoop-kms-server-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/hadoop-kms-server"
+    - require:
+      - pkg: hadoop-kms-server
+
+
 {% if pillar.cdh5.encryption.enable %}
 replace-tomcat-conf:
   cmd.run:
