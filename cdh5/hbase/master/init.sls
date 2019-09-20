@@ -33,3 +33,15 @@ hbase-master:
       - file: {{ pillar.cdh5.hbase.tmp_dir }}
       - file: /etc/hbase/conf/hbase-env.sh
       - file: /etc/hbase/conf/hbase-site.xml
+
+hbase-master-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/hbase-master"
+    - require:
+      - pkg: hbase-master
+
+hbase-thrift-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/hbase-thrift"
+    - require:
+      - pkg: hbase-master

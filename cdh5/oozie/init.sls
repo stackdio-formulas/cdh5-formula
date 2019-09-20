@@ -37,6 +37,12 @@ oozie:
       - file: /etc/oozie/conf/ca.crt
     {% endif %}
 
+oozie-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/oozie"
+    - require:
+      - pkg: oozie
+
 /etc/oozie/conf/oozie-log4j.properties:
   file:
     - managed

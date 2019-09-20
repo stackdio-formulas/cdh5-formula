@@ -30,3 +30,9 @@ hbase-regionserver:
       - file: {{ pillar.cdh5.hbase.tmp_dir }}
       - file: /etc/hbase/conf/hbase-env.sh
       - file: /etc/hbase/conf/hbase-site.xml
+
+hbase-regionserver-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/hbase-regionserver"
+    - require:
+      - pkg: hbase-regionserver

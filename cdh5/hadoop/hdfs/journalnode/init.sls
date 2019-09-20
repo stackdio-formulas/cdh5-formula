@@ -35,3 +35,9 @@ hadoop-hdfs-journalnode:
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
+
+hadoop-hdfs-journalnode-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/hadoop-hdfs-journalnode"
+    - require:
+      - pkg: hadoop-hdfs-journalnode

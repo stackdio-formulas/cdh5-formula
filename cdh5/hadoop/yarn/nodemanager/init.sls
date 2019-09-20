@@ -41,6 +41,13 @@ hadoop-yarn-nodemanager:
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
+hadoop-yarn-nodemanager-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/hadoop-yarn-nodemanager"
+    - require:
+      - pkg: hadoop-yarn-nodemanager
+
+
 ##
 # Installs the mapreduce service
 #

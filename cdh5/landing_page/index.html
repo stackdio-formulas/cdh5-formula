@@ -103,7 +103,7 @@ a:hover {
                     <li><a href='{% if https %}https://{{ oozie[0]["fqdn"] }}:11443/{% else %}http://{{ oozie[0]["fqdn"] }}:11000/{% endif %}'>Oozie Dashboard</a></li>
                     {% endif %}
                     {% if spark %}
-                    <li><a href='{% if https %}https://{{ spark[0]["fqdn"] }}:18488/{% else %}http://{{ spark[0]["fqdn"] }}:18080/{% endif %}'>Spark History Server</a></li>
+                    <li><a href='{% if https %}https://{{ spark[0]["fqdn"] }}:18488/{% else %}http://{{ spark[0]["fqdn"] }}:18088/{% endif %}'>Spark History Server</a></li>
                     {% endif %}
                 </ul>
                 {% if 'cdh5.hadoop.hdfs.namenode' in grains['roles'] or 'cdh5.hadoop.yarn.resourcemanager' in grains['roles'] or 'cdh5.hadoop.mapreduce.historyserver' in grains['roles']%}

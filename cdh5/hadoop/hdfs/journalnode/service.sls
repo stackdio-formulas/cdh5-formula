@@ -25,6 +25,7 @@ hadoop-hdfs-journalnode-svc:
     - require:
       - pkg: hadoop-hdfs-journalnode
       - cmd: cdh5_journal_dir
+      - cmd: hadoop-hdfs-journalnode-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}

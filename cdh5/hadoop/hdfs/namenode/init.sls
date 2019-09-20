@@ -42,3 +42,18 @@ hadoop-hdfs-namenode:
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
+
+hadoop-hdfs-namenode-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/hadoop-hdfs-namenode"
+    - require:
+      - pkg: hadoop-hdfs-namenode
+
+
+{% if standby %}
+hadoop-hdfs-zkfc-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/hadoop-hdfs-zkfc"
+    - require:
+      - pkg: hadoop-hdfs-namenode
+{% endif %}

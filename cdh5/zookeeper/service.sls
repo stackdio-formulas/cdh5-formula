@@ -63,6 +63,7 @@ zookeeper-init:
     - name: 'service zookeeper-server init --force'
     - unless: 'ls {{pillar.cdh5.zookeeper.data_dir}}/version-*'
     - require:
+      - cmd: zookeeper-init-script
       - file: zk_data_dir
       - file: /etc/zookeeper/conf/zoo.cfg
 
@@ -85,9 +86,10 @@ zookeeper-server-svc:
     - enable: true
     - require:
         - cmd: zookeeper-init
+        - cmd: zookeeper-init-script
         - file: /etc/zookeeper/conf/zoo.cfg
         - file: /etc/zookeeper/conf/log4j.properties
         - file: myid
-{% if pillar.cdh5.security.enable %}
+        {% if pillar.cdh5.security.enable %}
         - cmd: generate_zookeeper_keytabs
-{% endif %}
+        {% endif %}

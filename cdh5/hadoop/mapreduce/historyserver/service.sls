@@ -125,6 +125,7 @@ hadoop-mapreduce-historyserver-svc:
       - pkg: hadoop-mapreduce-historyserver
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
+      - cmd: hadoop-mapreduce-historyserver-init-script
       {% if pillar.cdh5.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}

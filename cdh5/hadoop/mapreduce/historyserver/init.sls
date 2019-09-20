@@ -36,3 +36,9 @@ hadoop-mapreduce-historyserver:
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
+
+hadoop-mapreduce-historyserver-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/hadoop-mapreduce-historyserver"
+    - require:
+      - pkg: hadoop-mapreduce-historyserver

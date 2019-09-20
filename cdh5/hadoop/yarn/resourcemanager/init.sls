@@ -37,3 +37,9 @@ hadoop-yarn-resourcemanager:
       {% if pillar.cdh5.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
+
+hadoop-yarn-resourcemanager-init-script:
+  cmd.run:
+    - name: "sed -i 's/su /runuser /g' /etc/init.d/hadoop-yarn-resourcemanager"
+    - require:
+      - pkg: hadoop-yarn-resourcemanager

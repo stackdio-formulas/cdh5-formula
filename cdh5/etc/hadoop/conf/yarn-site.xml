@@ -135,7 +135,7 @@
     {% if spark_historyserver %}
     <property>
         <name>spark.yarn.historyServer.address</name>
-        <value>http{% if pillar.cdh5.encryption.enable %}s{% endif %}://{{ spark_historyserver[0]['fqdn'] }}:{% if pillar.cdh5.encryption.enable %}18488{% else %}18080{% endif %}</value>
+        <value>http{% if pillar.cdh5.encryption.enable %}s{% endif %}://{{ spark_historyserver[0]['fqdn'] }}:{% if pillar.cdh5.encryption.enable %}18488{% else %}18088{% endif %}</value>
     </property>
     {% endif %}
 
