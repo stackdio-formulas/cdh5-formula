@@ -52,7 +52,7 @@ remove_policy_file:
 
 {% set releasever = grains.osmajorrelease %}
 
-{% set base_url = "https://" ~ pillar.cdh5.artifactory.username ~ ":" pillar.cdh5.artifactory.password ~ "@artifacts.corp.digitalreasoning.com/artifactory/cloudera-remote" %}
+{% set base_url = "https://" ~ pillar.cdh5.artifactory.username ~ ":" ~ pillar.cdh5.artifactory.password ~ "@artifacts.corp.digitalreasoning.com/artifactory/cloudera-remote" %}
 
 # Set up the CDH5 yum repository
 cloudera_cdh5:
