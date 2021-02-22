@@ -52,13 +52,15 @@ remove_policy_file:
 
 {% set releasever = grains.osmajorrelease %}
 
+{% set base_url = "https://" ~ pillar.cdh5.artifactory.username ~ ":" ~ pillar.cdh5.artifactory.password ~ "@artifacts.corp.digitalreasoning.com/artifactory/cloudera-remote" %}
+
 # Set up the CDH5 yum repository
 cloudera_cdh5:
   pkgrepo:
     - managed
     - humanname: "Cloudera's Distribution for Hadoop, Version 5"
-    - baseurl: "http://archive.cloudera.com/cdh5/redhat/{{ releasever }}/$basearch/cdh/{{ pillar.cdh5.version }}/"
-    - gpgkey: http://archive.cloudera.com/cdh5/redhat/{{ releasever }}/$basearch/cdh/RPM-GPG-KEY-cloudera
+    - baseurl: "{{ base_url }}/cdh5/redhat/{{ releasever }}/$basearch/cdh/{{ pillar.cdh5.version }}/"
+    - gpgkey: {{ base_url }}/cdh5/redhat/{{ releasever }}/$basearch/cdh/RPM-GPG-KEY-cloudera
     - gpgcheck: 1
 
 cdh5_refresh_db:
