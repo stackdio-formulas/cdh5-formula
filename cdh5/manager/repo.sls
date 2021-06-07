@@ -5,14 +5,14 @@ cloudera_manager_repo:
   pkgrepo:
     - managed
     - humanname: "Cloudera Manager"
-    - baseurl: 'http://archive.cloudera.com/cm5/redhat/{{ releasever }}/x86_64/cm/{{ pillar.cdh5.manager.version }}/'
-    - gpgkey: 'http://archive.cloudera.com/cm5/redhat/{{ releasever }}/x86_64/cm/RPM-GPG-KEY-cloudera'
+    - baseurl: 'https://{{pillar.cdh5.manager.cloudera_user}}:{{pillar.cdh5.manager.cloudera_password}}@archive.cloudera.com/cm5/redhat/{{ releasever }}/x86_64/cm/{{ pillar.cdh5.manager.version }}/'
+    - gpgkey: 'https://{{pillar.cdh5.manager.cloudera_user}}:{{pillar.cdh5.manager.cloudera_password}}@archive.cloudera.com/cm5/redhat/{{ releasever }}/x86_64/cm/RPM-GPG-KEY-cloudera'
     - gpgcheck: 1
 
 cloudera_manager_gpg:
   cmd:
     - run
-    - name: 'rpm --import http://archive.cloudera.com/cm5/redhat/{{ releasever }}/x86_64/cm/RPM-GPG-KEY-cloudera'
+    - name: 'rpm --import https://{{pillar.cdh5.manager.cloudera_user}}:{{pillar.cdh5.manager.cloudera_password}}@archive.cloudera.com/cm5/redhat/{{ releasever }}/x86_64/cm/RPM-GPG-KEY-cloudera'
     - unless: 'rpm -qi gpg-pubkey-e8f86acd'
     - require:
       - pkgrepo: cloudera_manager_repo

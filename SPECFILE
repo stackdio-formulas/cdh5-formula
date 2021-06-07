@@ -176,6 +176,8 @@ pillar_defaults:
       db_password: 1234
     manager:
       version: 5
+      cloudera_user: CHANGE_THIS
+      cloudera_password: CHANGE_THIS
       server:
         start_service: true
       agent:
