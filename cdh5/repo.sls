@@ -17,7 +17,7 @@
 cdh5_gpg:
   cmd:
     - run
-    - name: 'curl -s http://archive.cloudera.com/cdh5/ubuntu/{{ grains.lsb_distrib_codename }}/amd64/cdh/archive.key | apt-key add -'
+    - name: 'curl -s https://{{pillar.cdh5.manager.cloudera_user}}:{{pillar.cdh5.manager.cloudera_password}}@archive.cloudera.com/cdh5/ubuntu/{{ grains.lsb_distrib_codename }}/amd64/cdh/archive.key | apt-key add -'
     - unless: 'apt-key list | grep "Cloudera Apt Repository"'
     - require:
       - file: /etc/apt/sources.list.d/cloudera.list
@@ -57,8 +57,8 @@ cloudera_cdh5:
   pkgrepo:
     - managed
     - humanname: "Cloudera's Distribution for Hadoop, Version 5"
-    - baseurl: "http://archive.cloudera.com/cdh5/redhat/{{ releasever }}/$basearch/cdh/{{ pillar.cdh5.version }}/"
-    - gpgkey: http://archive.cloudera.com/cdh5/redhat/{{ releasever }}/$basearch/cdh/RPM-GPG-KEY-cloudera
+    - baseurl: "https://{{pillar.cdh5.manager.cloudera_user}}:{{pillar.cdh5.manager.cloudera_password}}@archive.cloudera.com/cdh5/redhat/{{ releasever }}/$basearch/cdh/{{ pillar.cdh5.version }}/"
+    - gpgkey: https://{{pillar.cdh5.manager.cloudera_user}}:{{pillar.cdh5.manager.cloudera_password}}@archive.cloudera.com/cdh5/redhat/{{ releasever }}/$basearch/cdh/RPM-GPG-KEY-cloudera
     - gpgcheck: 1
 
 cdh5_refresh_db:

@@ -1,1 +1,1 @@
-deb [arch=amd64] http://archive.cloudera.com/cdh5/ubuntu/{{ grains['lsb_distrib_codename'] }}/amd64/cdh {{ grains['lsb_distrib_codename'] }}-cdh{{ pillar.cdh5.version }} contrib
+deb [arch=amd64] https://{{pillar.cdh5.manager.cloudera_user}}:{{pillar.cdh5.manager.cloudera_password}}@archive.cloudera.com/cdh5/ubuntu/{{ grains['lsb_distrib_codename'] }}/amd64/cdh {{ grains['lsb_distrib_codename'] }}-cdh{{ pillar.cdh5.version }} contrib
